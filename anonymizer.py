@@ -1,6 +1,18 @@
 import sys
 import getopt
 import matcher_patterns
+import spacy
+from spacy.matcher import Matcher
+
+
+def entity_type_convertion(data, doc):
+    results = []
+    for match_id, start, end in data:
+        entity_name = doc.vocab.strings[match_id]
+        found_by_spacy = True
+        results.append([entity_name, doc[start:end],
+                        start, end, found_by_spacy])
+    return(results)
 
 
 def matches_handler(matcher, doc, i, matches, method='delete'):
@@ -17,23 +29,37 @@ def file_to_text(ifile, format='.txt'):
 
 
 def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
-    import spacy
-    from spacy.matcher import Matcher
+
     nlp = spacy.load('el_core_news_sm')
     matcher = Matcher(nlp.vocab)
     data = file_to_text(ifile, '.txt')
     doc = nlp(data)
 
+    '''
+        --- ENTITY LIST EXPLANATION ---
+        entities = [entity_name , span/word, start, end, found_by_spacy] 
+        We will use found_by_spacy bool to access data either via 
+        doc[start:end] if True else str(doc)[start:end]
+    '''
+    entities = []
+
+    results = matcher_patterns.vehicles(str(doc))
+    entities += results
     # You can pass as argument the match handler. This one will
     # delete be default the recognised entities in the text
-
-    matcher_patterns.phone_number(matcher)
+    results = matcher_patterns.phone_number(matcher, data=str(doc))
+    entities += results
     matches = matcher(doc)
-    print(matches)
+    results = entity_type_convertion(matches, doc)
+    entities += results
+    print(entities)
+    # print(matches)
+    # Use regex to find vehicles
     for i, my_match in enumerate(matches):
         [match_id, start, end] = my_match
         string_id = doc.vocab.strings[match_id]
-        print(f'The {i+1} match as {string_id}:{doc[start:end]}')
+        # print(f'The {i+1} match as {string_id}:{doc[start:end]}')
+
     print(doc)
     exit(0)
 

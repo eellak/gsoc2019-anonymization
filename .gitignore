@@ -2,3 +2,5 @@
 **/output*
 notes.txt
 __pycache__/
+**/*.swp
+**/*.swo
