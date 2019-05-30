@@ -10,7 +10,8 @@ def entity_type_convertion(data, doc):
     for match_id, start, end in data:
         entity_name = doc.vocab.strings[match_id]
         found_by_spacy = True
-        results.append([entity_name, doc[start:end],
+        span = doc[start:end]
+        results.append([entity_name, span, span,
                         start, end, found_by_spacy])
     return(results)
 
@@ -37,13 +38,20 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     data = str(doc)
     '''
         --- ENTITY LIST EXPLANATION ---
-        entities = [entity_name , span/word, start, end, found_by_spacy] 
+        entities = [entity_name, entity_value, span/word, start, end, found_by_spacy] 
+
         We will use found_by_spacy bool to access data either via 
-        doc[start:end] if True else str(doc)[start:end]
+        doc[start:end] if True else str(doc)[start:end] .
+
+        Span/word is the word just the way it was found into the text
+        while entity_value is the value extracted through specific
+        algorithms each time.
+        
+        Some times these to might have the same value.
     '''
     entities = []
 
-    results = matcher_patterns.vehicles(data=data)
+    results = matcher_patterns.vehicle(data=data)
     entities += results
     # You can pass as argument the match handler. This one will
     # delete be default the recognised entities in the text
@@ -53,6 +61,8 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     results = entity_type_convertion(matches, doc)
     entities += results
     results = matcher_patterns.identity_card(data=data)
+    entities += results
+    results = matcher_patterns.iban(data=data)
     entities += results
     print(entities)
 

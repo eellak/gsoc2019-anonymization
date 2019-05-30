@@ -25,6 +25,7 @@ def phone_number(data, matcher=None, handler=None, regex=True):
             e = match.end()
             span = data[s:e]
             entity_name = 'general_phone_number'
+            entity_value = span
             found_by_spacy = False
             temp = True
             for i, _ in enumerate(results):
@@ -32,7 +33,8 @@ def phone_number(data, matcher=None, handler=None, regex=True):
                     temp = False
                     break
             if temp:
-                results.append([entity_name, span, s, e, found_by_spacy])
+                results.append([entity_name, entity_value,
+                                span, s, e, found_by_spacy])
 
         # print(span)
         # results.append([entity_name, span, s, e, found_by_spacy])
@@ -59,7 +61,7 @@ def phone_number(data, matcher=None, handler=None, regex=True):
 # REGEX -- due to spacy issue with spaces in regex
 
 
-def vehicles(data, handler=None):
+def vehicle(data, handler=None):
     import re
     vehicle_regex = r'(?i)(\b(([αβεζηικμνορτυχabezhikmnoptyx]([\s.])?){3})([-\s])*([0-9]{4}))'
     rare_vehicles1 = r'(?i)(\b(([πσ])([\s.])?){2}([-\s])*([0-9]{4}))'
@@ -76,29 +78,33 @@ def vehicles(data, handler=None):
         e = match.end()
         span = data[s:e]
         entity_name = 'vehicle'
+        entity_value = span
         found_by_spacy = False
-        results.append([entity_name, span, s, e, found_by_spacy])
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     for match in re.finditer(rare_vehicles1, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'rare_vehicle'
+        entity_value = span
         found_by_spacy = False
-        results.append([entity_name, span, s, e, found_by_spacy])
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     for match in re.finditer(special_vehicle, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'special_vehicle'
+        entity_value = span
         found_by_spacy = False
-        results.append([entity_name, span, s, e, found_by_spacy])
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     for match in re.finditer(diplomatic_corps_vehicle, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'diplomatic_corps_vehicle'
+        entity_value = span
         found_by_spacy = False
-        results.append([entity_name, span, s, e, found_by_spacy])
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
 
     return results
 
@@ -112,6 +118,58 @@ def identity_card(data, handler=None):
         e = match.end()
         span = data[s:e]
         entity_name = 'identity_card'
+        entity_value = span
         found_by_spacy = False
-        results.append([entity_name, span, s, e, found_by_spacy])
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+    return results
+
+
+def iban(data, handler=None):
+    import re
+    results = []
+    iban_pattern = r'(?i)\b(IBAN|iban|ΙΒΑΝ|ιβαν)([\s\-:]*)(([A-Z]|[a-z]){2}([\s\-]*\d){25})'
+    print(re.findall(iban_pattern, data))
+    for match in re.finditer(iban_pattern, data):
+        # Make sure it is a correct iban
+        # example: iban GR-16-01101250000000012300675 -->
+        # group(0) whole prase
+        # group(1) 'iban'
+        # group(2) ' '
+        # group(3) 'GR-16-01101250000000012300675'
+        iban_number = match.group(3)
+        iban_number = iban_number.replace('\n', ' ')
+        iban_number = iban_number.replace('\t', ' ')
+        iban_number = iban_number.replace('\r', ' ')
+        iban_number = iban_number.replace('\f', ' ')
+        iban_number = iban_number.replace('-', '')
+        iban_number = iban_number.replace(' ', '')
+        if len(iban_number) != 27:
+            raise NameError('WRONG IBAN')
+        else:
+            first_part = iban_number[0:4]
+            second_part = iban_number[4:27]
+            converted_iban = second_part+first_part
+            from string import ascii_uppercase as a_up
+            final_iban = []
+            for letter in converted_iban:
+                if letter in a_up:
+                    letter_number = a_up.index(letter) + 10
+                    final_iban += (str(letter_number))
+                else:
+                    final_iban += letter
+            final_iban = int(''.join(final_iban))
+            print(final_iban)
+            [_, mod] = divmod(final_iban, 97)
+            if mod == 1:
+                # Correct iban according to
+                # https://en.wikipedia.org/wiki/International_Bank_Account_Number
+
+                s = match.start()
+                e = match.end()
+                span = data[s:e]
+                entity_name = 'iban'
+                entity_value = iban_number
+                found_by_spacy = False
+                results.append([entity_name, entity_value,
+                                span, s, e, found_by_spacy])
     return results
