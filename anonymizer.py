@@ -34,7 +34,7 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     matcher = Matcher(nlp.vocab)
     data = file_to_text(ifile, '.txt')
     doc = nlp(data)
-
+    data = str(doc)
     '''
         --- ENTITY LIST EXPLANATION ---
         entities = [entity_name , span/word, start, end, found_by_spacy] 
@@ -43,25 +43,18 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     '''
     entities = []
 
-    results = matcher_patterns.vehicles(str(doc))
+    results = matcher_patterns.vehicles(data=data)
     entities += results
     # You can pass as argument the match handler. This one will
     # delete be default the recognised entities in the text
-    results = matcher_patterns.phone_number(matcher, data=str(doc))
+    results = matcher_patterns.phone_number(data=data)
     entities += results
     matches = matcher(doc)
     results = entity_type_convertion(matches, doc)
     entities += results
+    results = matcher_patterns.identity_card(data=data)
+    entities += results
     print(entities)
-    # print(matches)
-    # Use regex to find vehicles
-    for i, my_match in enumerate(matches):
-        [match_id, start, end] = my_match
-        string_id = doc.vocab.strings[match_id]
-        # print(f'The {i+1} match as {string_id}:{doc[start:end]}')
-
-    print(doc)
-    exit(0)
 
 
 def main(argv):
