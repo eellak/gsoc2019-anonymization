@@ -62,6 +62,11 @@ def phone_number(matcher, data, handler=None, regex=True):
 def vehicles(data, handler=None):
     import re
     vehicle_regex = r'(?i)(\b(([αβεζηικμνορτυχabezhikmnoptyx]([\s.])?){3})([-\s])*([0-9]{4}))'
+    rare_vehicles1 = r'(?i)(\b(([πσ])([\s.])?){2}([-\s])*([0-9]{4}))'
+    '''security forces + construction machinery + farm machinery + trailers'''
+    special_vehicle = r'(?i)([πσεαλρμseamp])([\s.]?){2}([-\s])*([0-9]{5})'
+    ''' diplomatic corps'''
+    diplomatic_corps_vehicle = r'(?i)(([δσ][.\s]?){2}([0-9][\s]?){2})([\s-]?)([0-9]{1})'
 
     # ALTERNATIVE
     # matches = re.findall(vehicle_regex, data)
@@ -73,4 +78,26 @@ def vehicles(data, handler=None):
         entity_name = 'vehicle'
         found_by_spacy = False
         results.append([entity_name, span, s, e, found_by_spacy])
+    for match in re.finditer(rare_vehicles1, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'rare_vehicle'
+        found_by_spacy = False
+        results.append([entity_name, span, s, e, found_by_spacy])
+    for match in re.finditer(special_vehicle, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'special_vehicle'
+        found_by_spacy = False
+        results.append([entity_name, span, s, e, found_by_spacy])
+    for match in re.finditer(diplomatic_corps_vehicle, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'diplomatic_corps_vehicle'
+        found_by_spacy = False
+        results.append([entity_name, span, s, e, found_by_spacy])
+
     return results
