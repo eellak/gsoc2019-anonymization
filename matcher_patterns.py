@@ -206,16 +206,25 @@ def amka(data, handler=None):
     return results
 
 
-def brand_name(data, handler=None):
+def brand(data, handler=None):
     import re
     results = []
-    brand_name_pattern = r'(?i)\b(επωνυμία|επωνυμια)[\s:]?«[\s\-_]?(([\w][\s\-_]?)+)».\b'
+    brand_name_pattern = r'(?i)\b(επωνυμία|επωνυμια)[\s:]?«(.*?)»{1}'
+    brand_distinctive_title_pattern = r'(?i)\b(διακριτικό|διακριτικο)[\s\-]?(τίτλο|τιτλο)[\s:]?«(.*?)»{1}'
     for match in re.finditer(brand_name_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'brand_name'
         entity_value = match.group(2).upper()
+        found_by_spacy = False
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+    for match in re.finditer(brand_distinctive_title_pattern, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'brand_distinctive_title'
+        entity_value = match.group(3).upper()
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     return results
