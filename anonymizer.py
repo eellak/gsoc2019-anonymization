@@ -68,6 +68,8 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     entities += results
     results = matcher_patterns.amka(data=data)
     entities += results
+    results = matcher_patterns.brand_name(data=data)
+    entities += results
     print(entities)
 
 

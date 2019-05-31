@@ -3,9 +3,9 @@ def phone_number(data, matcher=None, handler=None, regex=True):
     if regex:
         import re
         results = []
-        general_phone_number_pattern = r'(\+(\s)*[0-9]{2})*([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})'
-        greek_mobile_number_pattern = r'(\+(\s)*30)*([\s\.-])*(69[0-9]{1})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})'
-        greek_phone_number_pattern = r'(\+(\s)*30)*([\s\.-])*(2[0-9]{2})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})'
+        general_phone_number_pattern = r'\b(\+(\s)*[0-9]{2})*([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})\b'
+        greek_mobile_number_pattern = r'\b(\+(\s)*30)*([\s\.-])*(69[0-9]{1})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})\b'
+        greek_phone_number_pattern = r'\b(\+(\s)*30)*([\s\.-])*(2[0-9]{2})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})\b'
         for match in re.finditer(greek_mobile_number_pattern, data):
             s = match.start()
             e = match.end()
@@ -63,15 +63,14 @@ def phone_number(data, matcher=None, handler=None, regex=True):
 
 def vehicle(data, handler=None):
     import re
-    vehicle_pattern = r'(?i)\b((([αβεζηικμνορτυχabezhikmnoptyx])([\s.])?){3})([-\s])*([0-9]{4})'
-    rare_vehicle_pattern = r'(?i)\b((([πσ])[\s.]?){2})([-\s])*([0-9]{4})'
+    # update: vehicle patterns only uppercase, case insensitive
+    vehicle_pattern = r'\b((([ΑΒΕΖΗΙΚΜΝΟΡΤΥΧABEZHIKMNOPTYX])([\s.])?){3})([-\s])*([0-9]{4})\b'
+    rare_vehicle_pattern = r'\b((([ΠΣ])[\s.]?){2})([-\s])*([0-9]{4})'
     '''security forces + construction machinery + farm machinery + trailers'''
-    special_vehicle_pattern = r'(?i)\b(([πσεαλρμseamp][\s.]?){2})[-\s]*([0-9]{5})'
+    special_vehicle_pattern = r'\b(([ΠΣΕΑΛΡΜSEAMP][\s.]?){2})[-\s]*([0-9]{5})\b'
     ''' diplomatic corps'''
-    diplomatic_corps_vehicle_pattern = r'(?i)\b(([δσ][.\s]?){2})(([0-9][\s]?){2}[\s-]*[0-9]{1})[\s]?(CD[\s.]?|cd[\s.]?)'
+    diplomatic_corps_vehicle_pattern = r'\b(([ΔΣ][.\s]?){2})(([0-9][\s]?){2}[\s-]*[0-9]{1})[\s]?(CD[\s.]?|cd[\s.]?)\b'
 
-    # ALTERNATIVE
-    # matches = re.findall(vehicle_pattern, data)
     results = []
     for match in re.finditer(vehicle_pattern, data):
         s = match.start()
@@ -116,7 +115,7 @@ def vehicle(data, handler=None):
 def identity_card(data, handler=None):
     import re
     results = []
-    identity_card_pattern = r'(?i)\b(([α-ω])([\s.])?){2}([\s-]?)(([0-9])([\s])?){6}'
+    identity_card_pattern = r'(?i)\b(([α-ω])([\s.])?){2}([\s-]?)(([0-9])([\s])?){6}\b'
     for match in re.finditer(identity_card_pattern, data):
         s = match.start()
         e = match.end()
@@ -131,7 +130,7 @@ def identity_card(data, handler=None):
 def iban(data, handler=None):
     import re
     results = []
-    iban_pattern = r'(?i)\b(IBAN|iban|ΙΒΑΝ|ιβαν)([\s\-:]*)(([A-Z]|[a-z]){2}([\s\-]*\d){25})'
+    iban_pattern = r'(?i)\b(IBAN|iban|ΙΒΑΝ|ιβαν)([\s\-:]*)(([A-Z]|[a-z]){2}([\s\-]*\d){25})\b'
     for match in re.finditer(iban_pattern, data):
         # Make sure it is a correct iban
         # example: iban GR-16-01101250000000012300675 -->
@@ -180,7 +179,7 @@ def iban(data, handler=None):
 def afm(data, handler=None):
     import re
     results = []
-    afm_pattern = r'(?i)\b[Αα][\s.]?[Φφ][\s.]?[Μμ][\s.]?[\s:]*([0-9]{9})'
+    afm_pattern = r'(?i)\bα[\s.]?φ[\s.]?μ[\s.]?[\s:]*([0-9]{9})\b'
     for match in re.finditer(afm_pattern, data):
         s = match.start()
         e = match.end()
@@ -195,14 +194,28 @@ def afm(data, handler=None):
 def amka(data, handler=None):
     import re
     results = []
-    amka_pattern = r'(?i)\b([Αα][\s.]?[Μμ][\s.]?[Κκ][\s.]?[Αα][\s.]?)[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})'
+    amka_pattern = r'(?i)\b(α[\s.]?μ[\s.]?κ[\s.]?α[\s.]?)[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})\b'
     for match in re.finditer(amka_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'amka'
         entity_value = match.group(2)
-        print(entity_value)
+        found_by_spacy = False
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+    return results
+
+
+def brand_name(data, handler=None):
+    import re
+    results = []
+    brand_name_pattern = r'(?i)\b(επωνυμία|επωνυμια)[\s:]?«[\s\-_]?(([\w][\s\-_]?)+)».\b'
+    for match in re.finditer(brand_name_pattern, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'brand_name'
+        entity_value = match.group(2).upper()
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     return results
