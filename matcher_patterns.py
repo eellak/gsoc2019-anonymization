@@ -63,46 +63,50 @@ def phone_number(data, matcher=None, handler=None, regex=True):
 
 def vehicle(data, handler=None):
     import re
-    vehicle_regex = r'(?i)(\b(([αβεζηικμνορτυχabezhikmnoptyx]([\s.])?){3})([-\s])*([0-9]{4}))'
-    rare_vehicles1 = r'(?i)(\b(([πσ])([\s.])?){2}([-\s])*([0-9]{4}))'
+    vehicle_pattern = r'(?i)\b((([αβεζηικμνορτυχabezhikmnoptyx])([\s.])?){3})([-\s])*([0-9]{4})'
+    rare_vehicle_pattern = r'(?i)\b((([πσ])[\s.]?){2})([-\s])*([0-9]{4})'
     '''security forces + construction machinery + farm machinery + trailers'''
-    special_vehicle = r'(?i)\b([πσεαλρμseamp])([\s.]?){2}([-\s])*([0-9]{5})'
+    special_vehicle_pattern = r'(?i)\b(([πσεαλρμseamp][\s.]?){2})[-\s]*([0-9]{5})'
     ''' diplomatic corps'''
-    diplomatic_corps_vehicle = r'(?i)\b(([δσ][.\s]?){2}([0-9][\s]?){2})([\s-]?)([0-9]{1})'
+    diplomatic_corps_vehicle_pattern = r'(?i)\b(([δσ][.\s]?){2})(([0-9][\s]?){2}[\s-]*[0-9]{1})[\s]?(CD[\s.]?|cd[\s.]?)'
 
     # ALTERNATIVE
-    # matches = re.findall(vehicle_regex, data)
+    # matches = re.findall(vehicle_pattern, data)
     results = []
-    for match in re.finditer(vehicle_regex, data):
+    for match in re.finditer(vehicle_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'vehicle'
-        entity_value = span
+        entity_value = match.group(1).strip().replace(
+            '.', '') + '-' + match.group(6).strip()
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
-    for match in re.finditer(rare_vehicles1, data):
+    for match in re.finditer(rare_vehicle_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'rare_vehicle'
-        entity_value = span
+        entity_value = match.group(1).strip().replace(
+            '.', '') + '-' + match.group(5).strip()
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
-    for match in re.finditer(special_vehicle, data):
+    for match in re.finditer(special_vehicle_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'special_vehicle'
-        entity_value = span
+        entity_value = match.group(1).strip().replace(
+            '.', '') + '-' + match.group(3).strip()
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
-    for match in re.finditer(diplomatic_corps_vehicle, data):
+    for match in re.finditer(diplomatic_corps_vehicle_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'diplomatic_corps_vehicle'
-        entity_value = span
+        entity_value = match.group(1).strip().replace(
+            '.', '') + '-' + match.group(3).replace('-', '') + '-' + match.group(5).strip().replace('.', '')
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
 
@@ -176,13 +180,29 @@ def iban(data, handler=None):
 def afm(data, handler=None):
     import re
     results = []
-    afm_pattern = r'(?i)\b[Αα]{1}[\s.]?[Φφ]{1}[\s.]?[Μμ][\s.]?[\s:]*([0-9]{9})'
+    afm_pattern = r'(?i)\b[Αα][\s.]?[Φφ][\s.]?[Μμ][\s.]?[\s:]*([0-9]{9})'
     for match in re.finditer(afm_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'afm'
         entity_value = match.group(1)
+        found_by_spacy = False
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+    return results
+
+
+def amka(data, handler=None):
+    import re
+    results = []
+    amka_pattern = r'(?i)\b([Αα][\s.]?[Μμ][\s.]?[Κκ][\s.]?[Αα][\s.]?)[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})'
+    for match in re.finditer(amka_pattern, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'amka'
+        entity_value = match.group(2)
+        print(entity_value)
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     return results

@@ -66,6 +66,8 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     entities += results
     results = matcher_patterns.afm(data=data)
     entities += results
+    results = matcher_patterns.amka(data=data)
+    entities += results
     print(entities)
 
 
