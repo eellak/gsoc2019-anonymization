@@ -46,7 +46,7 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
         Span/word is the word just the way it was found into the text
         while entity_value is the value extracted through specific
         algorithms each time.
-        
+
         Some times these to might have the same value.
     '''
     entities = []
@@ -63,6 +63,8 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     results = matcher_patterns.identity_card(data=data)
     entities += results
     results = matcher_patterns.iban(data=data)
+    entities += results
+    results = matcher_patterns.afm(data=data)
     entities += results
     print(entities)
 

@@ -128,7 +128,6 @@ def iban(data, handler=None):
     import re
     results = []
     iban_pattern = r'(?i)\b(IBAN|iban|ΙΒΑΝ|ιβαν)([\s\-:]*)(([A-Z]|[a-z]){2}([\s\-]*\d){25})'
-    print(re.findall(iban_pattern, data))
     for match in re.finditer(iban_pattern, data):
         # Make sure it is a correct iban
         # example: iban GR-16-01101250000000012300675 -->
@@ -158,7 +157,6 @@ def iban(data, handler=None):
                 else:
                     final_iban += letter
             final_iban = int(''.join(final_iban))
-            print(final_iban)
             [_, mod] = divmod(final_iban, 97)
             if mod == 1:
                 # Correct iban according to
@@ -172,4 +170,19 @@ def iban(data, handler=None):
                 found_by_spacy = False
                 results.append([entity_name, entity_value,
                                 span, s, e, found_by_spacy])
+    return results
+
+
+def afm(data, handler=None):
+    import re
+    results = []
+    afm_pattern = r'(?i)\b[Αα]{1}[\s.]?[Φφ]{1}[\s.]?[Μμ][\s.]?[\s:]*([0-9]{9})'
+    for match in re.finditer(afm_pattern, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'afm'
+        entity_value = match.group(1)
+        found_by_spacy = False
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     return results
