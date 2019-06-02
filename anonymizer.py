@@ -3,6 +3,7 @@ import getopt
 import matcher_patterns
 import spacy
 from spacy.matcher import Matcher
+from termcolor import colored
 
 
 def entity_type_convertion(data, doc):
@@ -38,9 +39,10 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     data = str(doc)
     '''
         --- ENTITY LIST EXPLANATION ---
-        entities = [entity_name, entity_value, span/word, start, end, found_by_spacy] 
+        entities = [entity_name, entity_value,
+            span/word, start, end, found_by_spacy]
 
-        We will use found_by_spacy bool to access data either via 
+        We will use found_by_spacy bool to access data either via
         doc[start:end] if True else str(doc)[start:end] .
 
         Span/word is the word just the way it was found into the text
@@ -70,7 +72,9 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     entities += results
     results = matcher_patterns.brand(data=data)
     entities += results
-    print(entities)
+    for element in entities:
+        print('[', colored(element[0], 'yellow'), ',', colored(
+            element[1], 'blue'), ',', colored(element[2], 'cyan'), ']')
 
 
 def main(argv):

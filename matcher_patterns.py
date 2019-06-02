@@ -3,29 +3,36 @@ def phone_number(data, matcher=None, handler=None, regex=True):
     if regex:
         import re
         results = []
-        general_phone_number_pattern = r'\b(\+(\s)*[0-9]{2})*([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})\b'
-        greek_mobile_number_pattern = r'\b(\+(\s)*30)*([\s\.-])*(69[0-9]{1})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})\b'
-        greek_phone_number_pattern = r'\b(\+(\s)*30)*([\s\.-])*(2[0-9]{2})([\s\.-])*([0-9]{3})([\s\.-])*([0-9]{4})\b'
+        general_phone_number_pattern = r'\b(\+[\s]*[0-9]{2})?[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b'
+        greek_mobile_number_pattern = r'\b(\+[\s]*30)?[\s\.\-]*(69[0-9]{1})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b'
+        greek_phone_number_pattern = r'\b(\+[\s]*30)?[\s\.\-]*(2[0-9]{2})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b'
         for match in re.finditer(greek_mobile_number_pattern, data):
             s = match.start()
             e = match.end()
             span = data[s:e]
             entity_name = 'greek_mobile_number'
+            entity_value = (match.group(1) if match.group(
+                1) != None else '') + match.group(2) + match.group(3) + match.group(4)
             found_by_spacy = False
-            results.append([entity_name, span, s, e, found_by_spacy])
+            results.append([entity_name, entity_value,
+                            span, s, e, found_by_spacy])
         for match in re.finditer(greek_phone_number_pattern, data):
             s = match.start()
             e = match.end()
             span = data[s:e]
             entity_name = 'greek_phone_number'
+            entity_value = (match.group(1) if match.group(
+                1) != None else '') + match.group(2) + match.group(3) + match.group(4)
             found_by_spacy = False
-            results.append([entity_name, span, s, e, found_by_spacy])
+            results.append([entity_name, entity_value,
+                            span, s, e, found_by_spacy])
         for match in re.finditer(general_phone_number_pattern, data):
             s = match.start()
             e = match.end()
             span = data[s:e]
             entity_name = 'general_phone_number'
-            entity_value = span
+            entity_value = (match.group(1) if match.group(1)
+                            != None else '') + match.group(2) + match.group(3) + match.group(4)
             found_by_spacy = False
             temp = True
             for i, _ in enumerate(results):
@@ -115,13 +122,14 @@ def vehicle(data, handler=None):
 def identity_card(data, handler=None):
     import re
     results = []
-    identity_card_pattern = r'(?i)\b(([α-ω])([\s.])?){2}([\s-]?)(([0-9])([\s])?){6}\b'
+    identity_card_pattern = r'(?i)\s\b(([α-ω][\s.]?){2})[\s-]?(([0-9][\s]?){6})\b'
     for match in re.finditer(identity_card_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'identity_card'
-        entity_value = span
+        entity_value = match.group(1).replace(
+            ' ', '') + '-' + match.group(3).strip().replace(' ', '')
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     return results
@@ -179,7 +187,8 @@ def iban(data, handler=None):
 def afm(data, handler=None):
     import re
     results = []
-    afm_pattern = r'(?i)\bα[\s.]?φ[\s.]?μ[\s.]?[\s:]*([0-9]{9})\b'
+    # afm_pattern = r'(?i)\bα[\s.]?φ[\s.]?μ[\s.]?[\s:]*([0-9]{9})\b'
+    afm_pattern = r'(?i)\bα[\s.]?φ[\s.]?μ[\s.]?[\s\-]?[\w]*?[\s:]*([0-9]{9})\b'
     for match in re.finditer(afm_pattern, data):
         s = match.start()
         e = match.end()
@@ -194,7 +203,8 @@ def afm(data, handler=None):
 def amka(data, handler=None):
     import re
     results = []
-    amka_pattern = r'(?i)\b(α[\s.]?μ[\s.]?κ[\s.]?α[\s.]?)[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})\b'
+    # amka_pattern = r'(?i)\b(α[\s.]?μ[\s.]?κ[\s.]?α[\s.]?)[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})\b'
+    amka_pattern = r'(?i)\b(α[\s.]?μ[\s.]?κ[\s.]?α[\s.]?)[\w]*?[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})\b'
     for match in re.finditer(amka_pattern, data):
         s = match.start()
         e = match.end()
