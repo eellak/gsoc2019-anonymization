@@ -72,6 +72,8 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     entities += results
     results = matcher_patterns.brand(data=data)
     entities += results
+    results = matcher_patterns.address(data=data)
+    entities += results
     for element in entities:
         print('[', colored(element[0], 'yellow'), ',', colored(
             element[1], 'blue'), ',', colored(element[2], 'cyan'), ']')

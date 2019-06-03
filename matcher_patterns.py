@@ -238,3 +238,21 @@ def brand(data, handler=None):
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
     return results
+
+
+def address(data, handler=None):
+    import re
+    results = []
+    # address_pattern = r'(?i)\b(?:οδός|οδος|οδο|οδό|οδού|οδου)[\s:]+?(.+?)[,\s]+?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(.+?\b))?'
+    # better approach: Addresses with capital
+    address_pattern = r'\b(?:οδός|οδος|οδο|οδό|οδού|οδου)[\s:]+?(?P<address>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number>.+?\b))?'
+    for match in re.finditer(address_pattern, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'address'
+        entity_value = match.group('address').strip(
+        ).replace(',', '') + ('-' + match.group('number').strip() if match.group(3) != None else '')
+        found_by_spacy = False
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+    return results
