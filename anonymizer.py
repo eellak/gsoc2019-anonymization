@@ -4,6 +4,7 @@ import matcher_patterns
 import spacy
 from spacy.matcher import Matcher
 from termcolor import colored
+import trie_index
 
 
 def entity_type_convertion(data, doc):
@@ -54,26 +55,39 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     entities = []
 
     results = matcher_patterns.vehicle(data=data)
-    entities += results
+    if results != []:
+        entities += results
     # You can pass as argument the match handler. This one will
     # delete be default the recognised entities in the text
     results = matcher_patterns.phone_number(data=data)
-    entities += results
+    if results != []:
+        entities += results
     matches = matcher(doc)
     results = entity_type_convertion(matches, doc)
-    entities += results
+    if results != []:
+        entities += results
     results = matcher_patterns.identity_card(data=data)
-    entities += results
+    if results != []:
+        entities += results
     results = matcher_patterns.iban(data=data)
-    entities += results
+    if results != []:
+        entities += results
     results = matcher_patterns.afm(data=data)
-    entities += results
+    if results != []:
+        entities += results
     results = matcher_patterns.amka(data=data)
-    entities += results
+    if results != []:
+        entities += results
     results = matcher_patterns.brand(data=data)
-    entities += results
+    if results != []:
+        entities += results
     results = matcher_patterns.address(data=data)
-    entities += results
+    if results != []:
+        entities += results
+    results = matcher_patterns.find_names(data=data)
+    if results != []:
+        entities += results
+    # Display
     for element in entities:
         print('[', colored(element[0], 'yellow'), ',', colored(
             element[1], 'blue'), ',', colored(element[2], 'cyan'), ']')

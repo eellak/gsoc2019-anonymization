@@ -244,15 +244,87 @@ def address(data, handler=None):
     import re
     results = []
     # address_pattern = r'(?i)\b(?:οδός|οδος|οδο|οδό|οδού|οδου)[\s:]+?(.+?)[,\s]+?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(.+?\b))?'
-    # better approach: Addresses with capital
+    # better approach: Addresses start with uppercase letters
     address_pattern = r'\b(?:οδός|οδος|οδο|οδό|οδού|οδου)[\s:]+?(?P<address>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number>.+?\b))?'
+    multiple_address_pattern = (r'\b(?:οδών|οδων|Οδών|Οδων)[\s:]+?' +
+                                r'(?P<address1>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number1>.+?\b))' +
+                                r'(?:[\w]?[\s,]*(?:και|Και|κι)[\s,]*)' +
+                                r'(?P<address2>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number2>.+?\b))')
+
     for match in re.finditer(address_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
         entity_name = 'address'
         entity_value = match.group('address').strip(
-        ).replace(',', '') + ('-' + match.group('number').strip() if match.group(3) != None else '')
+        ).replace(',', '') + ('-' + match.group('number').strip() if match.group('number') != None else '')
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+    for match in re.finditer(multiple_address_pattern, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'multiple_addresses'
+        entity_value = [
+            match.group('address1').strip().replace(',', '') +
+            ('-' + match.group('number1').strip()
+             if match.group('number1') != None else ''),
+
+            match.group('address2').strip().replace(',', '') +
+            ('-' + match.group('number2').strip()
+             if match.group('number1') != None else '')
+        ]
+        found_by_spacy = False
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+
+    return results
+
+
+def find_names(data, handler=None):
+    import trie_index
+    import re
+    results = []
+    possible_names = []
+    starts = []
+    ends = []
+    not_final_results = []
+    # for index, word in enumerate(data.split()):
+    #     if word[0].isupper():
+    #         possible_names.append(word)
+    name_pattern = r'\b[Α-ΩΆΈΌΊΏΉΎ][α-ωάέόίώήύ]+'
+    for match in re.finditer(name_pattern, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        possible_names.append(span)
+        entity_name = 'name'
+        entity_value = span.upper()
+        found_by_spacy = False
+        not_final_results.append([
+            entity_name,
+            entity_value,
+            span,
+            s,
+            e,
+            found_by_spacy
+        ])
+    # print(possible_names)
+    are_names = trie_index.identify(
+        'male_and_female_names.txt', testwords=possible_names)
+    for index, is_name in enumerate(are_names):
+        if is_name == True:
+            # word = possible_names[index]
+            # s = data.index(word)
+            # e = s+len(word)
+            # entity_name = 'name'
+            # results.append([
+            #     entity_name,
+            #     word.upper(),
+            #     word,
+            #     s,
+            #     e,
+            #     False
+
+            # ])
+            results.append(not_final_results[index])
     return results
