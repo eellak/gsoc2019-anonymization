@@ -8,7 +8,7 @@ def read_dictionary(dictionary_file=None):
     dictionary_file = 'male_and_female_names.txt' if dictionary_file == None else dictionary_file
     with open(dictionary_file, 'r') as f:
         file = f.readlines()
-        data = [prepair_word(word.strip().replace(' ', '').lower()).upper()
+        data = [prepair_word(word.strip().replace(' ', ''))
                 for word in file]
         return data
 

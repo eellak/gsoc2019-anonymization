@@ -310,4 +310,43 @@ def find_names(data, handler=None):
     for index, is_name in enumerate(are_names):
         if is_name == True:
             results.append(not_final_results[index])
+
+    # Now fine surnames that maybe exist for each name in list
+    #
+
+    surnames = []
+    names = [result[2] for result in results]
+
+    for index, name in enumerate(names):
+        surname_pattern = (r'(?P<surname_before>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?' +
+                           r'[\s]?' +
+                           name +
+                           r'[\s]?' +
+                           r'(?P<surname_after>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?')
+        for match in re.finditer(surname_pattern, data):
+            s = match.start()
+            e = match.end()
+            span = data[s:e]
+            surname_before = match.group('surname_before')
+            surname_after = match.group('surname_after')
+            if (surname_before == None and surname_after != None):
+                surname = surname_after
+                fullname = name + ' ' + surname
+                results[index][0] = ('name-surname')
+                results[index][1] = (name + '-' + surname).upper().strip()
+            elif (surname_before != None and surname_after == None):
+                surname = surname_before
+                fullname = name + ' ' + surname
+                results[index][0] = ('name-surname')
+                results[index][1] = (name + '-' + surname).upper().strip()
+
+            elif (surname_before != None and surname_after != None):
+                fullname = surname_before + ' ' + name + ' ' + surname_after
+                results[index][0] = ('name-surname')
+                results[index][1] = (
+                    name + '-' + surname_before + surname_after).upper().strip()
+
+            results[index][2] = span
+            results[index][3] = s
+            results[index][4] = e
     return results
