@@ -1,5 +1,6 @@
 **/inputs/*
 **/output*
+**/testfiles/*
 notes.txt
 __pycache__/
 **/*.swp
