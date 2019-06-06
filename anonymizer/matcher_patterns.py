@@ -281,17 +281,14 @@ def address(data, handler=None):
 
 
 def find_names(data, handler=None):
-    import trie_index
+    from anonymizer import trie_index
     import re
     results = []
     possible_names = []
     starts = []
     ends = []
     not_final_results = []
-    # for index, word in enumerate(data.split()):
-    #     if word[0].isupper():
-    #         possible_names.append(word)
-    name_pattern = r'\b[Α-ΩΆΈΌΊΏΉΎ][α-ωάέόίώήύ]+'
+    name_pattern = r'\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*'
     for match in re.finditer(name_pattern, data):
         s = match.start()
         e = match.end()
@@ -308,23 +305,9 @@ def find_names(data, handler=None):
             e,
             found_by_spacy
         ])
-    # print(possible_names)
     are_names = trie_index.identify(
-        'male_and_female_names.txt', testwords=possible_names)
+        'anonymizer/data/male_and_female_names.txt', testwords=possible_names)
     for index, is_name in enumerate(are_names):
         if is_name == True:
-            # word = possible_names[index]
-            # s = data.index(word)
-            # e = s+len(word)
-            # entity_name = 'name'
-            # results.append([
-            #     entity_name,
-            #     word.upper(),
-            #     word,
-            #     s,
-            #     e,
-            #     False
-
-            # ])
             results.append(not_final_results[index])
     return results

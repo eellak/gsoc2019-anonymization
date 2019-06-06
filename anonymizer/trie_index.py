@@ -93,13 +93,8 @@ class Trie:
 
 
 def identify(dataset=None, testwords=[]):
-    # data = './male_and_female_names.txt' if data == None else data
-    # with open(data) as f:
-    #     data = f.read().replace('\n', '').lower()
 
-    output = ["Not present in trie",
-              "Present in trie"]
-    dataset = 'male_and_female_names.txt' if dataset == None else dataset
+    dataset = 'anonymizer/data/male_and_female_names.txt' if dataset == None else dataset
     data = read_dictionary(dictionary_file=dataset)
     # Input words (prepaired to only 'α' through 'ω' and lower case)
     dictionary = [prepair_word(word) for word in data]
@@ -114,10 +109,8 @@ def identify(dataset=None, testwords=[]):
     name_found = []
     for word in testwords:
         # Search for different keys
-        # print("{} ---- {}".format(word,
-        #                           output[t.search(prepair_word(word=word))]))
         if t.search(prepair_word(word=word)) == 1:
-            #word is found
+            # word is found
             name_found.append(True)
         else:
             name_found.append(False)
