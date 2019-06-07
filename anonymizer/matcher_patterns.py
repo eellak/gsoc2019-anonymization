@@ -43,9 +43,6 @@ def phone_number(data, matcher=None, handler=None, regex=True):
                 results.append([entity_name, entity_value,
                                 span, s, e, found_by_spacy])
 
-        # print(span)
-        # results.append([entity_name, span, s, e, found_by_spacy])
-
         return results
 
     else:
@@ -280,7 +277,7 @@ def address(data, handler=None):
     return results
 
 
-def find_names(data, handler=None):
+def find_names(data, handler=None, strict_surname_matcher=True):
     from anonymizer import trie_index
     import re
     results = []
@@ -317,36 +314,212 @@ def find_names(data, handler=None):
     surnames = []
     names = [result[2] for result in results]
 
+    surnames_postfixes = ['ιατης', 'ιατη', 'αιτης', 'αιτη',
+                          'ιδης', 'ιδη', 'αδης', 'αδη',
+                          'ογλου', 'ακος', 'ακου', 'ακης',
+                          'ακη', 'πουλος', 'πουλου', 'νος',
+                          'αιος', 'λας', 'ιου', 'ιδης',
+                          'ουλας', 'κος', 'αρης', 'εας',
+                          'αιας', 'αια', 'ουρας', 'ουρα',
+                          'ινας', 'ινης', 'ινη', 'μης',
+                          'μη', 'ονους', 'ονου', 'ιωτης',
+                          'ιωτη', 'ιτης', 'ιτη', 'ιανος',
+                          'ιανου', 'ιανη', 'ινος', 'ινου',
+                          'αιου', 'λα', 'νου',
+                          ]
+
+    surnames_postfixes = [
+        'ος', 'ου', 'ης', 'η', 'ους', 'ας', 'α'
+    ]
+
     for index, name in enumerate(names):
-        surname_pattern = (r'(?P<surname_before>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?' +
+        surname_pattern = (r'(?P<possible_surname_before>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?' +
                            r'[\s]?' +
                            name +
                            r'[\s]?' +
-                           r'(?P<surname_after>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?')
+                           r'(?P<possible_surname_after>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?')
+
         for match in re.finditer(surname_pattern, data):
-            s = match.start()
-            e = match.end()
-            span = data[s:e]
-            surname_before = match.group('surname_before')
-            surname_after = match.group('surname_after')
-            if (surname_before == None and surname_after != None):
-                surname = surname_after
-                fullname = name + ' ' + surname
-                results[index][0] = ('name-surname')
-                results[index][1] = (name + '-' + surname).upper().strip()
-            elif (surname_before != None and surname_after == None):
-                surname = surname_before
-                fullname = name + ' ' + surname
-                results[index][0] = ('name-surname')
-                results[index][1] = (name + '-' + surname).upper().strip()
+            possible_surname_before = match.group('possible_surname_before')
+            possible_surname_after = match.group('possible_surname_after')
 
-            elif (surname_before != None and surname_after != None):
-                fullname = surname_before + ' ' + name + ' ' + surname_after
-                results[index][0] = ('name-surname')
-                results[index][1] = (
-                    name + '-' + surname_before + surname_after).upper().strip()
+            if (possible_surname_before == None and possible_surname_after != None):
 
-            results[index][2] = span
-            results[index][3] = s
-            results[index][4] = e
+                if strict_surname_matcher == False:
+                    s = match.start()
+                    e = match.end()
+                    span = data[s:e]
+                    surname = possible_surname_after
+                    fullname = name + ' ' + surname
+                    results[index][0] = ('name-surname')
+                    results[index][1] = (name + '-' + surname).upper().strip()
+                    results[index][2] = span
+                    results[index][3] = s
+                    results[index][4] = e
+
+                else:
+                    #  Logical value to check if it is indeed surname after loop
+                    #  for each different postfix
+                    is_surname_strict = False
+
+                    for surname_postfix in surnames_postfixes:
+                        l = len(surname_postfix)
+                        sur_l = len(possible_surname_after)
+                        to_be_compared = possible_surname_after[sur_l-l:sur_l].lower(
+                        )
+
+                        if (to_be_compared == surname_postfix):
+                            # Strict match of surname
+                            #
+                            is_surname_strict = True
+                            break
+
+                    if is_surname_strict == True:
+                        # Now we know it is surname
+                        # So pass the value to results
+                        surname = possible_surname_after
+                        s = match.start()
+                        e = match.end()
+                        span = data[s:e]
+                        results[index][0] = ('name-surname')
+                        results[index][1] = (
+                            name + '-' + surname).upper().strip()
+                        results[index][2] = span
+                        results[index][3] = s
+                        results[index][4] = e
+
+            elif (possible_surname_before != None and possible_surname_after == None):
+
+                if strict_surname_matcher == False:
+                    s = match.start()
+                    e = match.end()
+                    span = data[s:e]
+                    surname = possible_surname_before
+                    fullname = name + ' ' + surname
+                    results[index][0] = ('name-surname')
+                    results[index][1] = (name + '-' + surname).upper().strip()
+                    results[index][2] = span
+                    results[index][3] = s
+                    results[index][4] = e
+                else:
+                    #  Logical value to check if it is indeed surname before loop
+                    #  for each different postfix
+                    is_surname_strict = False
+
+                    for surname_postfix in surnames_postfixes:
+                        l = len(surname_postfix)
+                        sur_l = len(possible_surname_before)
+                        to_be_compared = possible_surname_before[sur_l-l:sur_l].lower(
+                        )
+
+                        if (to_be_compared == surname_postfix):
+                            # Strict match of surname
+                            #
+                            is_surname_strict = True
+                            break
+
+                    if is_surname_strict == True:
+                        # Now we know it is surname
+                        # So pass the value to results
+                        surname = possible_surname_before
+                        s = match.start()
+                        e = match.end()
+                        span = data[s:e]
+                        results[index][0] = ('name-surname')
+                        results[index][1] = (
+                            name + '-' + surname).upper().strip()
+                        results[index][2] = span
+                        results[index][3] = s
+                        results[index][4] = e
+
+            elif (possible_surname_before != None and possible_surname_after != None):
+
+                if strict_surname_matcher == False:
+                    s = match.start()
+                    e = match.end()
+                    span = data[s:e]
+                    results[index][0] = ('name-surname')
+                    results[index][1] = (name + '-' +
+                                         possible_surname_before + '-' +
+                                         possible_surname_after
+                                         ).upper().strip()
+                    results[index][2] = span
+                    results[index][3] = s
+                    results[index][4] = e
+                else:
+                    #  Logical values to check if it is indeed surname before loop
+                    #  for each different postfix.
+                    #  One for the surname to the left and one for the right.
+                    #  We check them both and decide
+
+                    is_surname_strict_before = False
+                    is_surname_strict_after = False
+                    surname_before = None
+                    surname_after = None
+
+                    for surname_postfix in surnames_postfixes:
+                        l = len(surname_postfix)
+                        sur_l = len(possible_surname_before)
+                        to_be_compared = possible_surname_before[sur_l-l:sur_l].lower(
+                        )
+
+                        if (to_be_compared == surname_postfix):
+                            # Strict match of surname
+                            #
+                            is_surname_strict_before = True
+                            break
+
+                    if is_surname_strict_before == True:
+                        # Now we know it is surname the one before
+                        # So pass the value to results
+                        surname_before = possible_surname_before
+
+                    for surname_postfix in surnames_postfixes:
+                        l = len(surname_postfix)
+                        sur_l = len(possible_surname_after)
+                        to_be_compared = possible_surname_after[sur_l-l:sur_l].lower(
+                        )
+
+                        if (to_be_compared == surname_postfix):
+                            # Strict match of surname
+                            #
+                            is_surname_strict_after = True
+                            break
+
+                    if is_surname_strict_after == True:
+                        # Now we know it is surname
+                        # So pass the value to results
+                        surname_after = possible_surname_after
+
+                    # Initialize s,e,span for results to be returned
+                    s = match.start()
+                    e = match.end()
+                    span = data[s:e]
+
+                    # Choose the final result
+                    if surname_before==None and surname_after!= None:
+                        surname = surname_after
+                        # change the start in span
+                        s = s + span.index(surname_after)
+                        span = data[s:e]
+
+                    elif surname_before!=None and surname_after==None:
+                        surname = surname_before
+                        # change the end in span
+                        e = s + span.index(name) + len(name)
+                        span = data[s:e]
+
+                    elif surname_before!=None and surname_after!=None:
+                        surname = surname_before + '-' + surname_after
+                    else:
+                        surname = None
+                        next
+
+                    results[index][0] = ('name-surname')
+                    results[index][1] = (
+                        name + '-' + surname).upper().strip()
+                    results[index][2] = span
+                    results[index][3] = s
+                    results[index][4] = e
+
     return results
