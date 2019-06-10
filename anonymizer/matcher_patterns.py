@@ -277,8 +277,9 @@ def address(data, handler=None):
     return results
 
 
-def find_names(data, handler=None, strict_surname_matcher=True):
+def name(data, handler=None, strict_surname_matcher=True):
     from anonymizer import trie_index
+    from anonymizer.trie_index import prepair_word
     import re
     results = []
     possible_names = []
@@ -365,8 +366,7 @@ def find_names(data, handler=None, strict_surname_matcher=True):
                     for surname_postfix in surnames_postfixes:
                         l = len(surname_postfix)
                         sur_l = len(possible_surname_after)
-                        to_be_compared = possible_surname_after[sur_l-l:sur_l].lower(
-                        )
+                        to_be_compared = prepair_word(possible_surname_after[sur_l-l:sur_l])
 
                         if (to_be_compared == surname_postfix):
                             # Strict match of surname
@@ -409,8 +409,7 @@ def find_names(data, handler=None, strict_surname_matcher=True):
                     for surname_postfix in surnames_postfixes:
                         l = len(surname_postfix)
                         sur_l = len(possible_surname_before)
-                        to_be_compared = possible_surname_before[sur_l-l:sur_l].lower(
-                        )
+                        to_be_compared = prepair_word( possible_surname_before[sur_l-l:sur_l] )
 
                         if (to_be_compared == surname_postfix):
                             # Strict match of surname
@@ -460,8 +459,7 @@ def find_names(data, handler=None, strict_surname_matcher=True):
                     for surname_postfix in surnames_postfixes:
                         l = len(surname_postfix)
                         sur_l = len(possible_surname_before)
-                        to_be_compared = possible_surname_before[sur_l-l:sur_l].lower(
-                        )
+                        to_be_compared = prepair_word( possible_surname_before[sur_l-l:sur_l] )
 
                         if (to_be_compared == surname_postfix):
                             # Strict match of surname
@@ -513,7 +511,7 @@ def find_names(data, handler=None, strict_surname_matcher=True):
                         surname = surname_before + '-' + surname_after
                     else:
                         surname = None
-                        next
+                        continue
 
                     results[index][0] = ('name-surname')
                     results[index][1] = (
@@ -521,5 +519,59 @@ def find_names(data, handler=None, strict_surname_matcher=True):
                     results[index][2] = span
                     results[index][3] = s
                     results[index][4] = e
+
+
+    # Mr surname or Miss Surname identified down below:
+    # 
+
+    surname_pattern = r'(?:\b(?:[κΚ]ος?|[κΚ]ου|[κΚ]ον|[κΚ]ας?|[δΔ]ις))\.?\s(?P<surname>[Α-Ω]+\w*)'
+    
+    for match in re.finditer(surname_pattern,data):
+        entity_value = match.group('surname').strip()
+        # Check if the entity value is surname
+        is_surname = False
+        for postfix in surnames_postfixes:
+            postfix_len = len(postfix)
+            entity_value_len = len(entity_value)
+            if prepair_word(entity_value[entity_value_len-postfix_len:entity_value_len] )== postfix:                
+                is_surname =True
+                break
+        # If not surname go to the next iteration
+        if is_surname == False:
+            continue
+
+        # Here we know it is surname
+        # 
+        entity_value = entity_value.upper()
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        results.append(['surname',entity_value,span,s,e,False])
+        
+    surname_pattern = r'(?P<prefix>[^.Α-Ωα-ω]\b[Α-Ω])\.\s(?P<surname>[Α-Ω]+\w*)'
+
+    for match in re.finditer(surname_pattern, data):
+        entity_value = match.group('surname').strip()
+        # Check if the entity value is surname
+        is_surname = False
+        for postfix in surnames_postfixes:
+            postfix_len = len(postfix)
+            entity_value_len = len(entity_value)
+            if prepair_word(entity_value[entity_value_len-postfix_len:entity_value_len]) == postfix:
+                is_surname = True
+                break
+        # If not surname go to the next iteration
+        if is_surname == False:
+            continue
+
+        # Here we know it is surname
+        #
+        entity_value = match.group('prefix').strip() + ' ' + match.group('surname').strip()
+        entity_value = entity_value.upper()
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        results.append(['surname', entity_value, span, s, e, False])
+
 
     return results

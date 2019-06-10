@@ -83,7 +83,7 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     results = matcher_patterns.address(data=data)
     if results != []:
         entities += results
-    results = matcher_patterns.find_names(data=data)
+    results = matcher_patterns.name(data=data)
     if results != []:
         entities += results
     # Display
