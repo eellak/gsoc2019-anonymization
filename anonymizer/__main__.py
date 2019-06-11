@@ -1,50 +1,52 @@
 import sys
 import getopt
 from anonymizer import anonymize
+from anonymizer.external_functions import create_output_file_name
+import argparse
 
 
 def main(argv):
     inputfile = ''
     outputfile = ''
     method = ''
-    custom_patterns = ''
+    configuration_file = ''
     helptext = '''Use: python3 anonymizer.py
     -i <inputfile>
     -o <outputfile>
     -m <method used: choose between deletion and encryption>
     -c <config.json>'''
 
-    try:
-        opts, args = getopt.getopt(
-            argv, "hi:o:m:", ["ifile=", "ofile=", "method="])
-    except getopt.GetoptError:
-        print(helptext)
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ["-i", "--ifile"]:
-            inputfile = arg
-        elif opt in ["-o", "--ofile"]:
-            outputfile = arg
-        elif opt in ["-m", "--method"]:
-            method = arg
-        elif opt in ["-c", "--config"]:
-            configurations = arg
-            custom_patterns = configurations
-        else:
-            print(helptext)
-            sys.exit()
+    parser = argparse.ArgumentParser(
+        description='Anonymize file', usage=helptext)
+    parser.add_argument('-i', '--ifile', help='Input file',
+                        type=str, required=True)
+    parser.add_argument('-o', '--ofile', help='Output file',
+                        type=str, required=False)
 
-    # Create output file name
-        if inputfile != '' and outputfile == '':
-            extensions = ['.txt', '.odt']
-            for extension in extensions:
-                if extension in inputfile:
-                    splitted = inputfile.split(extension)
-                    outputfile = splitted[0] + '_anonymized' + extension
+    parser.add_argument('-c', '--conf_file',
+                        help='Configuration file', type=str, required=True)
 
+    parser.add_argument('-m', '--method',
+                        help='What method is applied to the identified data')
+    args = parser.parse_args()
+
+    if args.ifile != None:
+        inputfile = args.ifile
+
+    if args.ofile != None:
+        outputfile = args.ofile
+    else:
+        outputfile = create_output_file_name(inputfile)
+
+    if args.method != None:
+        method = args.method
+
+    if args.conf_file != None:
+        configuration_file = args.conf_file
     # Load -d conf.json for custom patterns
     # Pass custom patterns to find_entities()
-    anonymize.find_entities(inputfile, outputfile, method, custom_patterns)
+    anonymize.find_entities(inputfile, outputfile, method,
+                            configuration_file=configuration_file)
 
 
 if __name__ == "__main__":

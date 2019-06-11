@@ -1,0 +1,13 @@
+{
+    "matcher": {
+        "phone_number": {},
+        "vehicle": {},
+        "identity_card": {},
+        "iban": {},
+        "afm": {},
+        "amka": {},
+        "brand": {},
+        "address": {},
+        "name": {}
+    }
+}

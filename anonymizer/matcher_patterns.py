@@ -1,6 +1,6 @@
 def phone_number(data, matcher=None, handler=None, regex=True):
 
-    if regex:
+    if regex==True :
         import re
         results = []
         general_phone_number_pattern = r'\b(\+[\s]*[0-9]{2})?[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b'
@@ -366,6 +366,9 @@ def name(data, handler=None, strict_surname_matcher=True):
                     for surname_postfix in surnames_postfixes:
                         l = len(surname_postfix)
                         sur_l = len(possible_surname_after)
+                        if (sur_l < l):
+                            continue
+
                         to_be_compared = prepair_word(possible_surname_after[sur_l-l:sur_l])
 
                         if (to_be_compared == surname_postfix):
@@ -409,6 +412,8 @@ def name(data, handler=None, strict_surname_matcher=True):
                     for surname_postfix in surnames_postfixes:
                         l = len(surname_postfix)
                         sur_l = len(possible_surname_before)
+                        if (sur_l < l):
+                            continue
                         to_be_compared = prepair_word( possible_surname_before[sur_l-l:sur_l] )
 
                         if (to_be_compared == surname_postfix):
@@ -459,6 +464,8 @@ def name(data, handler=None, strict_surname_matcher=True):
                     for surname_postfix in surnames_postfixes:
                         l = len(surname_postfix)
                         sur_l = len(possible_surname_before)
+                        if (sur_l < l):
+                            continue
                         to_be_compared = prepair_word( possible_surname_before[sur_l-l:sur_l] )
 
                         if (to_be_compared == surname_postfix):
@@ -475,6 +482,8 @@ def name(data, handler=None, strict_surname_matcher=True):
                     for surname_postfix in surnames_postfixes:
                         l = len(surname_postfix)
                         sur_l = len(possible_surname_after)
+                        if (sur_l < l):
+                            continue
                         to_be_compared = possible_surname_after[sur_l-l:sur_l].lower(
                         )
 
@@ -533,6 +542,8 @@ def name(data, handler=None, strict_surname_matcher=True):
         for postfix in surnames_postfixes:
             postfix_len = len(postfix)
             entity_value_len = len(entity_value)
+            if entity_value_len<postfix_len:
+                continue
             if prepair_word(entity_value[entity_value_len-postfix_len:entity_value_len] )== postfix:                
                 is_surname =True
                 break
@@ -557,6 +568,8 @@ def name(data, handler=None, strict_surname_matcher=True):
         for postfix in surnames_postfixes:
             postfix_len = len(postfix)
             entity_value_len = len(entity_value)
+            if entity_value_len<postfix_len:
+                continue
             if prepair_word(entity_value[entity_value_len-postfix_len:entity_value_len]) == postfix:
                 is_surname = True
                 break
