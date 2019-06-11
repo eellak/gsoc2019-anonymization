@@ -4,6 +4,22 @@ import spacy
 from spacy.matcher import Matcher
 from termcolor import colored
 from anonymizer import matcher_patterns
+from anonymizer.external_functions import official_json
+from anonymizer.external_functions import fix_pattern
+
+
+def read_conf(ifile=''):
+    with open(ifile, 'r') as f:
+        import json
+        data = f.read().replace('\n', ' ')
+
+        # Function that returns json object but
+        # replaces \ with <#ec>
+
+        json_file = official_json(data)
+
+        return json_file
+    raise NameError('conf.json file can not be found.')
 
 
 def entity_type_convertion(data, doc):
@@ -30,13 +46,18 @@ def file_to_text(ifile, format='.txt'):
         exit(fnf_error)
 
 
-def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
+def find_entities(ifile, ofile, method='delete', configuration_file='conf.json'):
 
     nlp = spacy.load('el_core_news_sm')
     matcher = Matcher(nlp.vocab)
     data = file_to_text(ifile, '.txt')
     doc = nlp(data)
     data = str(doc)
+
+    # READ CONFIGURATION FILE
+    #
+    conf_json = read_conf(configuration_file)
+    print(conf_json['matcher'])
     '''
         --- ENTITY LIST EXPLANATION ---
         entities = [entity_name, entity_value,
@@ -53,39 +74,14 @@ def find_entities(ifile, ofile, method='delete', configuration='conf.json'):
     '''
     entities = []
 
-    results = matcher_patterns.vehicle(data=data)
-    if results != []:
-        entities += results
-    # You can pass as argument the match handler. This one will
-    # delete be default the recognised entities in the text
-    results = matcher_patterns.phone_number(data=data)
-    if results != []:
-        entities += results
-    matches = matcher(doc)
-    results = entity_type_convertion(matches, doc)
-    if results != []:
-        entities += results
-    results = matcher_patterns.identity_card(data=data)
-    if results != []:
-        entities += results
-    results = matcher_patterns.iban(data=data)
-    if results != []:
-        entities += results
-    results = matcher_patterns.afm(data=data)
-    if results != []:
-        entities += results
-    results = matcher_patterns.amka(data=data)
-    if results != []:
-        entities += results
-    results = matcher_patterns.brand(data=data)
-    if results != []:
-        entities += results
-    results = matcher_patterns.address(data=data)
-    if results != []:
-        entities += results
-    results = matcher_patterns.name(data=data)
-    if results != []:
-        entities += results
+    for matcher, value in conf_json['matcher'].items():
+        custom_pattern_method = getattr(matcher_patterns, matcher)
+        # Call function with the proper parameters
+        results = custom_pattern_method(
+            data=data, pattern=fix_pattern(value['pattern']))
+        if results != None:
+            entities += results
+
     # Display
     for element in entities:
         print('[', colored(element[0], 'yellow'), ',', colored(

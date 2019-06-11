@@ -1,11 +1,15 @@
-def phone_number(data, matcher=None, handler=None, regex=True):
+def phone_number(data, pattern=None, handler=None, regex=True, matcher=None):
 
     if regex==True :
         import re
         results = []
-        general_phone_number_pattern = r'\b(\+[\s]*[0-9]{2})?[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b'
-        greek_mobile_number_pattern = r'\b(\+[\s]*30)?[\s\.\-]*(69[0-9]{1})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b'
-        greek_phone_number_pattern = r'\b(\+[\s]*30)?[\s\.\-]*(2[0-9]{2})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b'
+        if pattern==None:
+            return []
+        
+        general_phone_number_pattern = pattern['general_phone_number_pattern']
+        greek_mobile_number_pattern = pattern['greek_mobile_number_pattern']
+        greek_phone_number_pattern = pattern['greek_phone_number_pattern']
+        
         for match in re.finditer(greek_mobile_number_pattern, data):
             s = match.start()
             e = match.end()
@@ -65,17 +69,22 @@ def phone_number(data, matcher=None, handler=None, regex=True):
 # REGEX -- due to spacy issue with spaces in regex
 
 
-def vehicle(data, handler=None):
+def vehicle(data,pattern=None, handler=None):
     import re
+
+    if pattern==None:
+        return []
+        
     # update: vehicle patterns only uppercase, case insensitive
-    vehicle_pattern = r'\b((([ΑΒΕΖΗΙΚΜΝΟΡΤΥΧABEZHIKMNOPTYX])([\s.])?){3})([-\s])*([0-9]{4})\b'
-    rare_vehicle_pattern = r'\b((([ΠΣ])[\s.]?){2})([-\s])*([0-9]{4})'
+    vehicle_pattern = pattern['vehicle_pattern']
+    rare_vehicle_pattern = pattern['rare_vehicle_pattern']
     '''security forces + construction machinery + farm machinery + trailers'''
-    special_vehicle_pattern = r'\b(([ΠΣΕΑΛΡΜSEAMP][\s.]?){2})[-\s]*([0-9]{5})\b'
+    special_vehicle_pattern = pattern['special_vehicle_pattern']
     ''' diplomatic corps'''
-    diplomatic_corps_vehicle_pattern = r'\b(([ΔΣ][.\s]?){2})(([0-9][\s]?){2}[\s-]*[0-9]{1})[\s]?(CD[\s.]?|cd[\s.]?)\b'
+    diplomatic_corps_vehicle_pattern = pattern['diplomatic_corps_vehicle_pattern']
 
     results = []
+
     for match in re.finditer(vehicle_pattern, data):
         s = match.start()
         e = match.end()
@@ -116,10 +125,12 @@ def vehicle(data, handler=None):
     return results
 
 
-def identity_card(data, handler=None):
+def identity_card(data, pattern=None ,handler=None):
     import re
     results = []
-    identity_card_pattern = r'(?i)\s\b(([α-ω][\s.]?){2})[\s-]?(([0-9][\s]?){6})\b'
+    if pattern==None:
+        return []
+    identity_card_pattern = pattern['identity_card_pattern']
     for match in re.finditer(identity_card_pattern, data):
         s = match.start()
         e = match.end()
@@ -132,10 +143,12 @@ def identity_card(data, handler=None):
     return results
 
 
-def iban(data, handler=None):
+def iban(data, pattern=None, handler=None):
     import re
     results = []
-    iban_pattern = r'(?i)\b(IBAN|iban|ΙΒΑΝ|ιβαν)([\s\-:]*)(([A-Z]|[a-z]){2}([\s\-]*\d){25})\b'
+    if pattern==None:
+        return []
+    iban_pattern = pattern['iban_pattern']
     for match in re.finditer(iban_pattern, data):
         # Make sure it is a correct iban
         # example: iban GR-16-01101250000000012300675 -->
@@ -181,11 +194,13 @@ def iban(data, handler=None):
     return results
 
 
-def afm(data, handler=None):
+def afm(data, pattern=None, handler=None):
     import re
     results = []
+    if pattern == None:
+        return []
     # afm_pattern = r'(?i)\bα[\s.]?φ[\s.]?μ[\s.]?[\s:]*([0-9]{9})\b'
-    afm_pattern = r'(?i)\bα[\s.]?φ[\s.]?μ[\s.]?[\s\-]?[\w]*?[\s:]*([0-9]{9})\b'
+    afm_pattern = pattern['afm_pattern']
     for match in re.finditer(afm_pattern, data):
         s = match.start()
         e = match.end()
@@ -197,11 +212,12 @@ def afm(data, handler=None):
     return results
 
 
-def amka(data, handler=None):
+def amka(data, pattern=None, handler=None):
     import re
     results = []
-    # amka_pattern = r'(?i)\b(α[\s.]?μ[\s.]?κ[\s.]?α[\s.]?)[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})\b'
-    amka_pattern = r'(?i)\b(α[\s.]?μ[\s.]?κ[\s.]?α[\s.]?)[\w]*?[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})\b'
+    if pattern == None:
+        return []
+    amka_pattern = pattern['amka_pattern']
     for match in re.finditer(amka_pattern, data):
         s = match.start()
         e = match.end()
@@ -213,11 +229,13 @@ def amka(data, handler=None):
     return results
 
 
-def brand(data, handler=None):
+def brand(data, pattern=None, handler=None):
     import re
     results = []
-    brand_name_pattern = r'(?i)\b(επωνυμία|επωνυμια)[\s:]?«(.*?)»{1}'
-    brand_distinctive_title_pattern = r'(?i)\b(διακριτικό|διακριτικο)[\s\-]?(τίτλο|τιτλο)[\s:]?«(.*?)»{1}'
+    if pattern==None:
+        return []
+    brand_name_pattern = pattern['brand_name_pattern']
+    brand_distinctive_title_pattern = pattern['brand_distinctive_title_pattern']
     for match in re.finditer(brand_name_pattern, data):
         s = match.start()
         e = match.end()
@@ -237,17 +255,20 @@ def brand(data, handler=None):
     return results
 
 
-def address(data, handler=None):
+def address(data,pattern=None, handler=None):
     import re
+    if pattern==None:
+        return []
     results = []
     # address_pattern = r'(?i)\b(?:οδός|οδος|οδο|οδό|οδού|οδου)[\s:]+?(.+?)[,\s]+?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(.+?\b))?'
     # better approach: Addresses start with uppercase letters
-    address_pattern = r'\b(?:οδός|οδος|οδο|οδό|οδού|οδου)[\s:]+?(?P<address>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number>.+?\b))?'
-    multiple_address_pattern = (r'\b(?:οδών|οδων|Οδών|Οδων)[\s:]+?' +
-                                r'(?P<address1>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number1>.+?\b))' +
-                                r'(?:[\w]?[\s,]*(?:και|Και|κι)[\s,]*)' +
-                                r'(?P<address2>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number2>.+?\b))')
-
+    # address_pattern = pattern['address_pattern']
+    # multiple_address_pattern = (r'\b(?:οδών|οδων|Οδών|Οδων)[\s:]+?' +
+    #                             r'(?P<address1>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number1>.+?\b))' +
+    #                             r'(?:[\w]?[\s,]*(?:και|Και|κι)[\s,]*)' +
+    #                             r'(?P<address2>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number2>.+?\b))')
+    address_pattern = pattern['address_pattern']
+    multiple_address_pattern = pattern['multiple_address_pattern']
     for match in re.finditer(address_pattern, data):
         s = match.start()
         e = match.end()
@@ -277,7 +298,9 @@ def address(data, handler=None):
     return results
 
 
-def name(data, handler=None, strict_surname_matcher=True):
+def name(data, pattern=None, handler=None, strict_surname_matcher=True):
+    if pattern==None:
+        return []
     from anonymizer import trie_index
     from anonymizer.trie_index import prepair_word
     import re
@@ -286,7 +309,7 @@ def name(data, handler=None, strict_surname_matcher=True):
     starts = []
     ends = []
     not_final_results = []
-    name_pattern = r'\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*'
+    name_pattern = pattern['name_pattern']
     for match in re.finditer(name_pattern, data):
         s = match.start()
         e = match.end()
@@ -334,12 +357,13 @@ def name(data, handler=None, strict_surname_matcher=True):
     ]
 
     for index, name in enumerate(names):
-        surname_pattern = (r'(?P<possible_surname_before>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?' +
-                           r'[\s]?' +
-                           name +
-                           r'[\s]?' +
-                           r'(?P<possible_surname_after>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?')
+        # surname_pattern = (r'(?P<possible_surname_before>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?' +
+        #                    r'[\s]?' +
+        #                    name +
+        #                    r'[\s]?' +
+        #                    r'(?P<possible_surname_after>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?')
 
+        surname_pattern = pattern['surname_pattern_before'] + name + pattern['surname_pattern_after']
         for match in re.finditer(surname_pattern, data):
             possible_surname_before = match.group('possible_surname_before')
             possible_surname_after = match.group('possible_surname_after')
@@ -533,9 +557,9 @@ def name(data, handler=None, strict_surname_matcher=True):
     # Mr surname or Miss Surname identified down below:
     # 
 
-    surname_pattern = r'(?:\b(?:[κΚ]ος?|[κΚ]ου|[κΚ]ον|[κΚ]ας?|[δΔ]ις))\.?\s(?P<surname>[Α-Ω]+\w*)'
+    surname_pattern_mr = pattern['surname_pattern_mr']
     
-    for match in re.finditer(surname_pattern,data):
+    for match in re.finditer(surname_pattern_mr,data):
         entity_value = match.group('surname').strip()
         # Check if the entity value is surname
         is_surname = False
@@ -559,9 +583,9 @@ def name(data, handler=None, strict_surname_matcher=True):
         span = data[s:e]
         results.append(['surname',entity_value,span,s,e,False])
         
-    surname_pattern = r'(?P<prefix>[^.Α-Ωα-ω]\b[Α-Ω])\.\s(?P<surname>[Α-Ω]+\w*)'
+    surname_pattern_with_prefix = pattern['surname_pattern_with_prefix']
 
-    for match in re.finditer(surname_pattern, data):
+    for match in re.finditer(surname_pattern_with_prefix, data):
         entity_value = match.group('surname').strip()
         # Check if the entity value is surname
         is_surname = False
