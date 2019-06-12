@@ -57,7 +57,6 @@ def find_entities(ifile, ofile, method='delete', configuration_file='conf.json')
     # READ CONFIGURATION FILE
     #
     conf_json = read_conf(configuration_file)
-    print(conf_json['matcher'])
     '''
         --- ENTITY LIST EXPLANATION ---
         entities = [entity_name, entity_value,
@@ -75,6 +74,8 @@ def find_entities(ifile, ofile, method='delete', configuration_file='conf.json')
     entities = []
 
     for matcher, value in conf_json['matcher'].items():
+        if value['active'] == 'False':
+            continue
         custom_pattern_method = getattr(matcher_patterns, matcher)
         # Call function with the proper parameters
         results = custom_pattern_method(
