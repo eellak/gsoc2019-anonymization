@@ -326,8 +326,21 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
             e,
             found_by_spacy
         ])
-    are_names = trie_index.identify(
-        'anonymizer/data/male_and_female_names.txt', testwords=possible_names)
+    name_trie_index = trie_index.create_trie_index_for_names(
+        'anonymizer/data/male_and_female_names.txt')
+
+    # Possible names. Words that start with uppercase letter
+    are_names = []
+    for word in possible_names:
+        # Search for different keys
+        if name_trie_index.search(prepair_word(word=word)) == 1:
+            # word is found
+            are_names.append(True)
+        else:
+            are_names.append(False)
+    
+    
+
     for index, is_name in enumerate(are_names):
         if is_name == True:
             results.append(not_final_results[index])
@@ -610,5 +623,178 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         span = data[s:e]
         results.append(['surname', entity_value, span, s, e, False])
 
+
+    return results
+
+def place(data,pattern=None,handler=None):
+    
+    import re
+    from anonymizer.trie_index import create_trie_index
+    from anonymizer.trie_index import prepair_word
+
+    if pattern==None:
+        return []
+
+    # Create trie index first
+    # 
+    ## Both have no spaces
+    # Nomoi dataset
+    dataset = 'anonymizer/data/nomoi.csv'
+    place_trie_index_nomoi = create_trie_index(dataset=dataset)
+    # Dhmoi dataset
+    dataset = 'anonymizer/data/dhmoi.csv'
+    place_trie_index_dhmoi = create_trie_index(dataset=dataset)
+    
+
+    # Find possible nomous using regex.
+    place_pattern = pattern['place_pattern']
+
+    results = []
+
+    for match in re.finditer(place_pattern,data):
+
+            s = match.start()
+            e = match.end()
+            span = data[s:e]
+
+            if place_trie_index_nomoi.search(prepair_word(span)) == 1:
+                # place is found in try index
+                results.append([
+                    'place-nomos',
+                    span.upper(),
+                    span,
+                    s,
+                    e,
+                    False
+                ])
+
+            if place_trie_index_dhmoi.search(prepair_word(span)) == 1:
+                # place is found in try index
+                results.append([
+                    'place-nomos',
+                    span.upper(),
+                    span,
+                    s,
+                    e,
+                    False
+                ])
+
+
+    # Create dataset 
+    # This dataset - trie index handles any of: - or spaces as _
+
+    dataset = 'anonymizer/data/dioikhtikh_perifereia.csv'
+    place_trie_index_periferia = create_trie_index(dataset=dataset)
+
+    place_with_space_pattern = pattern['place_with_space_pattern']
+
+    for match in re.finditer(place_with_space_pattern,data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+
+        word_to_search = span.replace(' ','_').replace('-','_')
+        
+
+        # First search for the max string 
+
+        if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
+            # Add the place to the results
+                results.append([
+                    'place-perifereia',
+                    span.upper(),
+                    span,
+                    s,
+                    e,
+                    False
+                ])
+
+        word1 = match.group('word1')
+        word2 = match.group('word2')
+        word3 = match.group('word3')
+        # Then search for subgroup of possible perifereies (word1_word2 in regex)
+
+        if word1 != None and word2!=None:
+            word_to_search = word1.strip() + '_' + word2.strip()
+            if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
+                # Add the place to the results
+                s = data.index(word1.strip())
+                e = data.index(word2.strip()) + len(word2.strip())
+                span = data[s:e]
+                results.append([
+                    'place-perifereia',
+                    word_to_search.upper(),
+                    span,
+                    s,
+                    e,
+                    False
+                ])
+
+        if word2 != None and word3 != None:
+            word_to_search = word2.strip() + '_' + word3.strip()
+            if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
+                # Add the place to the results
+                s = data.index(word2.strip())
+                e = data.index(word3.strip()) + len(word3.strip())
+                span = data[s:e]
+                results.append([
+                    'place-perifereia',
+                    word_to_search.upper(),
+                    span,
+                    s,
+                    e,
+                    False
+                ])
+
+
+        # Then search (if not None) each word as individual
+        if word1 != None and (word2!=None or word3!= None):
+            word_to_search = word1.strip()
+            if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
+                # Add the place to the results
+                e = s + len(word1.strip())
+                span = data[s:e]
+                results.append([
+                    'place-perifereia',
+                    word_to_search.upper(),
+                    span,
+                    s,
+                    e,
+                    False
+                ])
+
+
+        if word2!= None :
+
+            word_to_search = word2.strip()
+            if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
+                # Add the place to the results
+                s = data.index(word2.strip())
+                e = s + len(word2.strip())
+                span = data[s:e]
+                results.append([
+                    'place-perifereia',
+                    word_to_search.upper(),
+                    span,
+                    s,
+                    e,
+                    False
+                ])
+        if word3 != None:
+
+            word_to_search = word3.strip()
+            if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
+                # Add the place to the results
+                s = data.index(word3.strip())
+                e = s + len(word3.strip())
+                span = data[s:e]
+                results.append([
+                    'place-perifereia',
+                    word_to_search.upper(),
+                    span,
+                    s,
+                    e,
+                    False
+                ])
 
     return results

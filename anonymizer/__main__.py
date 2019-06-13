@@ -3,13 +3,14 @@ import getopt
 from anonymizer import anonymize
 from anonymizer.external_functions import create_output_file_name
 import argparse
+import os.path
 
 
 def main(argv):
     inputfile = ''
     outputfile = ''
     method = ''
-    configuration_file = ''
+    configuration_file = 'anonymizer/conf.json'
     helptext = '''Use: python3 anonymizer.py
     -i <inputfile>
     -o <outputfile>
@@ -24,10 +25,10 @@ def main(argv):
                         type=str, required=False)
 
     parser.add_argument('-c', '--conf_file',
-                        help='Configuration file', type=str, required=True)
+                        help='Configuration file', type=str, required=False)
 
     parser.add_argument('-m', '--method',
-                        help='What method is applied to the identified data')
+                        help='Which method is applied to the identified data')
     args = parser.parse_args()
 
     if args.ifile != None:
@@ -43,6 +44,12 @@ def main(argv):
 
     if args.conf_file != None:
         configuration_file = args.conf_file
+    else:
+        # If the service can not track conf.json
+        if not os.path.exists(configuration_file):
+            raise NameError(
+                "Please make sure that the conf.json file's path is: anonymizer/conf.json")
+
     # Load -d conf.json for custom patterns
     # Pass custom patterns to find_entities()
     anonymize.find_entities(inputfile, outputfile, method,

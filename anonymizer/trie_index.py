@@ -51,7 +51,7 @@ class TrieNode:
 
     # Trie node class
     def __init__(self):
-        self.children = [None]*25
+        self.children = [None]*27
 
         # isEndOfWord is True if node represent the end of the word
         self.isEndOfWord = False
@@ -68,11 +68,19 @@ class Trie:
         # Returns new trie node (initialized to NULLs)
         return TrieNode()
 
-    def _charToIndex(self, ch):
+    def _charToIndex(self, ch, print_index=False):
 
         # private helper function
         # Converts key current character into index
         # use only 'a' through 'z' and lower case
+        if print_index == True:
+            print(f'ord ch={ord(ch)}')
+        if ch == '.':
+            return 26
+        if ch == '_':
+            return 25
+        if ord(ch) - ord('α') > 24:
+            exit(ch)
         return ord(ch)-ord('α')
 
     def insert(self, key):
@@ -84,6 +92,17 @@ class Trie:
         length = len(key)
         for level in range(length):
             index = self._charToIndex(key[level])
+            if ord(key[level]) == 10:
+                continue
+            if index > 26 or index < 0:
+                exit(
+                    f'''Error while inserting:
+                        key:{key}
+                        character level:{level}
+                        character: {key[level]}
+                        Index trying to access:{index}
+                        ord(character):{ord(key[level])}
+                    ''')
 
             # if current character is not present
             if not pCrawl.children[index]:
@@ -93,7 +112,7 @@ class Trie:
         # mark last node as leaf
         pCrawl.isEndOfWord = True
 
-    def search(self, key):
+    def search(self, key, print_index=False):
 
         # Search key in the trie
         # Returns true if key presents
@@ -101,7 +120,9 @@ class Trie:
         pCrawl = self.root
         length = len(key)
         for level in range(length):
-            index = self._charToIndex(key[level])
+            index = self._charToIndex(key[level], print_index=print_index)
+            if print_index == True:
+                print(index)
             if not pCrawl.children[index]:
                 return False
             pCrawl = pCrawl.children[index]
@@ -109,7 +130,7 @@ class Trie:
         return pCrawl != None and pCrawl.isEndOfWord
 
 
-def identify(dataset=None, testwords=[]):
+def create_trie_index_for_names(dataset=None):
 
     dataset = 'anonymizer/data/male_and_female_names.txt' if dataset == None else dataset
     data = read_dictionary(dictionary_file=dataset)
@@ -125,18 +146,37 @@ def identify(dataset=None, testwords=[]):
         except:
             from termcolor import colored as color
             print(color(
-                  'The following name cannot be included in the search:{}'.format(
-                      word),
+                  'The following name can not be included in the search:{} from the file: {}'.format(
+                      word, dataset),
                   'red'))
 
-    # Possible names. Words that start with uppercase letter
-    possible_names = []
-    name_found = []
-    for word in testwords:
-        # Search for different keys
-        if t.search(prepair_word(word=word)) == 1:
-            # word is found
-            name_found.append(True)
-        else:
-            name_found.append(False)
-    return name_found
+    return t
+
+
+def create_trie_index(dataset=None):
+
+    if dataset == None:
+        raise NameError('No dataset given for trie index to be initialized.')
+
+    with open(dataset, mode='r') as f:
+        file = f.readlines()
+        data = [word.replace('\r', '\n').replace(
+            '\u000D\u000A', '\n').replace('(', '\n').replace(')', '\n') for word in file]
+
+    t = Trie()
+
+    for word in data:
+        try:
+            word = prepair_word(word.replace(' ', '_').replace(
+                '-', '_').replace('\r', '').replace(
+                '\u000D\u000A', '\n').replace('\u000D', '\n'))
+        # replace spaces with _ and - with _
+            t.insert(word)
+
+        except:
+            from termcolor import colored as color
+            print(color(
+                'The following place can not be included in the search:{} from the file: {}'.format(
+                    word, dataset),
+                'red'))
+    return t
