@@ -377,19 +377,11 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     # These words will never be parsed as surnames
     # 
 
-    safe_words = ['δικαστικος','δικαστικου','προεδρος','προεδρου',
-    'αντιπροεδρος','αντιπροεδρου','επικρατεια','επικρατειας',
-    'επιμελητης','επιμελητη','βουλη','βουλης',
-    'συμβουλος','συμβουλου','συμβουλιο','συμβουλιου'
-    'ο','η','νομικος','νομικου',
-    'δικαιου','δικαιο','κρατος','κρατους'
-    'πρωτοβαθμια','πρωτοβαθμιας','δευτεροβαθμια','δευτεροβαθμιας',
-    'τριτοβαθμια','τριτοβαθμιας',
-    'το','αφμ','αμκα','ιστοσελιδα',
-    'δημοσιευση','δημοσιευσης','δημοσιευσεων']
+
+    with open('anonymizer/data/safewords.csv',mode='r') as sw:
+        safe_words = [word.replace('\n', '') for word in sw.readlines()]
 
     for index, name in enumerate(names):
-        print(name)
         if prepair_word(name) in safe_words:
             try:
                 # print(f'I found {prepair_word(name)} in names')

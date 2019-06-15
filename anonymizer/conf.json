@@ -6,6 +6,7 @@
         }
     },
     "paths": {
-        "patterns.json": "anonymizer/patterns.json"
+        "patterns.json": "anonymizer/patterns.json",
+        "safewords.csv": "anonymizer/safewords.csv"
     }
 }
