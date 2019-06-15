@@ -73,10 +73,6 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
         Some times these to might have the same value.
     '''
     entities = []
-    try:
-        [x, y] = conf_json['matcher'].items()
-    except:
-        raise NameError('Corrupted patterns file.')
 
     for matcher, value in conf_json['matcher'].items():
         if value['active'] == 'False':
