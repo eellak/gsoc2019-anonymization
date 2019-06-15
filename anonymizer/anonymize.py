@@ -9,7 +9,7 @@ from anonymizer.external_functions import fix_pattern
 from anonymizer.external_functions import sort_by_start
 
 
-def read_conf(ifile=''):
+def read_patterns(ifile=''):
     with open(ifile, 'r') as f:
         import json
         data = f.read().replace('\n', ' ')
@@ -20,7 +20,7 @@ def read_conf(ifile=''):
         json_file = official_json(data)
 
         return json_file
-    raise NameError('conf.json file can not be found.')
+    raise NameError('patterns.json file can not be found.')
 
 
 def entity_type_convertion(data, doc):
@@ -47,7 +47,7 @@ def file_to_text(ifile, format='.txt'):
         exit(fnf_error)
 
 
-def find_entities(ifile, ofile, method='delete', configuration_file='conf.json', in_order=True):
+def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', in_order=True):
 
     nlp = spacy.load('el_core_news_sm')
     matcher = Matcher(nlp.vocab)
@@ -57,7 +57,7 @@ def find_entities(ifile, ofile, method='delete', configuration_file='conf.json',
 
     # READ CONFIGURATION FILE
     #
-    conf_json = read_conf(configuration_file)
+    conf_json = read_patterns(patterns_file)
     '''
         --- ENTITY LIST EXPLANATION ---
         entities = [entity_name, entity_value,
@@ -73,6 +73,10 @@ def find_entities(ifile, ofile, method='delete', configuration_file='conf.json',
         Some times these to might have the same value.
     '''
     entities = []
+    try:
+        [x, y] = conf_json['matcher'].items()
+    except:
+        raise NameError('Corrupted patterns file.')
 
     for matcher, value in conf_json['matcher'].items():
         if value['active'] == 'False':

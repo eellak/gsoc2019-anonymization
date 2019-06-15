@@ -37,5 +37,5 @@ def fix_pattern(patterns):
             pattern.update({key: value})
         except:
             raise NameError(
-                'Make sure that values in conf.json patterns are different within each function')
+                'Make sure that values in patterns.json patterns are different within each function')
     return(pattern)
