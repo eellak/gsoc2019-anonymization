@@ -336,6 +336,7 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         if name_trie_index.search(prepair_word(word=word)) == 1:
             # word is found
             are_names.append(True)
+            
         else:
             are_names.append(False)
     
@@ -345,11 +346,14 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         if is_name == True:
             results.append(not_final_results[index])
 
+
     # Now fine surnames that maybe exist for each name in list
     #
 
     surnames = []
     names = [result[2] for result in results]
+    name_set = set(names)
+    names = list(name_set)
 
     surnames_postfixes = ['ιατης', 'ιατη', 'αιτης', 'αιτη',
                           'ιδης', 'ιδη', 'αδης', 'αδη',
@@ -369,7 +373,30 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         'ος', 'ου', 'ης', 'η', 'ους', 'ας', 'α'
     ]
 
+    # Safewords:
+    # These words will never be parsed as surnames
+    # 
+
+    safe_words = ['δικαστικος','δικαστικου','προεδρος','προεδρου',
+    'αντιπροεδρος','αντιπροεδρου','επικρατεια','επικρατειας',
+    'επιμελητης','επιμελητη','βουλη','βουλης',
+    'συμβουλος','συμβουλου','συμβουλιο','συμβουλιου'
+    'ο','η','νομικος','νομικου',
+    'δικαιου','δικαιο','κρατος','κρατους'
+    'πρωτοβαθμια','πρωτοβαθμιας','δευτεροβαθμια','δευτεροβαθμιας',
+    'τριτοβαθμια','τριτοβαθμιας',
+    'το','αφμ','αμκα','ιστοσελιδα',
+    'δημοσιευση','δημοσιευσης','δημοσιευσεων']
+
     for index, name in enumerate(names):
+        print(name)
+        if prepair_word(name) in safe_words:
+            try:
+                # print(f'I found {prepair_word(name)} in names')
+                names.remove(name)
+            except:
+                raise NameError(f'Can not remove {name}')
+            continue
         # surname_pattern = (r'(?P<possible_surname_before>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?' +
         #                    r'[\s]?' +
         #                    name +
@@ -380,6 +407,16 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         for match in re.finditer(surname_pattern, data):
             possible_surname_before = match.group('possible_surname_before')
             possible_surname_after = match.group('possible_surname_after')
+            if possible_surname_before!= None:
+                if prepair_word(possible_surname_before) in safe_words:
+                    # print(possible_surname_before)
+                    len_surname_before = len(possible_surname_before)
+                    possible_surname_before = None
+            if possible_surname_after!=None:
+                if prepair_word(possible_surname_after) in safe_words:
+                    # print(possible_surname_after)
+                    len_surname_after = len(possible_surname_after)
+                    possible_surname_after = None
 
             if (possible_surname_before == None and possible_surname_after != None):
 
@@ -418,10 +455,18 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
                         # Now we know it is surname
                         # So pass the value to results
                         surname = possible_surname_after
-                        s = match.start()
+                        # s = (match.start() + len_surname_before if possible_surname_before==None else match.start()) 
+                        s = match.start() 
                         e = match.end()
                         span = data[s:e]
-                        results[index][0] = ('name-surname')
+                        s1 = span.index(name)
+                        s = s + s1
+                        span = data[s:e]
+
+                        # s = span.index(name)
+                        # e = span.index(surname) + len(surname)
+                        # span = span[s:e]
+                        results[index][0] = ('name-surname-after')
                         results[index][1] = (
                             name + '-' + surname).upper().strip()
                         results[index][2] = span
@@ -434,9 +479,12 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
                     s = match.start()
                     e = match.end()
                     span = data[s:e]
+                    end_name_index = span.index(name)
+                    e = s + end_name_index
+                    span = data[s:e]
                     surname = possible_surname_before
                     fullname = name + ' ' + surname
-                    results[index][0] = ('name-surname')
+                    results[index][0] = ('name-surname-before')
                     results[index][1] = (name + '-' + surname).upper().strip()
                     results[index][2] = span
                     results[index][3] = s
@@ -575,6 +623,8 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     for match in re.finditer(surname_pattern_mr,data):
         entity_value = match.group('surname').strip()
         # Check if the entity value is surname
+        if prepair_word(entity_value) in safe_words:
+            continue
         is_surname = False
         for postfix in surnames_postfixes:
             postfix_len = len(postfix)
@@ -600,6 +650,8 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
 
     for match in re.finditer(surname_pattern_with_prefix, data):
         entity_value = match.group('surname').strip()
+        if prepair_word(entity_value) in safe_words:
+            continue
         # Check if the entity value is surname
         is_surname = False
         for postfix in surnames_postfixes:
@@ -621,8 +673,10 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         s = match.start()
         e = match.end()
         span = data[s:e]
-        results.append(['surname', entity_value, span, s, e, False])
+        results.append(['name-surname', entity_value, span, s, e, False])
+    
 
+    
 
     return results
 
