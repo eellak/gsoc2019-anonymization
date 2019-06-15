@@ -10,6 +10,7 @@ def main(argv):
     inputfile = ''
     outputfile = ''
     method = ''
+    in_order = True
     configuration_file = 'anonymizer/conf.json'
     helptext = '''Use: python3 anonymizer.py
     -i <inputfile>
@@ -29,6 +30,9 @@ def main(argv):
 
     parser.add_argument('-m', '--method',
                         help='Which method is applied to the identified data')
+
+    parser.add_argument(
+        '--in_order', help='Show results in order with the text')
     args = parser.parse_args()
 
     if args.ifile != None:
@@ -42,6 +46,11 @@ def main(argv):
     if args.method != None:
         method = args.method
 
+    if args.in_order != None:
+        in_order = args.in_order
+    else:
+        in_order = True
+
     if args.conf_file != None:
         configuration_file = args.conf_file
     else:
@@ -53,7 +62,7 @@ def main(argv):
     # Load -d conf.json for custom patterns
     # Pass custom patterns to find_entities()
     anonymize.find_entities(inputfile, outputfile, method,
-                            configuration_file=configuration_file)
+                            configuration_file=configuration_file, in_order=in_order)
 
 
 if __name__ == "__main__":

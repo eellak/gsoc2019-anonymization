@@ -1,3 +1,10 @@
+def sort_by_start(result=None):
+
+    if result == None:
+        return None
+    return result[3]
+
+
 def create_output_file_name(ifile):
     extensions = ['.txt', '.odt']
     for extension in extensions:

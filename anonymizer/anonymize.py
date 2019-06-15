@@ -6,6 +6,7 @@ from termcolor import colored
 from anonymizer import matcher_patterns
 from anonymizer.external_functions import official_json
 from anonymizer.external_functions import fix_pattern
+from anonymizer.external_functions import sort_by_start
 
 
 def read_conf(ifile=''):
@@ -46,7 +47,7 @@ def file_to_text(ifile, format='.txt'):
         exit(fnf_error)
 
 
-def find_entities(ifile, ofile, method='delete', configuration_file='conf.json'):
+def find_entities(ifile, ofile, method='delete', configuration_file='conf.json', in_order=True):
 
     nlp = spacy.load('el_core_news_sm')
     matcher = Matcher(nlp.vocab)
@@ -83,7 +84,12 @@ def find_entities(ifile, ofile, method='delete', configuration_file='conf.json')
         if results != None:
             entities += results
 
+    if in_order == True:
+        entities.sort(key=sort_by_start)
+
     # Display
     for element in entities:
         print('[', colored(element[0], 'yellow'), ',', colored(
-            element[1], 'blue'), ',', colored(element[2], 'cyan'), ']')
+            element[1], 'blue'), ',', colored(element[2], 'cyan'),
+            ',', element[3],
+            ']',)
