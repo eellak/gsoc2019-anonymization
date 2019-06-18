@@ -38,20 +38,32 @@ def matches_handler(matcher, doc, i, matches, method='delete'):
     pass
 
 
-def file_to_text(ifile, format='.txt'):
-    try:
-        with open(ifile, 'r') as f:
-            data = f.read().replace('\n', ' ')
-            return data
-    except FileNotFoundError as fnf_error:
-        exit(fnf_error)
+def read_data_from_file(ifile, format='txt'):
+    if format == 'txt':
+        try:
+            with open(ifile, 'r') as f:
+                data = f.read().replace('\n', ' ')
+                return data
+        except FileNotFoundError as fnf_error:
+            exit(fnf_error)
+    else:
+        from ODTReader.odtreader import odtToText
+        data = odtToText(ifile)
+        return data
 
 
 def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', in_order=True):
 
     nlp = spacy.load('el_core_news_sm')
     matcher = Matcher(nlp.vocab)
-    data = file_to_text(ifile, '.txt')
+    # Check file extension
+    extension = ifile[-3:]
+    if extension == 'odt':
+        data = read_data_from_file(ifile=ifile, format='odt')
+    elif extension == 'txt':
+        data = read_data_from_file(ifile=ifile, format='txt')
+    else:
+        raise NameError('find_entities: Not extension .txt or .odt')
     doc = nlp(data)
     data = str(doc)
 
