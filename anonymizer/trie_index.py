@@ -51,7 +51,7 @@ class TrieNode:
 
     # Trie node class
     def __init__(self):
-        self.children = [None]*27
+        self.children = [None]*28
 
         # isEndOfWord is True if node represent the end of the word
         self.isEndOfWord = False
@@ -74,13 +74,19 @@ class Trie:
         # Converts key current character into index
         # use only 'a' through 'z' and lower case
         if print_index == True:
-            print(f'ord ch={ord(ch)}')
+            print(f'ord(ch)={ord(ch)}')
+        # Special characters added
+        # Catching: <.>,<_>,<\r> (for windows)
+
         if ch == '.':
             return 26
         if ch == '_':
             return 25
-        if ord(ch) - ord('α') > 24:
-            exit(ch)
+        if ord(ch) == 10:
+            return 27
+        if ord(ch) - ord('α') > 24 or ord(ch) - ord('α') < 0:
+            exit(
+                f'''Error at _charToIndex while searching trie index: ord(ch)={ord(ch)}''')
         return ord(ch)-ord('α')
 
     def insert(self, key):
@@ -97,11 +103,11 @@ class Trie:
             if index > 26 or index < 0:
                 exit(
                     f'''Error while inserting:
-                        key:{key}
-                        character level:{level}
+                        key: {key}
+                        character level: {level}
                         character: {key[level]}
-                        Index trying to access:{index}
-                        ord(character):{ord(key[level])}
+                        Index trying to access: {index}
+                        ord(character): {ord(key[level])}
                     ''')
 
             # if current character is not present

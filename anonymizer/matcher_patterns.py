@@ -374,7 +374,7 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     # These words will never be parsed as surnames
     #
     from anonymizer.external_functions import find_path
-    safewords_path = find_path('anonymizer/conf.json','safewords')
+    safewords_path = find_path('anonymizer/conf.json', 'safewords')
     with open(safewords_path, mode='r') as sw:
         safe_words = [word.replace('\n', '') for word in sw.readlines()]
 
@@ -740,7 +740,7 @@ def place(data, pattern=None, handler=None):
 
         # First search for the max string
 
-        if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
+        if place_trie_index_periferia.search(prepair_word(word_to_search), print_index=False) == 1:
             # Add the place to the results
             results.append([
                 'place-perifereia',

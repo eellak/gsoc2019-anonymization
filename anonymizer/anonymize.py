@@ -54,8 +54,12 @@ def read_data_from_file(ifile, format='txt'):
 
 def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', in_order=True):
 
-    nlp = spacy.load('el_core_news_sm')
-    matcher = Matcher(nlp.vocab)
+    # spacy -- init
+    #
+
+    # nlp = spacy.load('el_core_news_sm')
+    # matcher = Matcher(nlp.vocab)
+
     # Check file extension
     extension = ifile[-3:]
     if extension == 'odt':
@@ -64,8 +68,8 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
         data = read_data_from_file(ifile=ifile, format='txt')
     else:
         raise NameError('find_entities: Not extension .txt or .odt')
-    doc = nlp(data)
-    data = str(doc)
+    # doc = nlp(data)
+    # data = str(doc)
 
     # READ CONFIGURATION FILE
     #
@@ -99,9 +103,17 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
     if in_order == True:
         entities.sort(key=sort_by_start)
 
-    # Display
+    unique_values = True
+    if unique_values == True:
+        final_entities = []
+        for entity in entities:
+            if entity not in final_entities:
+                final_entities.append(entity)
+        entities = final_entities
+
+        # Display
     for element in entities:
         print('[', colored(element[0], 'yellow'), ',', colored(
             element[1], 'blue'), ',', colored(element[2], 'cyan'),
-            ',', element[3],
+            ',', element[3], ',', element[4],
             ']',)
