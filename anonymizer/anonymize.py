@@ -1,6 +1,7 @@
 import sys
 import getopt
 import spacy
+from os import system as runShell
 from spacy.matcher import Matcher
 from termcolor import colored
 from anonymizer import matcher_patterns
@@ -47,8 +48,16 @@ def read_data_from_file(ifile, format='txt'):
         except FileNotFoundError as fnf_error:
             exit(fnf_error)
     else:
-        from ODTReader.odtreader import odtToText
-        data = odtToText(ifile)
+
+        tempfile = ifile[0:len(ifile)-4] + '_temp.txt'
+        command = 'odt2txt ' + ifile + ' --output=' + '\'' + tempfile + '\''
+        runShell(command)
+        with open(tempfile, mode='r') as f:
+            data = f.read().replace('\n', ' ')
+        # with open('testtemp1.txt', mode='w') as temp:
+        #     temp.write(data)
+        remove_file_command = 'rm ' + tempfile
+        runShell(remove_file_command)
         return data
 
 
@@ -110,8 +119,7 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
             if entity not in final_entities:
                 final_entities.append(entity)
         entities = final_entities
-
-        # Display
+    # Display
     for element in entities:
         print('[', colored(element[0], 'yellow'), ',', colored(
             element[1], 'blue'), ',', colored(element[2], 'cyan'),

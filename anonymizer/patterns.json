@@ -62,7 +62,7 @@
                 "surname_pattern_before": "(?:(?P<possible_surname_before>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?[\s]+)?",
                 "surname_pattern_after": "(?:[\s]+(?P<possible_surname_after>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?)?",
                 "surname_pattern_mr": "(?:\b(?:[κΚ]ος?|[κΚ]ου|[κΚ]ον|[κΚ]ας?|[δΔ]ις))\.?\s(?P<surname>[Α-Ω]+\w*)",
-                "surname_pattern_with_prefix": "(?P<prefix>[^.Α-Ωα-ω]\b[Α-Ω])\.\s*(?P<surname>[Α-Ω]+\w*)"
+                "surname_pattern_with_prefix": "[^.Α-Ωα-ω](?P<prefix>\b[Α-Ω]+\.)\s*(?P<surname>[Α-Ω]+\w*)"
             }
         },
         "place": {
