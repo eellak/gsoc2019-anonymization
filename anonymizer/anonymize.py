@@ -20,7 +20,7 @@ def read_patterns(ifile=''):
         json_file = official_json(data)
 
         return json_file
-    raise NameError('patterns.json file can not be found.')
+    raise NameError('patterns file can not be found.')
 
 
 def entity_type_convertion(data, doc):
@@ -57,7 +57,7 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
 
     # READ CONFIGURATION FILE
     #
-    conf_json = read_patterns(patterns_file)
+    patterns_json = read_patterns(patterns_file)
     '''
         --- ENTITY LIST EXPLANATION ---
         entities = [entity_name, entity_value,
@@ -74,7 +74,7 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
     '''
     entities = []
 
-    for matcher, value in conf_json['matcher'].items():
+    for matcher, value in patterns_json['matcher'].items():
         if value['active'] == 'False':
             continue
         custom_pattern_method = getattr(matcher_patterns, matcher)

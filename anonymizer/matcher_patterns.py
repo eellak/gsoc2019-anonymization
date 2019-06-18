@@ -1,15 +1,15 @@
 def phone_number(data, pattern=None, handler=None, regex=True, matcher=None):
 
-    if regex==True :
+    if regex == True:
         import re
         results = []
-        if pattern==None:
+        if pattern == None:
             return []
-        
+
         general_phone_number_pattern = pattern['general_phone_number_pattern']
         greek_mobile_number_pattern = pattern['greek_mobile_number_pattern']
         greek_phone_number_pattern = pattern['greek_phone_number_pattern']
-        
+
         for match in re.finditer(greek_mobile_number_pattern, data):
             s = match.start()
             e = match.end()
@@ -69,12 +69,12 @@ def phone_number(data, pattern=None, handler=None, regex=True, matcher=None):
 # REGEX -- due to spacy issue with spaces in regex
 
 
-def vehicle(data,pattern=None, handler=None):
+def vehicle(data, pattern=None, handler=None):
     import re
 
-    if pattern==None:
+    if pattern == None:
         return []
-        
+
     # update: vehicle patterns only uppercase, case insensitive
     vehicle_pattern = pattern['vehicle_pattern']
     rare_vehicle_pattern = pattern['rare_vehicle_pattern']
@@ -125,10 +125,10 @@ def vehicle(data,pattern=None, handler=None):
     return results
 
 
-def identity_card(data, pattern=None ,handler=None):
+def identity_card(data, pattern=None, handler=None):
     import re
     results = []
-    if pattern==None:
+    if pattern == None:
         return []
     identity_card_pattern = pattern['identity_card_pattern']
     for match in re.finditer(identity_card_pattern, data):
@@ -146,7 +146,7 @@ def identity_card(data, pattern=None ,handler=None):
 def iban(data, pattern=None, handler=None):
     import re
     results = []
-    if pattern==None:
+    if pattern == None:
         return []
     iban_pattern = pattern['iban_pattern']
     for match in re.finditer(iban_pattern, data):
@@ -232,7 +232,7 @@ def amka(data, pattern=None, handler=None):
 def brand(data, pattern=None, handler=None):
     import re
     results = []
-    if pattern==None:
+    if pattern == None:
         return []
     brand_name_pattern = pattern['brand_name_pattern']
     brand_distinctive_title_pattern = pattern['brand_distinctive_title_pattern']
@@ -255,9 +255,9 @@ def brand(data, pattern=None, handler=None):
     return results
 
 
-def address(data,pattern=None, handler=None):
+def address(data, pattern=None, handler=None):
     import re
-    if pattern==None:
+    if pattern == None:
         return []
     results = []
     # address_pattern = r'(?i)\b(?:οδός|οδος|οδο|οδό|οδού|οδου)[\s:]+?(.+?)[,\s]+?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(.+?\b))?'
@@ -299,7 +299,7 @@ def address(data,pattern=None, handler=None):
 
 
 def name(data, pattern=None, handler=None, strict_surname_matcher=True):
-    if pattern==None:
+    if pattern == None:
         return []
     from anonymizer import trie_index
     from anonymizer.trie_index import prepair_word
@@ -336,16 +336,13 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         if name_trie_index.search(prepair_word(word=word)) == 1:
             # word is found
             are_names.append(True)
-            
+
         else:
             are_names.append(False)
-    
-    
 
     for index, is_name in enumerate(are_names):
         if is_name == True:
             results.append(not_final_results[index])
-
 
     # Now fine surnames that maybe exist for each name in list
     #
@@ -375,10 +372,10 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
 
     # Safewords:
     # These words will never be parsed as surnames
-    # 
-
-
-    with open('anonymizer/data/safewords.csv',mode='r') as sw:
+    #
+    from anonymizer.external_functions import find_path
+    safewords_path = find_path('anonymizer/conf.json','safewords')
+    with open(safewords_path, mode='r') as sw:
         safe_words = [word.replace('\n', '') for word in sw.readlines()]
 
     for index, name in enumerate(names):
@@ -395,16 +392,17 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         #                    r'[\s]?' +
         #                    r'(?P<possible_surname_after>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?')
 
-        surname_pattern = pattern['surname_pattern_before'] + name + pattern['surname_pattern_after']
+        surname_pattern = pattern['surname_pattern_before'] + \
+            name + pattern['surname_pattern_after']
         for match in re.finditer(surname_pattern, data):
             possible_surname_before = match.group('possible_surname_before')
             possible_surname_after = match.group('possible_surname_after')
-            if possible_surname_before!= None:
+            if possible_surname_before != None:
                 if prepair_word(possible_surname_before) in safe_words:
                     # print(possible_surname_before)
                     len_surname_before = len(possible_surname_before)
                     possible_surname_before = None
-            if possible_surname_after!=None:
+            if possible_surname_after != None:
                 if prepair_word(possible_surname_after) in safe_words:
                     # print(possible_surname_after)
                     len_surname_after = len(possible_surname_after)
@@ -435,7 +433,8 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
                         if (sur_l < l):
                             continue
 
-                        to_be_compared = prepair_word(possible_surname_after[sur_l-l:sur_l])
+                        to_be_compared = prepair_word(
+                            possible_surname_after[sur_l-l:sur_l])
 
                         if (to_be_compared == surname_postfix):
                             # Strict match of surname
@@ -447,8 +446,8 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
                         # Now we know it is surname
                         # So pass the value to results
                         surname = possible_surname_after
-                        # s = (match.start() + len_surname_before if possible_surname_before==None else match.start()) 
-                        s = match.start() 
+                        # s = (match.start() + len_surname_before if possible_surname_before==None else match.start())
+                        s = match.start()
                         e = match.end()
                         span = data[s:e]
                         s1 = span.index(name)
@@ -491,7 +490,8 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
                         sur_l = len(possible_surname_before)
                         if (sur_l < l):
                             continue
-                        to_be_compared = prepair_word( possible_surname_before[sur_l-l:sur_l] )
+                        to_be_compared = prepair_word(
+                            possible_surname_before[sur_l-l:sur_l])
 
                         if (to_be_compared == surname_postfix):
                             # Strict match of surname
@@ -543,7 +543,8 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
                         sur_l = len(possible_surname_before)
                         if (sur_l < l):
                             continue
-                        to_be_compared = prepair_word( possible_surname_before[sur_l-l:sur_l] )
+                        to_be_compared = prepair_word(
+                            possible_surname_before[sur_l-l:sur_l])
 
                         if (to_be_compared == surname_postfix):
                             # Strict match of surname
@@ -581,19 +582,19 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
                     span = data[s:e]
 
                     # Choose the final result
-                    if surname_before==None and surname_after!= None:
+                    if surname_before == None and surname_after != None:
                         surname = surname_after
                         # change the start in span
                         s = s + span.index(surname_after)
                         span = data[s:e]
 
-                    elif surname_before!=None and surname_after==None:
+                    elif surname_before != None and surname_after == None:
                         surname = surname_before
                         # change the end in span
                         e = s + span.index(name) + len(name)
                         span = data[s:e]
 
-                    elif surname_before!=None and surname_after!=None:
+                    elif surname_before != None and surname_after != None:
                         surname = surname_before + '-' + surname_after
                     else:
                         surname = None
@@ -606,13 +607,12 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
                     results[index][3] = s
                     results[index][4] = e
 
-
     # Mr surname or Miss Surname identified down below:
-    # 
+    #
 
     surname_pattern_mr = pattern['surname_pattern_mr']
-    
-    for match in re.finditer(surname_pattern_mr,data):
+
+    for match in re.finditer(surname_pattern_mr, data):
         entity_value = match.group('surname').strip()
         # Check if the entity value is surname
         if prepair_word(entity_value) in safe_words:
@@ -621,23 +621,23 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         for postfix in surnames_postfixes:
             postfix_len = len(postfix)
             entity_value_len = len(entity_value)
-            if entity_value_len<postfix_len:
+            if entity_value_len < postfix_len:
                 continue
-            if prepair_word(entity_value[entity_value_len-postfix_len:entity_value_len] )== postfix:                
-                is_surname =True
+            if prepair_word(entity_value[entity_value_len-postfix_len:entity_value_len]) == postfix:
+                is_surname = True
                 break
         # If not surname go to the next iteration
         if is_surname == False:
             continue
 
         # Here we know it is surname
-        # 
+        #
         entity_value = entity_value.upper()
         s = match.start()
         e = match.end()
         span = data[s:e]
-        results.append(['surname',entity_value,span,s,e,False])
-        
+        results.append(['surname', entity_value, span, s, e, False])
+
     surname_pattern_with_prefix = pattern['surname_pattern_with_prefix']
 
     for match in re.finditer(surname_pattern_with_prefix, data):
@@ -649,7 +649,7 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         for postfix in surnames_postfixes:
             postfix_len = len(postfix)
             entity_value_len = len(entity_value)
-            if entity_value_len<postfix_len:
+            if entity_value_len < postfix_len:
                 continue
             if prepair_word(entity_value[entity_value_len-postfix_len:entity_value_len]) == postfix:
                 is_surname = True
@@ -660,73 +660,70 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
 
         # Here we know it is surname
         #
-        entity_value = match.group('prefix').strip() + ' ' + match.group('surname').strip()
+        entity_value = match.group('prefix').strip(
+        ) + ' ' + match.group('surname').strip()
         entity_value = entity_value.upper()
         s = match.start()
         e = match.end()
         span = data[s:e]
         results.append(['name-surname', entity_value, span, s, e, False])
-    
-
-    
 
     return results
 
-def place(data,pattern=None,handler=None):
-    
+
+def place(data, pattern=None, handler=None):
+
     import re
     from anonymizer.trie_index import create_trie_index
     from anonymizer.trie_index import prepair_word
 
-    if pattern==None:
+    if pattern == None:
         return []
 
     # Create trie index first
-    # 
-    ## Both have no spaces
+    #
+    # Both have no spaces
     # Nomoi dataset
     dataset = 'anonymizer/data/nomoi.csv'
     place_trie_index_nomoi = create_trie_index(dataset=dataset)
     # Dhmoi dataset
     dataset = 'anonymizer/data/dhmoi.csv'
     place_trie_index_dhmoi = create_trie_index(dataset=dataset)
-    
 
     # Find possible nomous using regex.
     place_pattern = pattern['place_pattern']
 
     results = []
 
-    for match in re.finditer(place_pattern,data):
+    for match in re.finditer(place_pattern, data):
 
-            s = match.start()
-            e = match.end()
-            span = data[s:e]
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
 
-            if place_trie_index_nomoi.search(prepair_word(span)) == 1:
+        if place_trie_index_nomoi.search(prepair_word(span)) == 1:
                 # place is found in try index
-                results.append([
-                    'place-nomos',
-                    span.upper(),
-                    span,
-                    s,
-                    e,
-                    False
-                ])
+            results.append([
+                'place-nomos',
+                span.upper(),
+                span,
+                s,
+                e,
+                False
+            ])
 
-            if place_trie_index_dhmoi.search(prepair_word(span)) == 1:
-                # place is found in try index
-                results.append([
-                    'place-nomos',
-                    span.upper(),
-                    span,
-                    s,
-                    e,
-                    False
-                ])
+        if place_trie_index_dhmoi.search(prepair_word(span)) == 1:
+            # place is found in try index
+            results.append([
+                'place-nomos',
+                span.upper(),
+                span,
+                s,
+                e,
+                False
+            ])
 
-
-    # Create dataset 
+    # Create dataset
     # This dataset - trie index handles any of: - or spaces as _
 
     dataset = 'anonymizer/data/dioikhtikh_perifereia.csv'
@@ -734,33 +731,32 @@ def place(data,pattern=None,handler=None):
 
     place_with_space_pattern = pattern['place_with_space_pattern']
 
-    for match in re.finditer(place_with_space_pattern,data):
+    for match in re.finditer(place_with_space_pattern, data):
         s = match.start()
         e = match.end()
         span = data[s:e]
 
-        word_to_search = span.replace(' ','_').replace('-','_')
-        
+        word_to_search = span.replace(' ', '_').replace('-', '_')
 
-        # First search for the max string 
+        # First search for the max string
 
         if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
             # Add the place to the results
-                results.append([
-                    'place-perifereia',
-                    span.upper(),
-                    span,
-                    s,
-                    e,
-                    False
-                ])
+            results.append([
+                'place-perifereia',
+                span.upper(),
+                span,
+                s,
+                e,
+                False
+            ])
 
         word1 = match.group('word1')
         word2 = match.group('word2')
         word3 = match.group('word3')
         # Then search for subgroup of possible perifereies (word1_word2 in regex)
 
-        if word1 != None and word2!=None:
+        if word1 != None and word2 != None:
             word_to_search = word1.strip() + '_' + word2.strip()
             if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
                 # Add the place to the results
@@ -792,9 +788,8 @@ def place(data,pattern=None,handler=None):
                     False
                 ])
 
-
         # Then search (if not None) each word as individual
-        if word1 != None and (word2!=None or word3!= None):
+        if word1 != None and (word2 != None or word3 != None):
             word_to_search = word1.strip()
             if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:
                 # Add the place to the results
@@ -809,8 +804,7 @@ def place(data,pattern=None,handler=None):
                     False
                 ])
 
-
-        if word2!= None :
+        if word2 != None:
 
             word_to_search = word2.strip()
             if place_trie_index_periferia.search(prepair_word(word_to_search)) == 1:

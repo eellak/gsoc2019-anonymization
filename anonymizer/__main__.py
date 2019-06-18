@@ -20,7 +20,7 @@ def main(argv):
     -m <method used: choose between deletion and encryption>
     -p <patterns.json>
     -l <True,False: choose in line with text results>
-    -c <conf.json>'''
+    '''
 
     parser = argparse.ArgumentParser(
         description='Anonymize file', usage=helptext)
@@ -29,9 +29,6 @@ def main(argv):
 
     parser.add_argument('-o', '--ofile', help='Output file',
                         type=str, required=False)
-
-    parser.add_argument('-c', '--conf_file',
-                        help='Configuration file', type=str, required=False)
 
     parser.add_argument('-p', '--patterns_file',
                         help='Patterns file', type=str, required=False)
@@ -45,16 +42,10 @@ def main(argv):
 
     # If given configuration file check that it exists
     #
-    if args.conf_file != None:
-        conf_file = args.conf_file
-        if not os.path.exists(conf_file):
-            raise NameError(
-                f'Please make sure that the file ({conf_file}) exists.')
-    else:
-        # If the service can not track conf.json
-        if not os.path.exists(conf_file):
-            raise NameError(
-                "Please make sure that the conf.json file's path is: anonymizer/conf.json")
+    # If the service can not track conf.json
+    if not os.path.exists(conf_file):
+        raise NameError(
+            "Please make sure that the conf.json file's path is: anonymizer/conf.json")
 
     with open(conf_file, mode='r') as cf:
         data = cf.read().replace('\n', '')
@@ -87,12 +78,11 @@ def main(argv):
                 f'Please make sure that the file ({patterns_file}) exists.')
     else:
         # If the service can not track patterns.json
-        patterns_file = conf_json['paths']['patterns.json']
+        patterns_file = conf_json['paths']['patterns']
         if not os.path.exists(patterns_file):
             raise NameError(
-                f"Please make sure that the patterns.json file's path is: {patterns_file}")
+                f"Please make sure that the patterns file's path is: {patterns_file}")
 
-    # Load -d patterns.json for custom patterns
     # Pass custom patterns to find_entities()
     anonymize.find_entities(inputfile, outputfile, method,
                             patterns_file=patterns_file, in_order=in_order)

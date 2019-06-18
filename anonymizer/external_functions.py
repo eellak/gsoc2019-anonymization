@@ -39,3 +39,15 @@ def fix_pattern(patterns):
             raise NameError(
                 'Make sure that values in patterns.json patterns are different within each function')
     return(pattern)
+
+
+def find_path(conf_file='anonymizer/conf.json', file_needed=None):
+    if conf_file == None:
+        raise NameError('find_path:No configuration file given')
+    if file_needed == None:
+        raise NameError('find_path:No file given')
+    import json
+    with open(conf_file, mode='r') as json_file:
+        data = json.load(json_file)
+    paths = data['paths']
+    return paths[file_needed]
