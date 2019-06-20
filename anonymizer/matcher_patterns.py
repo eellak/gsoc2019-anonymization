@@ -668,6 +668,37 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         span = data[s:e]
         results.append(['name-surname', entity_value, span, s, e, False])
 
+    middlename_pattern = pattern['middlename_pattern']
+    for index, name in enumerate(names):
+    
+        # pattern contains already found name!
+        surname_with_middlename_pattern = name + middlename_pattern
+        for match in re.finditer(surname_with_middlename_pattern, data):
+            s = match.start()
+            e = match.end()
+            span = data[s:e]
+            surname = match.group('surname')
+            middlename = match.group('middlename')
+            surname_in_safewords = prepair_word(
+                surname.replace('.', '')) in safe_words
+            middlename_in_safewords = prepair_word(
+                middlename.replace('.', '')) in safe_words
+
+            if match.group('middlename') != None:
+                if middlename_in_safewords:
+                # This span is perhaps name so name matcher will catch it 
+                    continue
+            if surname != None and middlename != None:
+                if surname_in_safewords:
+                    # Update span
+                    start_of_surname = span.index(surname)
+                    e = s + start_of_surname
+                    span = data[s:e]
+                    
+            entity_value = span.strip().replace(',','').upper()
+            entity_name = 'name-middlename-surname'
+            results.append([entity_name,entity_value,span,s,e,False])
+
     return results
 
 
