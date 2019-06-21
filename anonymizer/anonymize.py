@@ -120,6 +120,8 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
                 final_entities.append(entity)
         entities = final_entities
     # Display
+    print(
+        colored(f'\n\n-------------File:{ifile}-------------', 'green'))
     for element in entities:
         print('[', colored(element[0], 'yellow'), ',', colored(
             element[1], 'blue'), ',', colored(element[2], 'cyan'),

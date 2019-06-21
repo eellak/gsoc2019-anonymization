@@ -1,5 +1,6 @@
 import sys
 import getopt
+from anonymizer.anonymize import find_entities
 from anonymizer import anonymize
 from anonymizer.external_functions import create_output_file_name
 import argparse
@@ -24,20 +25,39 @@ def main(argv):
 
     parser = argparse.ArgumentParser(
         description='Anonymize file', usage=helptext)
-    parser.add_argument('-i', '--ifile', help='Input file',
-                        type=str, required=True)
+    parser.add_argument('-i',
+                        '--ifile',
+                        help='Input file',
+                        type=str,
+                        required=False)
 
-    parser.add_argument('-o', '--ofile', help='Output file',
-                        type=str, required=False)
+    parser.add_argument('-o',
+                        '--ofile',
+                        help='Output file',
+                        type=str,
+                        required=False)
 
-    parser.add_argument('-p', '--patterns_file',
-                        help='Patterns file', type=str, required=False)
+    parser.add_argument('-p',
+                        '--patterns_file',
+                        help='Patterns file',
+                        type=str,
+                        required=False)
 
-    parser.add_argument('-m', '--method',
-                        help='Which method is applied to the identified data')
+    parser.add_argument('-m',
+                        '--method',
+                        help='Which method is applied to the identified data', type=str,
+                        required=False)
 
-    parser.add_argument('-l', '--in_order',
-                        help='Show results in line/order with the text')
+    parser.add_argument('-l',
+                        '--in_order',
+                        help='Show results in line/order with the text',
+                        required=False)
+
+    parser.add_argument('-f',
+                        '--folder',
+                        help='Anonymize all files in folder',
+                        type=str,
+                        required=False)
     args = parser.parse_args()
 
     # If given configuration file check that it exists
@@ -51,12 +71,11 @@ def main(argv):
         data = cf.read().replace('\n', '')
         conf_json = json.loads(data)
 
-    if args.ifile != None:
-        inputfile = args.ifile
+    inputfile = args.ifile
 
     if args.ofile != None:
         outputfile = args.ofile
-    else:
+    elif inputfile != None:
         outputfile = create_output_file_name(inputfile)
 
     if args.method != None:
@@ -83,9 +102,30 @@ def main(argv):
             raise NameError(
                 f"Please make sure that the patterns file's path is: {patterns_file}")
 
-    # Pass custom patterns to find_entities()
-    anonymize.find_entities(inputfile, outputfile, method,
-                            patterns_file=patterns_file, in_order=in_order)
+    if (inputfile != None):
+        # Pass custom patterns to find_entities()
+        find_entities(ifile=inputfile,
+                      ofile=outputfile,
+                      method=method,
+                      patterns_file=patterns_file,
+                      in_order=in_order)
+
+    if args.folder != None:
+        folder = args.folder
+        if not os.path.exists(folder):
+            raise NameError(f"This folder ({folder}) doesn't exist.")
+        files = []
+        for file in os.listdir(folder):
+            if file.endswith(".txt") or file.endswith(".odt"):
+                files.append(folder + file)
+        # print(files)
+        for file in files:
+            # print(file)
+            find_entities(ifile=file,
+                          ofile=create_output_file_name(file),
+                          method=method,
+                          patterns_file=patterns_file,
+                          in_order=in_order)
 
 
 if __name__ == "__main__":
