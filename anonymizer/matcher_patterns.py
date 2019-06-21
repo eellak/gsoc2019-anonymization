@@ -867,5 +867,19 @@ def place(data, pattern=None, handler=None):
                     e,
                     False
                 ])
+    return results
+
+
+def decision_number(data, pattern=None, handler=None):
+    
+    import re
+    results = []
+    
+    decision_number_pattern = pattern['decision_number_pattern']
+    for match in re.finditer(decision_number_pattern,data):
+        s = match.start()
+        e= match.end()
+        span = data[s:e]
+        results.append(['decision_number',span.upper(),span,s,e,False])
 
     return results
