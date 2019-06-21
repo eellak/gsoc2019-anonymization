@@ -14,8 +14,8 @@ On the subject of the creation of the anonymizer I suggest the following metrics
 Milestones at the end of each [GSoC phase](https://developers.google.com/open-source/gsoc/timeline):
 
 ### June 28, 2019 Phase 1 Evaluation:
-- Complete the implementation of data anonymizer.
-- Complete the sensitive data recognition matcher using spaCy in _.txt_ and _.odt_ files.
+- Complete the sensitive data recognition matcher using regular expressions in _.txt_ and _.odt_ files.
+- Complete the implementation of the data anonymizer module.
 ### July 26, 2019 Phase 2 Evaluation:
 - Initial Documentation.
 - Complete the implementation of Linux application with a web GUI.
