@@ -10,6 +10,36 @@ from anonymizer.external_functions import fix_pattern
 from anonymizer.external_functions import sort_by_start
 
 
+def anonymize_element(element, method=['strict', '*', 'True']):
+
+    [method_type,
+     symbol,
+     length_replace] = method
+    if len(symbol) > 1:
+        symbol = symbol[0]
+    span = element[2]
+    s = element[3]
+    e = element[4]
+    if method_type.lower() in ['strict', 's']:
+        if length_replace.lower() in ['true', 't']:
+            l = len(span)
+        else:
+            try:
+                l = int(float(length_replace))
+                if l > len(span):
+                    l = len(span)
+            except:
+                raise NameError(f'Not acceptable lenght: {length_replace}')
+        rep = ''
+        for i in range(l):
+            rep += symbol
+        # Fill the remaining gap with spaces
+        # This keeps the alignment
+        for i in range(len(span) - l):
+            rep += ' '
+        return rep
+
+
 def read_patterns(ifile=''):
     with open(ifile, 'r') as f:
         import json
@@ -137,18 +167,49 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
     # Anonymize entities by removing them
     # from the original file
     # print(data)
+
+    final_text = ''
+    index = 0
+    previous_e = 0
     for element in entities:
+        span = element[2]
         s = element[3]
         e = element[4]
-        span = data[s:e]
-        l = len(span)
-        rep = []
-        for i in range(l):
-            rep.append('*')
-        data = data[:s] + ''.join(rep) + data[e:]
+        if previous_e >= e:
+            # currenct element is substring of the previous
+            index = previous_e
+            continue
+        elif (s >= previous_e):
+            # print(f'common case span:{span}')
+            # Common case
+            final_text += data[index:s] + anonymize_element(element, method)
+            previous_e = e
+            index = e
+        else:
+            # previous and current element have both a common substring
+            print(
+                f'Weird case span_trimmed:{data[previous_e:e]},span:{span}')
+            temp_element = [
+                element[0],
+                element[1],
+                data[previous_e:e],
+                previous_e,
+                e,
+                element[5]
+            ]
+            final_text += anonymize_element(
+                temp_element, method)
+            print(anonymize_element(
+                temp_element, method))
+            previous_e = e
+            index = e
+        # print(data[:s] + colored(data[s], 'red') + data[s:])
+    if index < len(data):
+        final_text += data[index:len(data)]
 
     # Get the original new lines
     for i, letter in replaced:
-        data = data[:i] + letter + data[i+1:]
+        final_text = final_text[:i] + letter + final_text[i+1:]
+
     with open(ofile, mode='w') as of:
-        of.write(data)
+        of.write(final_text)

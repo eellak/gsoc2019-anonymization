@@ -3,6 +3,17 @@
         "in_order": {
             "value": "True",
             "help": "If True, in order preview of results is enabled"
+        },
+        "method": {
+            "strict": {
+                "is_active": "True",
+                "value": "*",
+                "lenght_of_word": "True"
+            },
+            "elastic": {
+                "is_active": "False",
+                "value": "*"
+            }
         }
     },
     "paths": {

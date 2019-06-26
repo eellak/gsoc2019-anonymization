@@ -18,7 +18,7 @@ def main(argv):
     helptext = '''Use: python3 anonymizer.py
     -i <inputfile>
     -o <outputfile>
-    -m <method used: choose between deletion and encryption>
+    -m <method_used(s:strict or e:elastic)/symbol/(lenght==lenght_of_word)?>
     -p <patterns.json>
     -l <True,False: choose in line with text results>
     '''
@@ -79,7 +79,27 @@ def main(argv):
         outputfile = create_output_file_name(inputfile)
 
     if args.method != None:
-        method = args.method
+        try:
+            method_input = args.method
+            [method_chosen,
+             symbol_input,
+             lenght_input] = method_input.split('/')
+            assert method_chosen.lower() in ['s', 'strict', 'e', 'elastic']
+            assert len(symbol_input) == 1
+            method = [method_chosen, symbol_input, lenght_input]
+        except:
+            raise NameError('Make sure you give the right method')
+    else:
+        if conf_json['general']['method']['strict']['is_active'] == 'True':
+            method = ['strict',
+                      conf_json['general']['method']['strict']['value'],
+                      conf_json['general']['method']['strict']['lenght_of_word']
+                      ]
+        elif conf_json['general']['method']['elastic']['is_active'] == 'True':
+            method = ['elastic',
+                      conf_json['general']['method']['elastic']['value'],
+                      None
+                      ]
 
     if args.in_order != None:
         if args.in_order in [True, False]:
