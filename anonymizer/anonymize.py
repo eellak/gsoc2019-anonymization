@@ -43,8 +43,14 @@ def read_data_from_file(ifile, format='txt'):
     if format == 'txt':
         try:
             with open(ifile, 'r') as f:
-                data = f.read().replace('\n', ' ')
-                return data
+                data = f.read()
+                replaced = []
+                for i, letter in enumerate(data):
+                    if letter in ['\n', '\t', '\r']:
+                        replaced.append([i, letter])
+                data = data.replace('\n', ' ').replace(
+                    '\t', ' ').replace('\r', ' ')
+                return [data, replaced]
         except FileNotFoundError as fnf_error:
             exit(fnf_error)
     else:
@@ -58,7 +64,7 @@ def read_data_from_file(ifile, format='txt'):
         #     temp.write(data)
         remove_file_command = 'rm ' + tempfile
         runShell(remove_file_command)
-        return data
+        return [data, []]
 
 
 def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', in_order=True):
@@ -72,9 +78,9 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
     # Check file extension
     extension = ifile[-3:]
     if extension == 'odt':
-        data = read_data_from_file(ifile=ifile, format='odt')
+        [data, replaced] = read_data_from_file(ifile=ifile, format='odt')
     elif extension == 'txt':
-        data = read_data_from_file(ifile=ifile, format='txt')
+        [data, replaced] = read_data_from_file(ifile=ifile, format='txt')
     else:
         raise NameError('find_entities: Not extension .txt or .odt')
     # doc = nlp(data)
@@ -127,3 +133,22 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
             element[1], 'blue'), ',', colored(element[2], 'cyan'),
             ',', element[3], ',', element[4],
             ']',)
+
+    # Anonymize entities by removing them
+    # from the original file
+    # print(data)
+    for element in entities:
+        s = element[3]
+        e = element[4]
+        span = data[s:e]
+        l = len(span)
+        rep = []
+        for i in range(l):
+            rep.append('*')
+        data = data[:s] + ''.join(rep) + data[e:]
+
+    # Get the original new lines
+    for i, letter in replaced:
+        data = data[:i] + letter + data[i+1:]
+    with open(ofile, mode='w') as of:
+        of.write(data)
