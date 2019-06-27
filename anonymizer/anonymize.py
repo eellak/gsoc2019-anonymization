@@ -84,17 +84,32 @@ def read_data_from_file(ifile, format='txt'):
         except FileNotFoundError as fnf_error:
             exit(fnf_error)
     else:
-
-        tempfile = ifile[0:len(ifile)-4] + '_temp.txt'
-        command = 'odt2txt ' + ifile + ' --output=' + '\'' + tempfile + '\''
+        tempfile = ifile[0:len(ifile)-4] + '_temp.xml'
+        command = 'odf2xml ' + '-o ' + tempfile + ' ' + ifile
         runShell(command)
-        with open(tempfile, mode='r') as f:
-            data = f.read().replace('\n', ' ')
-        # with open('testtemp1.txt', mode='w') as temp:
-        #     temp.write(data)
+        with open(tempfile, mode='r', encoding='utf-8') as f:
+            data = f.read()
+            replaced = []
+            for i, letter in enumerate(data):
+                if letter in ['\n', '\t', '\r']:
+                    replaced.append([i, letter])
+            data = data.replace('\n', ' ').replace(
+                '\t', ' ').replace('\r', ' ')
         remove_file_command = 'rm ' + tempfile
         runShell(remove_file_command)
-        return [data, []]
+        return [data, replaced]
+
+        # return [data, []]
+        # tempfile = ifile[0:len(ifile)-4] + '_temp.txt'
+        # command = 'odt2txt ' + ifile + ' --output=' + '\'' + tempfile + '\''
+        # runShell(command)
+        # with open(tempfile, mode='r') as f:
+        #     data = f.read().replace('\n', ' ')
+        # # with open('testtemp1.txt', mode='w') as temp:
+        # #     temp.write(data)
+        # remove_file_command = 'rm ' + tempfile
+        # runShell(remove_file_command)
+        # return [data, []]
 
 
 def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', in_order=True):
@@ -211,3 +226,9 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
 
     with open(ofile, mode='w') as of:
         of.write(final_text)
+
+    if ifile[-3:] == 'odt':
+        # Create an odt file
+        # Remove the file above
+        command = 'xml2odf -o ' + ofile + ' ' + ofile
+        runShell(command)

@@ -672,7 +672,7 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
         results.append(['surname', entity_value, span, s, e, False])
 
     surname_pattern_with_prefix = pattern['surname_pattern_with_prefix']
-
+    # [^.Α-Ωα-ω]
     for match in re.finditer(surname_pattern_with_prefix, data):
         entity_value = match.group('surname').strip()
         if prepair_word(entity_value) in safe_words:
