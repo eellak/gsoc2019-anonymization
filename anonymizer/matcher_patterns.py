@@ -294,6 +294,39 @@ def address(data, pattern=None, handler=None):
         ]
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+    
+    return results
+
+def known_address(data,pattern=None):
+
+    if pattern==[]:
+        return []
+    results = []
+
+    import re
+    from anonymizer.trie_index import create_trie_index
+    from anonymizer.trie_index import prepair_word
+
+    known_addresses = pattern['known_address_pattern']
+    # Create dataset
+    dataset = 'anonymizer/data/odoi.csv'
+    address_trie_index = create_trie_index(dataset=dataset)
+    for match in re.finditer(known_addresses,data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        word_to_search = span.replace(' ', '_').replace('-', '_')
+        # Search this matched pattern in trie index
+        if address_trie_index.search(prepair_word(word_to_search)) == 1:
+            results.append([
+                'address',
+                span.upper(),
+                span,
+                s,
+                e,
+                False
+            ])
+    
 
     return results
 

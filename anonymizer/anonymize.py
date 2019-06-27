@@ -187,8 +187,8 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
             index = e
         else:
             # previous and current element have both a common substring
-            print(
-                f'Weird case span_trimmed:{data[previous_e:e]},span:{span}')
+            # print(
+                # f'Weird case span_trimmed:{data[previous_e:e]},span:{span}')
             temp_element = [
                 element[0],
                 element[1],
@@ -199,8 +199,6 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
             ]
             final_text += anonymize_element(
                 temp_element, method)
-            print(anonymize_element(
-                temp_element, method))
             previous_e = e
             index = e
         # print(data[:s] + colored(data[s], 'red') + data[s:])
