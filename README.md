@@ -31,3 +31,41 @@ Milestones at the end of each [GSoC phase](https://developers.google.com/open-so
 - Mentor: Theodoros Karounos
 - Mentor: Iraklis Varlamis
 - Organization: [GFOSS](https://gfoss.eu/)
+
+## Usage
+
+#### Syntax
+
+```
+python3 -m anonymizer
+
+    -i <inputfile>
+    
+    -o <outputfile>
+    
+    -f <folder>
+    
+    -m <method_used(s,strict)/symbol/(lenght==lenght_of_word)>
+    
+    -p <patterns.json>
+```
+
+
+#### Defaults
+
+```
+python3 -m anonymizer -i testfile.odt -o testfile_anonymized.odt -m s/*/True -p anonymizer/patterns.json
+```
+
+
+#### Explanation
+
+- i: Specify the input's file path.
+- o: Specify the output's file  path.
+- f: Specify a folder's path. If set, the module will anonymize all .txt and .odt files in the folder.
+- m:
+    - method: Strict method.
+    - symbol: Specify the symbol that will replace sensitive information.
+    - length: If True lenght is set to ` len(entity) `, else if a number _n_ is given each entity shall
+              be replaced with symbol _n_ times, always respecting the original alignment/format of the text.
+- p: Specify the patterns file. A default pattern file is given in _anonymizer/patterns.json_
