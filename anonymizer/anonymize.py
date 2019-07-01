@@ -190,6 +190,59 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
         span = element[2]
         s = element[3]
         e = element[4]
+        # Brand elements may have html tags in .odt files
+        if element[0] == 'brand_name' and ifile[-3:] == 'odt':
+            print(f'Span:{span}')
+            final_text += data[index:s]
+            index = s
+            previous_e = e
+            import re
+            regex = r'(<.*?>)'
+            tags = []
+            for match in re.finditer(regex, span):
+                st = match.start()
+                end = match.end()
+                sp = span[st:end]
+                tags.append([st, end, sp])
+            if tags == []:
+                final_text += data[index:s] + \
+                    anonymize_element(element, method)
+                previous_e = e
+                index = e
+                continue
+            temp_index = index
+            for tag in tags:
+                st = tag[0]
+                end = tag[1]
+                sp = tag[2]
+                temp_data = data[temp_index:index+st]
+                temp_element = [
+                    'brand_name',
+                    temp_data.upper(),
+                    temp_data,
+                    temp_index,
+                    index+st,
+                    False
+                ]
+
+                final_text += anonymize_element(temp_element, method)
+                final_text += sp
+                temp_index = index + end
+            temp_data = data[temp_index:e]
+            temp_element = [
+                'brand_name',
+                temp_data.upper(),
+                temp_data,
+                temp_index,
+                e,
+                False
+            ]
+
+            final_text += anonymize_element(temp_element, method)
+            # index = previous_e
+            # index = e
+            index = e
+            continue
         if previous_e >= e:
             # currenct element is substring of the previous
             index = previous_e
