@@ -192,7 +192,6 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
         e = element[4]
         # Brand elements may have html tags in .odt files
         if element[0] == 'brand_name' and ifile[-3:] == 'odt':
-            print(f'Span:{span}')
             final_text += data[index:s]
             index = s
             previous_e = e

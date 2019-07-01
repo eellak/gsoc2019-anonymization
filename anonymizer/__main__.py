@@ -15,12 +15,14 @@ def main(argv):
     conf_file = 'anonymizer/conf.json'
     # in_order = True
     patterns_file = 'anonymizer/patterns.json'
-    helptext = '''Use: python3 anonymizer.py
+    helptext = '''
+------------------------------------------------------------------------------
+python3 -m anonymizer
     -i <inputfile>
     -o <outputfile>
-    -m <method_used(s:strict or e:elastic)/symbol/(lenght==lenght_of_word)?>
+    -f <folder>
+    -m <method_used(s,strict)/symbol/(lenght==lenght_of_word)>
     -p <patterns.json>
-    -l <True,False: choose in line with text results>
     '''
 
     parser = argparse.ArgumentParser(
@@ -46,11 +48,6 @@ def main(argv):
     parser.add_argument('-m',
                         '--method',
                         help='Which method is applied to the identified data', type=str,
-                        required=False)
-
-    parser.add_argument('-l',
-                        '--in_order',
-                        help='Show results in line/order with the text',
                         required=False)
 
     parser.add_argument('-f',
@@ -101,13 +98,8 @@ def main(argv):
                       None
                       ]
 
-    if args.in_order != None:
-        if args.in_order in [True, False]:
-            in_order = args.in_order
-        else:
-            raise NameError('--in_order: Choose between: True,False')
-    else:
-        in_order = True if conf_json['general']['in_order']['value'] == 'True' else False
+    in_order = True
+
     # If given patterns file check that it exists
     #
     if args.patterns_file != None:
