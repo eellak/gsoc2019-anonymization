@@ -6,3 +6,4 @@ __pycache__/
 **/*.swp
 **/*.swo
 conf_temp.json
+myvenv/*
