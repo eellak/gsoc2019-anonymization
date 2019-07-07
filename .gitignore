@@ -3,6 +3,7 @@
 **/testfiles/*
 notes.txt
 __pycache__/
+.vscode/
 **/*.swp
 **/*.swo
 conf_temp.json

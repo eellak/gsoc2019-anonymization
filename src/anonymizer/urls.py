@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from pages.views import home_view, about_view, contact_view
+from upload_file.views import upload_file
 
 urlpatterns = [
     path('about/', about_view, name='about'),
-    path('home/', home_view, name='home'),
+    path('home/', upload_file, name='home'),
     path('contact/', contact_view, name='home'),
     path('admin/', admin.site.urls),
 ]

@@ -2,4 +2,11 @@
 {% block upload_file_block %}
 This is it working!
 {% endblock upload_file_block %} {% endcomment %}
-This is it working!
+<div id='upload_container' class="container">
+<h2>Upload your file here:<h2>
+<form method='POST' enctype='multipart/form-data' action="">
+{% csrf_token %}
+<input type='file' name='document' id="choose_file_button" class="btn">
+<button type='submit' value='submit' id="upload_file_button" class="btn">Upload file</button>
+</form>
+</div>

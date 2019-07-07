@@ -27,3 +27,18 @@
   background-color: #4CAF50;
   color: white;
 }
+
+#upload_container {
+  
+  background-color: rgba(26, 25, 25, 1);
+  /* color:white */
+  color:rgb(255, 255, 255)
+}
+
+#choose_file_button{
+  float: left;
+  color:white;
+}
+#upload_file_button{
+  float: right;
+}
