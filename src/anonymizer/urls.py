@@ -19,8 +19,9 @@ from pages.views import home_view, about_view, contact_view
 from upload_file.views import upload_file
 
 urlpatterns = [
+    path('', upload_file, name='home'),
     path('about/', about_view, name='about'),
     path('home/', upload_file, name='home'),
-    path('contact/', contact_view, name='home'),
+    path('contact/', contact_view, name='contact'),
     path('admin/', admin.site.urls),
 ]
