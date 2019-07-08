@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.urls import reverse
 # Create your models here.
 # from django.http import HttpResponseRedirect
 # from django.shortcuts import render
@@ -10,3 +10,6 @@ from django.db import models
 class Document(models.Model):
     # title = models.CharField(max_length=200, default='')
     file = models.FileField()
+
+    def get_absolute_url(self):
+        return reverse("documents:document-detail", kwargs={"pk": self.pk})
