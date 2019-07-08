@@ -32,12 +32,14 @@
   
   background-color: rgba(26, 25, 25, 1);
   /* color:white */
-  color:rgb(255, 255, 255)
+  color:rgb(255, 255, 255);
+  
 }
 
 #choose_file_button{
   float: left;
   color:white;
+  font-size:medium;
 }
 #upload_file_button{
   float: right;

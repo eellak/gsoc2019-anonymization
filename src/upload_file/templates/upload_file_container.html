@@ -5,18 +5,13 @@ This is it working!
 
 <div id='upload_container' class="container">
 
-
-<h2>Upload your file here:<h2>
-{% comment %} <form method='POST' enctype='multipart/form-data' action="">
-{% csrf_token %}
-<input type='file' name='file' id="choose_file_button" class="btn">
-<button type='submit' value='submit' id="upload_file_button" class="btn">Upload file</button>
-</form>
-
- {% endcomment %}
-<form method='POST' enctype='multipart/form-data'>
-{% csrf_token %}
-    {{  form.as_p   }}
-    <input type='submit' value='Upload'>
-</form>
+    
+    <h2 style='text-align:center'>Upload your files here<h2>
+    <form method='POST' enctype='multipart/form-data'>
+    {% csrf_token %}
+        <div id="choose_file_button">
+            {{  form.as_p   }}
+        </div>
+        <button type='submit' class='btn' id="upload_file_button">Upload</button>
+    </form>
 </div>
