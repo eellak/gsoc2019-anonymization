@@ -2,10 +2,20 @@
 <div class="container">
 {% block content %}
 <div class='document container'>
+    <div id='original_document' class='split left'>
 
-<h3 style='text-align:center'><b>{{document.name|upper}}</b><h3>
-<br>
-{{document.text}}
+    <h3 style='text-align:center'><b>{{document.name|upper}}</b><h3>
+    <br>
+    {{document.text}}
+    </div>
+
+    <div id='anonymized_document' class='split right'>
+    <h3 style='text-align:center'><b>{{document.name|upper}}</b><h3>
+    <br>
+    {{document.text}}
+
+    </div>
+
 </div>
 {% endblock content %}
 </div>
