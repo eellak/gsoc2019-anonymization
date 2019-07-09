@@ -8,3 +8,4 @@ __pycache__/
 **/*.swo
 conf_temp.json
 myvenv/*
+src/upload_file/documents/*

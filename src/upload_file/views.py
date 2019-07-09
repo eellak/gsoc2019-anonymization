@@ -1,8 +1,9 @@
+import os
 from django.http import HttpResponseRedirect
 from .forms import UploadFileForm
 from django.shortcuts import render
 from .models import Document
-
+from django.conf import settings
 
 # from .forms import ModelFormWithFileField
 # from .models import ModelWithFileField
@@ -10,8 +11,8 @@ from .models import Document
 # Imaginary function to handle an uploaded file.
 # from somewhere import handle_uploaded_file
 
+
 def handle_uploaded_file(f, name='temp.txt'):
-    import os
     script_dir = os.path.dirname(__file__)
     rel_path = "documents/" + name
     abs_file_path = os.path.join(script_dir, rel_path)
@@ -33,6 +34,7 @@ def upload_file(request):
                 request.FILES['file'], name=uploaded_file.name)
             # request.session['file'] = request.FILES['file']
             print(uploaded_file.name)
+            request.session['file'] = uploaded_file.name
             print(uploaded_file.size)
             return HttpResponseRedirect('/document/preview')
         else:
@@ -44,5 +46,20 @@ def upload_file(request):
 
 def document_preview(request):
     print('document_previewed')
-    context = {}
+
+    text = ''
+    file = os.path.join(os.path.dirname(__file__),
+                        'documents/' + request.session['file'])
+
+    with open(file, mode='r') as f:
+        text = f.read()
+
+    document = {
+        'name': request.session['file'],
+        'text': text
+    }
+    context = {
+        'document': document,
+
+    }
     return render(request, 'document_preview.html', context)
