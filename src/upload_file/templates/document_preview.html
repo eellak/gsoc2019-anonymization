@@ -1,7 +1,39 @@
 {% extends 'base.html' %}
 <div class="container">
 {% block content %}
+
+<script>
+option = 1;
+
+function select_preview_button_function(x){
+    option = x;
+    if (x==1){
+        document.getElementById('option1').style.visibility = "visible";
+        document.getElementById('option2').style.visibility = "hidden";
+        document.getElementById('option1_button').classList.remove('btn-secondary');
+        document.getElementById('option1_button').classList.add('btn-primary');
+        document.getElementById('option2_button').classList.remove('btn-primary');
+        document.getElementById('option2_button').classList.add('btn-secondary');
+
+    }
+    else{
+        document.getElementById('option1').style.visibility = "hidden";
+        document.getElementById('option2').style.visibility = "visible";
+        document.getElementById('option2_button').classList.remove('btn-secondary');
+        document.getElementById('option2_button').classList.add('btn-primary');
+        document.getElementById('option1_button').classList.remove('btn-primary');
+        document.getElementById('option1_button').classList.add('btn-secondary');
+
+    }
+}
+</script>
+<div id='select_preview_button'>
+<button type='button' id='option1_button' name='option1' class='btn btn-primary' onclick="select_preview_button_function(1)">Side To Side </button>         
+<button type='button' id='option2_button' name='option2' class='btn btn-secondary' onclick="select_preview_button_function(2)">Highlighted</button>
+</div>
 <div class='document container'>
+
+    <div id='option1'>
     <div id='original_document' class='split left'>
 
     <h3 style='text-align:center'><b>{{document.name|upper}}</b><h3>
@@ -15,7 +47,15 @@
     {{document.text}}
 
     </div>
+    </div>
+
+    <div id='option2'>
+    <h2>Highlighted Option is here</h2>
+    </div>
 
 </div>
+<script>
+select_preview_button_function(1);
+</script>
 {% endblock content %}
 </div>

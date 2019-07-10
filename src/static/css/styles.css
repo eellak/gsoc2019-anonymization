@@ -1,6 +1,12 @@
+:root {
+  --main-bg-color: #1a1919; 
+  --main-inv-color:#f2f2f2;
+  --main-inv-on-hover-color: #ddd
+}
+
 /* Add a black background color to the top navigation */
 .topnav {
-  background-color: #1a1919;
+  background-color: var(--main-bg-color);
   overflow: hidden;
   z-index: 100;
   
@@ -10,7 +16,7 @@
 .topnav a {
 
   float: right;
-  color: #f2f2f2;
+  color: var(--main-inv-color);
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
@@ -19,7 +25,7 @@
 
 /* Change the color of links on hover */
 .topnav a:hover {
-  background-color: #ddd;
+  background-color: var(--main-inv-on-hover-color);
   color: black;
 }
 
@@ -29,22 +35,6 @@
   color: white;
 }
 
-#upload_container {
-  
-  background-color: rgba(26, 25, 25, 1);
-  /* color:white */
-  color:rgb(255, 255, 255);
-  
-}
-
-#choose_file_button{
-  float: left;
-  color:white;
-  font-size:medium;
-}
-#upload_file_button{
-  float: right;
-}
 
 .split {
   height: 100%;
@@ -81,4 +71,33 @@
 .centered img {
   width: 150px;
   border-radius: 50%;
+}
+
+
+
+
+/* ID's */
+
+#upload_container {
+  
+  background-color: rgba(26, 25, 25, 1);
+  /* color:white */
+  color:rgb(255, 255, 255);
+  
+}
+
+#choose_file_button{
+  float: left;
+  color:white;
+  font-size:medium;
+}
+#upload_file_button{
+  float: right;
+}
+
+#select_preview_button{
+  text-align: left;
+  position: relative;
+  padding: 1em;
+  z-index: 3;
 }
