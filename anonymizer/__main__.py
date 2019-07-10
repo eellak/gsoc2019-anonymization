@@ -23,6 +23,7 @@ python3 -m anonymizer
     -f <folder>
     -m <method_used(s,strict)/symbol/(lenght==lenght_of_word)>
     -p <patterns.json>
+    -v <verbose>
     '''
 
     parser = argparse.ArgumentParser(
@@ -54,6 +55,11 @@ python3 -m anonymizer
                         '--folder',
                         help='Anonymize all files in folder',
                         type=str,
+                        required=False)
+    parser.add_argument('-v',
+                        '--verbose',
+                        help='Verbose execution',
+                        action='store_true',
                         required=False)
     args = parser.parse_args()
 
@@ -98,7 +104,7 @@ python3 -m anonymizer
                       None
                       ]
 
-    in_order = True
+    verbose = args.verbose
 
     # If given patterns file check that it exists
     #
@@ -120,7 +126,7 @@ python3 -m anonymizer
                       ofile=outputfile,
                       method=method,
                       patterns_file=patterns_file,
-                      in_order=in_order)
+                      verbose=verbose)
 
     if args.folder != None:
         folder = args.folder
@@ -137,7 +143,7 @@ python3 -m anonymizer
                           ofile=create_output_file_name(file),
                           method=method,
                           patterns_file=patterns_file,
-                          in_order=in_order)
+                          verbose=verbose)
 
 
 if __name__ == "__main__":

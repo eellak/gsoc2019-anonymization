@@ -112,8 +112,13 @@ def read_data_from_file(ifile, format='txt'):
         # return [data, []]
 
 
-def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', in_order=True):
+def find_entities(ifile,
+                  ofile,
+                  method='delete',
+                  patterns_file='patterns.json',
+                  verbose=False):
 
+    in_order = True
     # spacy -- init
     #
 
@@ -170,14 +175,16 @@ def find_entities(ifile, ofile, method='delete', patterns_file='patterns.json', 
             if entity not in final_entities:
                 final_entities.append(entity)
         entities = final_entities
-    # Display
-    print(
-        colored(f'\n\n-------------File:{ifile}-------------', 'green'))
-    for element in entities:
-        print('[', colored(element[0], 'yellow'), ',', colored(
-            element[1], 'blue'), ',', colored(element[2], 'cyan'),
-            ',', element[3], ',', element[4],
-            ']',)
+
+    if verbose:
+        # Display
+        print(
+            colored(f'\n\n-------------File:{ifile}-------------', 'green'))
+        for element in entities:
+            print('[', colored(element[0], 'yellow'), ',', colored(
+                element[1], 'blue'), ',', colored(element[2], 'cyan'),
+                ',', element[3], ',', element[4],
+                ']',)
 
     # Anonymize entities by removing them
     # from the original file
