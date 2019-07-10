@@ -48,6 +48,8 @@ python3 -m anonymizer
     -m <method_used(s,strict)/symbol/(lenght==lenght_of_word)>
     
     -p <patterns.json>
+    
+    -v <verbose_mode>
 ```
 
 
@@ -69,3 +71,4 @@ python3 -m anonymizer -i testfile.odt -o testfile_anonymized.odt -m s/*/True -p 
     - length: If True lenght is set to ` len(entity) `, else if a number _n_ is given each entity shall
               be replaced with symbol _n_ times, always respecting the original alignment/format of the text.
 - p: Specify the patterns file. A default pattern file is given in _anonymizer/patterns.json_
+- v: If typed, verbose mode is on. In verbose mode all identified entities are printed on the console.
