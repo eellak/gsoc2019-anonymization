@@ -1,3 +1,1 @@
-import anonymizer.matcher_patterns
-import anonymizer.trie_index
-import anonymizer.anonymize
+from anonymizer import matcher_patterns, trie_index, anonymize

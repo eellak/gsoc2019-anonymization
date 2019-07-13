@@ -1,0 +1,24 @@
+{
+    "general": {
+        "in_order": {
+            "value": "True",
+            "help": "If True, in order preview of results is enabled"
+        },
+        "method": {
+            "strict": {
+                "is_active": "True",
+                "value": "*",
+                "lenght_of_word": "True"
+            },
+            "elastic": {
+                "is_active": "False",
+                "value": "*"
+            }
+        }
+    },
+    "paths": {
+        "patterns": "anonymizer_service/patterns.json",
+        "safewords": "anonymizer_service/data/safewords.csv",
+        "dioikhtikh_perifereia": "anonymizer_service/data/dioikhtikh_perifereia.csv"
+    }
+}

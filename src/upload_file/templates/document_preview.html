@@ -36,15 +36,15 @@ function select_preview_button_function(x){
     <div id='option1'>
     <div id='original_document' class='split left'>
 
-    <h3 style='text-align:center'><b>{{document.name|upper}}</b><h3>
+    <h3 style='text-align:center'><b>{{document.name}}</b><h3>
     <br>
-    {{document.text}}
+    {{document.text|linebreaks}}
     </div>
 
     <div id='anonymized_document' class='split right'>
-    <h3 style='text-align:center'><b>{{document.name|upper}}</b><h3>
+    <h3 style='text-align:center'><b>{{document_anonymized.name}}</b><h3>
     <br>
-    {{document.text}}
+    {{document_anonymized.text|linebreaks}}
 
     </div>
     </div>
