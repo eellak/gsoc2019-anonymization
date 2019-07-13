@@ -30,14 +30,11 @@ def upload_file(request):
         form = UploadFileForm(request.POST, request.FILES)
         # print(form)
         if form.is_valid():
-            print('valid form')
             uploaded_file = request.FILES['file']
             handle_uploaded_file(
                 request.FILES['file'], name=uploaded_file.name)
             # request.session['file'] = request.FILES['file']
-            print(uploaded_file.name)
             request.session['file'] = uploaded_file.name
-            print(uploaded_file.size)
             return HttpResponseRedirect('/document/preview')
         else:
             print('not valid form')
@@ -47,7 +44,6 @@ def upload_file(request):
 
 
 def document_preview(request):
-    print('document_previewed')
 
     text = ''
     file = os.path.join(os.path.dirname(__file__),
@@ -58,29 +54,60 @@ def document_preview(request):
     command = 'cd ..'
     # command = 'cd /home/dimitris/Documents/gsoc2019-anonymization/src'
     runShell(command)
-    runShell('pwd')
-    command = ('python3 -m anonymizer_service -i upload_file/documents/' +
-               request.session['file'])
-    runShell(command)
-
     file_type = request.session['file'][-3:]
-    tmp = request.session['file']
-    l = len(tmp)
-    anonymized_file_name = tmp[0:(l-4)] + '_anonymized' + tmp[(l-4):l]
-    anonymized_file = os.path.join(os.path.dirname(__file__),
-                                   'documents/' + anonymized_file_name)
 
     if file_type == 'odt':
+
+        file_name = request.session['file']
+        l = len(file_name)
+        anonymized_file_name = file_name[0:(
+            l-4)] + '_anonymized' + file_name[(l-4):l]
+        anonymized_file = os.path.join(os.path.dirname(__file__),
+                                       'documents/' + anonymized_file_name)
+
         # Convert odt to text just to preview
         # text = ///
         file_error = False
+        tempname = 'temp_' + file_name[0:len(file_name)-4] + '.txt'
+        temp_file = os.path.join(os.path.dirname(__file__),
+                                 'documents/' + tempname)
+
+        command = 'odt2txt ' + file + ' --output=' + temp_file
+        runShell(command)
+        command = ('python3 -m anonymizer_service -i upload_file/documents/' +
+                   tempname)
+        runShell(command)
+
+        anonymized_file_name = tempname[0:(
+            len(tempname)-4)] + '_anonymized.txt'
+        anonymized_file = os.path.join(os.path.dirname(__file__),
+                                       'documents/' + anonymized_file_name)
+
+        with open(temp_file, mode='r') as f:
+            text = f.read()
+        with open(anonymized_file, mode='r') as f:
+            text_anonymized = f.read()
+        anonymized_document_name = file_name[0:len(
+            file_name)-4] + '_anonymized.odt'
+
     elif file_type == 'txt':
+        command = ('python3 -m anonymizer_service -i upload_file/documents/' +
+                   request.session['file'])
+        runShell(command)
+
+        file_name = request.session['file']
+        l = len(file_name)
+        anonymized_file_name = file_name[0:(
+            l-4)] + '_anonymized' + file_name[(l-4):l]
+        anonymized_file = os.path.join(os.path.dirname(__file__),
+                                       'documents/' + anonymized_file_name)
+
         with open(file, mode='r') as f:
             text = f.read()
         with open(anonymized_file, mode='r') as f:
             text_anonymized = f.read()
-
         file_error = False
+        anonymized_document_name = anonymized_file_name
     else:
         text = 'This file can not be supported.'
         file_error = True
@@ -93,7 +120,7 @@ def document_preview(request):
     }
 
     document_anonymized = {
-        'name': anonymized_file_name,
+        'name': anonymized_document_name,
         'text': text_anonymized,
         'type': file_type,
         'error': file_error
