@@ -22,7 +22,8 @@ class Document(models.Model):
     documents = models.ForeignKey(
         UserDocuments, on_delete=models.CASCADE, default=None)
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE)
+        User, on_delete=models.CASCADE, default=None)
+    slug = models.SlugField(max_length=40, default=file.name)
 
     # def get_absolute_url(self):
     #     return reverse("documents:document-detail", kwargs={"pk": self.pk})

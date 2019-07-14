@@ -1,10 +1,11 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from .views import document_preview, document_list
 
 # document app
 app_name = 'documents'
 urlpatterns = [
-    path('preview/', document_preview, name='document-preview'),
+    re_path(r'preview/(?P<filename>[\w\-.]+)',
+            document_preview, name='document-preview'),
     path('list/', document_list, name='document-list')
 ]
