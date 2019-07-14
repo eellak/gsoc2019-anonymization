@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2> Documents </h2>
+{% comment %} {{ documents.file }} {% endcomment %}
+<table class='table'>
+<thread>
+<tr>
+    <th>Name</th>
+    <th>Preview</th>
+    <th>Download</th>
+</tr>
+</thread>
+<tbody>
+{% for filename in filenames %}
+<tr>
+    <td>{{filename}}</td>
+    <td>
+        <a href="{{documents}}" class='btn btn-primary btn-sm'>Preview</a>
+    </td>
+    <td>
+        <a href='home/' class='btn btn-primary btn-sm'>Download</a>
+    </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<h1>{{filename}}</h1>
+{% endblock content %}

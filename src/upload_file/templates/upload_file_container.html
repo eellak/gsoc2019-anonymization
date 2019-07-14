@@ -10,9 +10,10 @@ This is it working!
     <form method='post' enctype='multipart/form-data'>
     {% csrf_token %}
         {% comment %} <input class="box__file" type="file" name="file" id="file" data-multiple-caption="{count} files selected" multiple /> {% endcomment %}
-        <div id="choose_file_button">
+       <div id="choose_file_button">
             {{  form|crispy  }}
         </div>
+        {% comment %} <input type='file' name='file' multiple> {% endcomment %}
         <button type='submit' class='btn' id="upload_file_button">Upload</button>
     </form>
 </div>
