@@ -1,3 +1,8 @@
+autopep8==1.4.4
 Django==2.0.12
+django-crispy-forms==1.7.2
+django-form-utils==1.0.3
+pkg-resources==0.0.0
+pycodestyle==2.5.0
 pytz==2019.1
 termcolor==1.1.0
