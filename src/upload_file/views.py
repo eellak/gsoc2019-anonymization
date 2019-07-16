@@ -9,7 +9,7 @@ import subprocess
 from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
 from upload_file.external_functions import anonymize_file
-
+from pages.external_functions import create_user_folders
 
 # from .forms import ModelFormWithFileField
 # from .models import ModelWithFileField
@@ -21,7 +21,7 @@ user_folder = 'usr1/'
 files_folder = 'files/'
 
 
-def handle_uploaded_file(f, name='temp.txt'):
+def handle_uploaded_file(f, name='temp.txt', user_folder='usr1/'):
     script_dir = os.path.dirname(__file__)
     rel_path = "documents/" + user_folder + files_folder + name
     # + str(User)
@@ -33,13 +33,6 @@ def handle_uploaded_file(f, name='temp.txt'):
 # Create your views here.
 
 
-def dynamic_document_lookup(request, id):
-    context = {
-
-    }
-    return render(request, "document/preview", context)
-
-
 def upload_file(request):
     if request.method == 'POST':
         form = UploadDocumentForm(request.POST, request.FILES)
@@ -48,7 +41,10 @@ def upload_file(request):
             keepfiles = []
             for cnt, afile in enumerate(files):
                 handle_uploaded_file(
-                    afile, name=afile.name)
+                    afile,
+                    name=afile.name,
+                    user_folder=str(request.user) + '/'
+                )
                 filename_for_session = 'file' + str(cnt)
                 request.session[filename_for_session] = afile.name
 
@@ -58,12 +54,14 @@ def upload_file(request):
         else:
             print('not valid form')
     else:
+        create_user_folders(request=request)
         form = UploadDocumentForm()
     return render(request, 'home.html', {'form': form})
 
 
 def document_list(request):
 
+    user_folder = (str(request.user) + '/')
     script_dir = os.path.dirname(__file__)
     rel_path = "documents/" + user_folder + files_folder
     abs_file_path = os.path.join(script_dir, rel_path)
@@ -79,8 +77,11 @@ def document_list(request):
 
 def document_preview(request, filename):
 
+    user_folder = str(request.user) + '/'
     [document, document_anonymized] = anonymize_file(
-        filename, user_folder=user_folder, files_folder=files_folder)
+        filename,
+        user_folder=user_folder,
+        files_folder=files_folder)
 
     context = {
         'document': document,

@@ -9,6 +9,10 @@ from django.urls import reverse
 # from .forms import UploadDocumentForm
 # from .models import ModelWithFileField
 
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}'.format(instance.user.id, filename)
+
 
 class UserDocuments(models.Model):
     user = models.ForeignKey(
@@ -24,6 +28,3 @@ class Document(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, default=None)
     slug = models.SlugField(max_length=40, default=file.name)
-
-    # def get_absolute_url(self):
-    #     return reverse("documents:document-detail", kwargs={"pk": self.pk})
