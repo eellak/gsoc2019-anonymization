@@ -8,6 +8,7 @@
     <th>Name</th>
     <th>Preview</th>
     <th>Download</th>
+    <th>Delete</th>
 </tr>
 </thread>
 <tbody>
@@ -20,9 +21,43 @@
     <td>
         <a href="/document/preview/{{filename}}" class='btn btn-primary btn-sm'>Download</a>
     </td>
+    <th>
+        <button type='button' class='btn btn-danger' ><span  class='glyphicon glyphicon-trash' onclick="delete_file({{files_path}},{{filename}})"></span></button>
+    </th>
 </tr>
 {% endfor %}
 </tbody>
 </table>
-<h1>{{filename}}</h1>
+<table class='table'>
+<thread>
+<tr>
+    <th>Name</th>
+    <th>Preview</th>
+    <th>Download</th>
+    <th>Delete</th>
+</tr>
+</thread>
+<tbody>
+{% for instance in object_list %}
+<tr>
+    <td>{{instance}}</td>
+    <td>
+        <a href = "/document/preview/{{instance.name}}" class='btn btn-primary btn-sm'>Preview</a>
+    </td>
+    <td>
+        <a href="/document/preview/{{instance.name}}" class='btn btn-primary btn-sm'>Download</a>
+    </td>
+    <th>
+        <button type='button' class='btn btn-danger' ><span  class='glyphicon glyphicon-trash' onclick="delete_file({{files_path}},{{instance}})"></span></button>
+    </th>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% comment %} <h1>{{filename}}</h1> {% endcomment %}
+
+    <p>id--name--file--document--user--text</p>
+{% for instance in object_list %}
+    <p>{{instance.id}}--{{instance.name}}--{{instance.file}}--{{instance.document}}--{{instance.user}}--{{instance.text}}</p>
+{% endfor %}
 {% endblock content %}

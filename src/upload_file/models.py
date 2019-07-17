@@ -21,10 +21,16 @@ class UserDocuments(models.Model):
 
 
 class Document(models.Model):
-    # title = models.CharField(max_length=200, default='')
+
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200, default='')
     file = models.FileField()
     documents = models.ForeignKey(
-        UserDocuments, on_delete=models.CASCADE, default=None)
+        UserDocuments, on_delete=models.CASCADE, default=None, null=True)
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, default=None)
-    slug = models.SlugField(max_length=40, default=file.name)
+        User, on_delete=models.CASCADE, default=None, null=True)
+    user_text = models.CharField(max_length=200, default='anonymous')
+    text = models.TextField(default='')
+
+    def __str__(self):
+        return str(self.name)

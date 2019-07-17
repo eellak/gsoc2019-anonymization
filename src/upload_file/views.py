@@ -1,15 +1,16 @@
-import os
-from django.http import HttpResponseRedirect
-from .forms import UploadDocumentForm
-from django.shortcuts import render
-from .models import Document
-from django.conf import settings
-from os import system as runShell
-import subprocess
-from django.views.generic.edit import FormView
-from django.contrib.auth.models import User
-from upload_file.external_functions import anonymize_file
 from pages.external_functions import create_user_folders
+from upload_file.external_functions import anonymize_file
+from django.contrib.auth.models import User
+from django.views.generic.edit import FormView
+import subprocess
+from os import system as runShell
+from django.conf import settings
+from .models import Document
+from django.shortcuts import render
+from .forms import UploadDocumentForm
+from django.http import HttpResponseRedirect
+import os
+
 
 # from .forms import ModelFormWithFileField
 # from .models import ModelWithFileField
@@ -21,14 +22,22 @@ user_folder = 'usr1/'
 files_folder = 'files/'
 
 
-def handle_uploaded_file(f, name='temp.txt', user_folder='usr1/'):
+def handle_uploaded_file(f, name='temp.txt', user_folder='usr1/', user='anonymous'):
     script_dir = os.path.dirname(__file__)
     rel_path = "documents/" + user_folder + files_folder + name
     # + str(User)
     abs_file_path = os.path.join(script_dir, rel_path)
+    # text = ''
+
     with open(abs_file_path, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
+    with open(abs_file_path, 'r', errors='ignore') as destination:
+        text = destination.read()
+        # text = unicode(text, errors='ignore')
+
+    Document.objects.create(name=name, text=text,
+                            file=abs_file_path, user_text=user)
 
 # Create your views here.
 
@@ -43,7 +52,8 @@ def upload_file(request):
                 handle_uploaded_file(
                     afile,
                     name=afile.name,
-                    user_folder=str(request.user) + '/'
+                    user_folder=str(request.user) + '/',
+                    user=str(request.user)
                 )
                 filename_for_session = 'file' + str(cnt)
                 request.session[filename_for_session] = afile.name
@@ -61,6 +71,8 @@ def upload_file(request):
 
 def document_list(request):
 
+    # Get all documents from database
+    queryset = Document.objects.all()
     user_folder = (str(request.user) + '/')
     script_dir = os.path.dirname(__file__)
     rel_path = "documents/" + user_folder + files_folder
@@ -69,7 +81,9 @@ def document_list(request):
     files = os.listdir(abs_file_path)
 
     context = {
-        'filenames': files
+        'filenames': files,
+        'files_path': os.path.join(script_dir, "documents/" + user_folder),
+        'object_list': queryset
     }
 
     return render(request, 'document_list.html', context)
