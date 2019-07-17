@@ -72,10 +72,8 @@ def upload_file(request):
 def document_list(request):
 
     # Get all documents from database
-    queryset = Document.objects.distinct()
-
-
-# queryset = Document.objects.order_by().values_list('name', flat=True).distinct()
+    queryset = Document.objects.filter(user_text=str(request.user))
+    # queryset = Document.objects.order_by().values_list('name', flat=True).distinct()
     user_folder = (str(request.user) + '/')
     script_dir = os.path.dirname(__file__)
     rel_path = "documents/" + user_folder + files_folder
