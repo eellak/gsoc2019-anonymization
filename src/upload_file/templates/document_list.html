@@ -2,7 +2,7 @@
 {% block content %}
 <h2> Documents </h2>
 {% comment %} {{ documents.file }} {% endcomment %}
-<table class='table'>
+{% comment %} <table class='table'>
 <thread>
 <tr>
     <th>Name</th>
@@ -28,6 +28,7 @@
 {% endfor %}
 </tbody>
 </table>
+{% endcomment %}
 <table class='table'>
 <thread>
 <tr>
@@ -36,7 +37,8 @@
     <th>Download</th>
     <th>Delete</th>
 </tr>
-</thread>
+</thread> 
+
 <tbody>
 {% for instance in object_list %}
 <tr>
@@ -48,16 +50,11 @@
         <a href="/document/preview/{{instance.name}}" class='btn btn-primary btn-sm'>Download</a>
     </td>
     <th>
-        <button type='button' class='btn btn-danger' ><span  class='glyphicon glyphicon-trash' onclick="delete_file({{files_path}},{{instance}})"></span></button>
+        <button type='button' class='btn btn-danger' onclick="location.href = '/document/delete/{{instance.id}}'"><span  class='glyphicon glyphicon-trash' ></span></button>
     </th>
 </tr>
 {% endfor %}
 </tbody>
 </table>
-{% comment %} <h1>{{filename}}</h1> {% endcomment %}
 
-    <p>id--name--file--document--user--text</p>
-{% for instance in object_list %}
-    <p>{{instance.id}}--{{instance.name}}--{{instance.file}}--{{instance.document}}--{{instance.user}}--{{instance.text}}</p>
-{% endfor %}
 {% endblock content %}

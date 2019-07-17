@@ -6,7 +6,7 @@ import subprocess
 from os import system as runShell
 from django.conf import settings
 from .models import Document
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import UploadDocumentForm
 from django.http import HttpResponseRedirect
 import os
@@ -87,6 +87,11 @@ def document_list(request):
     }
 
     return render(request, 'document_list.html', context)
+
+
+def document_delete(request, id):
+    query = Document.objects.filter(id=id).delete()
+    return HttpResponseRedirect('/document/list/')
 
 
 def document_preview(request, filename):

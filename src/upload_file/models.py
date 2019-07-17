@@ -34,3 +34,6 @@ class Document(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+    # def get_absolute_url(self):
+    #     return reverse("document-list", kwargs={"pk": self.pk})
