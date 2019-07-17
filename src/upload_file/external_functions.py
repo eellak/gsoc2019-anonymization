@@ -1,11 +1,12 @@
 import os
 from os import system as runShell
+from upload_file.models import Document
 
 
-def anonymize_file(filename='', user_folder='default', files_folder='files'):
+def anonymize_file(id='', user_folder='default', files_folder='files'):
 
-    text = ''
-    print(filename)
+    obj_file = Document.objects.get(id=id)
+    filename = str(obj_file)
     file = os.path.join(os.path.dirname(__file__),
                         'documents/' + user_folder + files_folder + filename)
     directory = os.path.dirname(__file__)
@@ -50,7 +51,7 @@ def anonymize_file(filename='', user_folder='default', files_folder='files'):
             file_name)-4] + '_anonymized.odt'
 
     elif file_type == 'txt':
-
+        text = Document.objects.filter(id=1)
         file_name = filename
         l = len(file_name)
         anonymized_file_name = file_name[0:(

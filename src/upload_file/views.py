@@ -72,7 +72,10 @@ def upload_file(request):
 def document_list(request):
 
     # Get all documents from database
-    queryset = Document.objects.all()
+    queryset = Document.objects.distinct()
+
+
+# queryset = Document.objects.order_by().values_list('name', flat=True).distinct()
     user_folder = (str(request.user) + '/')
     script_dir = os.path.dirname(__file__)
     rel_path = "documents/" + user_folder + files_folder
@@ -94,11 +97,11 @@ def document_delete(request, id):
     return HttpResponseRedirect('/document/list/')
 
 
-def document_preview(request, filename):
+def document_preview(request, id):
 
     user_folder = str(request.user) + '/'
     [document, document_anonymized] = anonymize_file(
-        filename,
+        id=id,
         user_folder=user_folder,
         files_folder=files_folder)
 

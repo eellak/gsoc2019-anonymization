@@ -5,7 +5,7 @@ from .views import document_preview, document_list, document_delete
 # document app
 app_name = 'documents'
 urlpatterns = [
-    re_path(r'preview/(?P<filename>[\w\-.0-9]+)',
+    re_path(r'preview/(?P<id>[\w\-.0-9]+)',
             document_preview, name='document-preview'),
     re_path(r'delete/(?P<id>[\w\-.0-9]+)',
             document_delete, name='document-delete'),
