@@ -32,13 +32,23 @@ function goBack() {
 }
 </script>
 <div id='select_preview_button'>
+{% comment %} Selection Buttons {% endcomment %}
 <button type='button' id='option1_button' name='option1' class='btn btn-primary' onclick="select_preview_button_function(1)">Side To Side </button>         
+
 <button type='button' id='option2_button' name='option2' class='btn btn-secondary' onclick="select_preview_button_function(2)">Highlighted</button>
-<button type='button' id='return_button' name='return' class='btn btn-primary' onclick='goBack()'>Back to List</button>
-<button type='button' id='update_text_button' name='update_text_button' class='btn btn-danger' onclick='updateText()'> Update text</button>
+
+{% comment %} Nabigation Buttons {% endcomment %}
+<button type='button' id='return_button' name='return' class='btn btn-info' onclick='goBack()'>Back to List</button>
+
+<button type='button' id='update_text_button' name='update_text_button' class='btn btn-success' onclick='updateText()'> Update text</button>
+
 <button type='button' id='anonymize_word_button' name='anonymize_word' class='btn btn-danger' onclick='addWordsToBeAnonymized()'>Anonymize word</button>
-{% comment %} <hr> {% endcomment %}
-{% comment %} onclick="document.getElementById('return_button').classList.add('btn-primary'); {% endcomment %}
+
+{% include 'button_delete_words.html' %}
+{% comment %} <button type='button' id='delete_words_button' name='delete_words' class='btn btn-warning' onclick='deleteWordsToBeAnonymized()'>Delete words</button> {% endcomment %}
+
+
+
 </div>
 <div class='document container'>
 

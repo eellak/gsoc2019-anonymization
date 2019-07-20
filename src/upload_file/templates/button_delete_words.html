@@ -1,0 +1,23 @@
+  {% comment %} <button type='button' id='delete_words_button' name='delete_words' class='btn btn-warning' onclick='deleteWordsToBeAnonymized()'>Delete words</button> {% endcomment %}
+<!-- Example split danger button -->
+<div class="btn-group my-top-buttons" id='delete_words_button'>
+  <button type="button" class="btn btn-warning" onclick='deleteWordsToBeAnonymized(-1)'>Delete Words</button>
+  <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
+    <span class="sr-only">Words</span>
+  </button>
+  <div class="dropdown-menu">
+  <script>
+  {% comment %} Load innerHtml via js {% endcomment %}
+    {% comment %} element  = document.getElementById(currunt_id).innerHTML = words_to_be_anonymized[i-1]; {% endcomment %}
+  for (i=0; i < words_to_be_anonymized.length;i++){
+    currunt_id = 'delete_word' + i.toString();
+    document.writeln(words_to_be_anonymized[i])
+  }
+  </script>
+    <a class="dropdown-item" href="#word1" onclick='deleteWordsToBeAnonymized(1)'>Word1</a>
+    <a class="dropdown-item" href="#word2">Word2 </a>
+    <a class="dropdown-item" href="#word3">Word3</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#word0" onclick='deleteWordsToBeAnonymized(-1)'>Delete All</a>
+  </div>
+</div>

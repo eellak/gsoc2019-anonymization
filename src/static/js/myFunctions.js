@@ -47,9 +47,21 @@ function addWordsToBeAnonymized() {
 }
 
 function updateText() {
-    new_url = window.location.href + '?param=' + JSON.stringify(words_to_be_anonymized);
+    base_url = window.location.href.split('?')[0]
+    // console.log(base_url)
+    new_url = base_url + '?param=' + JSON.stringify(words_to_be_anonymized);
     window.location = new_url;
 }
+
+function deleteWordsToBeAnonymized(n) {
+    if (n == -1) { words_to_be_anonymized = [] }
+    else if (n > -1) {
+        words_to_be_anonymized.splice(n, 1);
+    }
+    else {
+        console.log('Error not valid number of deleteWordsToBeAnonymized array');
+    }
+};
 
 
 
