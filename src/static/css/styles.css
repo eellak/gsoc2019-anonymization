@@ -117,6 +117,7 @@
 }
 #delete_words_button{
   float: right;
+  /* position: fixed */
 }
 .my-top-buttons{
   z-index: 50;

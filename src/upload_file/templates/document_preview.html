@@ -35,7 +35,7 @@ function goBack() {
 {% comment %} Selection Buttons {% endcomment %}
 <button type='button' id='option1_button' name='option1' class='btn btn-primary' onclick="select_preview_button_function(1)">Side To Side </button>         
 
-<button type='button' id='option2_button' name='option2' class='btn btn-secondary' onclick="select_preview_button_function(2)">Highlighted</button>
+<button type='button' id='option2_button' name='option2' class='btn btn-secondary' onclick="select_preview_button_function(2)">Focus</button>
 
 {% comment %} Nabigation Buttons {% endcomment %}
 <button type='button' id='return_button' name='return' class='btn btn-info' onclick='goBack()'>Back to List</button>
@@ -53,26 +53,32 @@ function goBack() {
 <div class='document container'>
 
     <div id='option1'>
-    <div id='original_document' class='split left'>
+        <div id='original_document' class='split left'>
 
-    <h3 style='text-align:center'><b>{{document.name}}</b><h3>
-    <br>
-    {{document.text|linebreaks}}
+            <h3 style='text-align:center'><b>{{document.name}}</b><h3>
+            <br>
+            {{document.text|linebreaks}}
+        </div>
+
+        <div id='anonymized_document' class='split right'>
+            <h3 style='text-align:center'><b>{{document_anonymized.name}}</b><h3>
+            <br>
+            {% comment %} {% for word in document.text|join:" " %}
+                <span id='tobehidden'>{{word}}</span>
+            
+            {% endfor %} {% endcomment %}
+            <span id='anonymized_text'>{{document_anonymized.text|linebreaks}}</span>
+        </div>
     </div>
 
-    <div id='anonymized_document' class='split right'>
-    <h3 style='text-align:center'><b>{{document_anonymized.name}}</b><h3>
-    <br>
-    {% comment %} {% for word in document.text|join:" " %}
-        <span id='tobehidden'>{{word}}</span>
-    
-    {% endfor %} {% endcomment %}
-    <span id='anonymized_text'>{{document_anonymized.text|linebreaks}}</span>
-    </div>
-    </div>
+    <div id='option2' style='z-index:+5;'>
+        
+                <div id='anonymized_document' >
+            <h3 style='text-align:left;'><b>{{document_anonymized.name}}</b><h3>
+            <br>
+            <span id='anonymized_text'>{{document_anonymized.text|linebreaks}}</span>
+        </div>
 
-    <div id='option2'>
-    <h2>Highlighted Option is here</h2>
     </div>
 
 </div>
