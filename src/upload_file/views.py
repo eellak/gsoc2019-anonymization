@@ -1,3 +1,4 @@
+import requests
 from pages.external_functions import create_user_folders
 from upload_file.external_functions import anonymize_file
 from django.contrib.auth.models import User
@@ -20,6 +21,18 @@ import os
 
 user_folder = 'usr1/'
 files_folder = 'files/'
+
+
+def file_download(url, path, chunk=2048):
+    req = requests.get(url, stream=True)
+    if req.status_code == 200:
+        with open(path, 'wb') as f:
+            for chunk in req.iter_content(chunk):
+                f.write(chunk)
+            f.close()
+        return path
+    raise Exception(
+        'Given url is return status code:{}'.format(req.status_code))
 
 
 def handle_uploaded_file(f, name='temp.txt', user_folder='usr1/', user='anonymous'):
@@ -93,6 +106,12 @@ def document_list(request):
 def document_delete(request, id):
     query = Document.objects.filter(id=id).delete()
     return HttpResponseRedirect('/document/list/')
+
+
+def document_download(request, id):
+    query = Document.objects.filter(id=id).filter(user_text=str(request.user))
+
+    # file_download(url='hello', path=)
 
 
 def document_preview(request, id):

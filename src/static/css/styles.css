@@ -102,7 +102,16 @@
   z-index: 3;
 }
 
+
 #return_button{
   float: right;
 }
 
+
+#anonymize_word_button{
+  float: right;
+    }
+
+#update_text_button{
+  float: right;
+}

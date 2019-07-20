@@ -35,6 +35,8 @@ function goBack() {
 <button type='button' id='option1_button' name='option1' class='btn btn-primary' onclick="select_preview_button_function(1)">Side To Side </button>         
 <button type='button' id='option2_button' name='option2' class='btn btn-secondary' onclick="select_preview_button_function(2)">Highlighted</button>
 <button type='button' id='return_button' name='return' class='btn btn-primary' onclick='goBack()'>Back to List</button>
+<button type='button' id='update_text_button' name='update_text_button' class='btn btn-danger' onclick='updateText()'> Update text</button>
+<button type='button' id='anonymize_word_button' name='anonymize_word' class='btn btn-danger' onclick='addWordsToBeAnonymized()'>Anonymize word</button>
 {% comment %} <hr> {% endcomment %}
 {% comment %} onclick="document.getElementById('return_button').classList.add('btn-primary'); {% endcomment %}
 </div>
@@ -51,8 +53,11 @@ function goBack() {
     <div id='anonymized_document' class='split right'>
     <h3 style='text-align:center'><b>{{document_anonymized.name}}</b><h3>
     <br>
-    {{document_anonymized.text|linebreaks}}
-
+    {% comment %} {% for word in document.text|join:" " %}
+        <span id='tobehidden'>{{word}}</span>
+    
+    {% endfor %} {% endcomment %}
+    <span id='anonymized_text'>{{document_anonymized.text|linebreaks}}</span>
     </div>
     </div>
 
