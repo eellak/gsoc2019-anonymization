@@ -46,6 +46,10 @@ function addWordsToBeAnonymized() {
 
 }
 
+function updateText() {
+    new_url = window.location.href + '?param=' + JSON.stringify(words_to_be_anonymized);
+    window.location = new_url;
+}
 
 
 
