@@ -116,24 +116,33 @@ def document_download(request, id):
 
 
 def document_preview(request, id):
+    # Get object instance
+    doc_obj = Document.objects.get(id=id)
+    anonymized_words = doc_obj.anonymized_words
+    print('arxika anonymized words', anonymized_words)
+    # GET method parameters
     url = request.get_full_path()
     words = request.GET.getlist('param')
     custom_words = ''
     if words != []:
         # Make sure that we anonymize these words too.
         custom_words = words[0]
-        # print(*words)
-        # print(custom_words)
         l = len(custom_words)
         custom_words = custom_words[1:l-1]
         custom_words = custom_words.replace("\\n", "")
         print('custom words:', custom_words)
+        anonymized_words += custom_words
+        anonymized_words += ','
+        print('anonymized_words', anonymized_words)
+        # Update anonymized words by user in database
+        Document.objects.filter(id=id).update(
+            anonymized_words=anonymized_words)
     user_folder = str(request.user) + '/'
     [document, document_anonymized] = anonymize_file(
         id=id,
         user_folder=user_folder,
         files_folder=files_folder,
-        custom_words=custom_words)
+        custom_words=anonymized_words)
 
     context = {
         'document': document,

@@ -6,13 +6,6 @@ $(document).ready(function () {
         word = window.getSelection().toString();
         if (word != '') {
             selected_word = word;
-            // Animate button 
-            // document.getElementById('anonymize_word_button').style.opacity = 0.5;
-            // setTimeout(function () {
-            //     //do what you need here
-            //     document.getElementById('anonymize_word_button').style.opacity = 1;
-            // }, 150);
-            // $("#anonymize_word_button").effect("bounce", { times: 3 }, 1000, doAnimation);
             fade();
             document.getElementById('anonymize_word_button').style.opacity = 1;
 

@@ -31,6 +31,7 @@ class Document(models.Model):
         User, on_delete=models.CASCADE, default=None, null=True)
     user_text = models.CharField(max_length=200, default='anonymous')
     text = models.TextField(default='')
+    anonymized_words = models.TextField(default='')
 
     def __str__(self):
         return str(self.name)
