@@ -54,7 +54,14 @@ function updateText() {
 }
 
 function deleteWordsToBeAnonymized(n) {
-    if (n == -1) { words_to_be_anonymized = [] }
+    if (n == -1) {
+        words_to_be_anonymized = [];
+        base_url = window.location.href.split('?')[0]
+        // console.log(base_url)
+        new_url = base_url;
+        window.location = new_url;
+
+    }
     else if (n > -1) {
         words_to_be_anonymized.splice(n, 1);
     }
