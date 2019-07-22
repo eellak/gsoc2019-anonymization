@@ -115,7 +115,11 @@ def document_download(request, id):
 
 
 def document_preview(request, id):
-
+    url = request.get_full_path()
+    words = request.GET.getlist('param')
+    if words != []:
+        # Make sure that we anonymize these words too.
+        pass
     user_folder = str(request.user) + '/'
     [document, document_anonymized] = anonymize_file(
         id=id,

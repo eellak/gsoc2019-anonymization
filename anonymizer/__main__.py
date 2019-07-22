@@ -24,6 +24,7 @@ python3 -m anonymizer
     -m <method_used(s,strict)/symbol/(lenght==lenght_of_word)>
     -p <patterns.json>
     -v <verbose>
+    -w <array of words>
     '''
 
     parser = argparse.ArgumentParser(
@@ -61,6 +62,10 @@ python3 -m anonymizer
                         help='Verbose execution',
                         action='store_true',
                         required=False)
+    parser.add_argument('-w',
+                        '--words',
+                        help='Custom words search',
+                        required=False)
     args = parser.parse_args()
 
     # If given configuration file check that it exists
@@ -80,6 +85,12 @@ python3 -m anonymizer
         outputfile = args.ofile
     elif inputfile != None:
         outputfile = create_output_file_name(inputfile)
+
+    if args.words != None:
+        words_array_string = args.words.strip()
+        words_array = words_array_string.split(',')
+    else:
+        words_array = []
 
     if args.method != None:
         try:
@@ -126,7 +137,8 @@ python3 -m anonymizer
                       ofile=outputfile,
                       method=method,
                       patterns_file=patterns_file,
-                      verbose=verbose)
+                      verbose=verbose,
+                      words_array=words_array)
 
     if args.folder != None:
         folder = args.folder
@@ -143,7 +155,8 @@ python3 -m anonymizer
                           ofile=create_output_file_name(file),
                           method=method,
                           patterns_file=patterns_file,
-                          verbose=verbose)
+                          verbose=verbose,
+                          words_array=words_array)
 
 
 if __name__ == "__main__":

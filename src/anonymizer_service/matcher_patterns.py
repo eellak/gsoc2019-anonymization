@@ -916,3 +916,16 @@ def decision_number(data, pattern=None, handler=None):
         results.append(['decision_number',span.upper(),span,s,e,False])
 
     return results
+
+def custom_words(data,word=None,handler=None):
+    
+    import re 
+    results = []
+    for match in re.finditer(word,data):
+        s = match.start()
+        e= match.end()
+        span = data[s:e]
+        results.append(['custom_word',span.upper(),span,s,e,False])
+    return results
+
+

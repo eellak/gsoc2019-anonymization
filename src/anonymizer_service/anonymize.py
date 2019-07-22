@@ -116,7 +116,8 @@ def find_entities(ifile,
                   ofile,
                   method='delete',
                   patterns_file='patterns.json',
-                  verbose=False):
+                  verbose=False,
+                  words_array=[]):
 
     in_order = True
     # spacy -- init
@@ -162,6 +163,12 @@ def find_entities(ifile,
         # Call function with the proper parameters
         results = custom_pattern_method(
             data=data, pattern=fix_pattern(value['pattern']))
+        if results != None:
+            entities += results
+
+    # Words Array , Custom word search in text
+    for word in words_array:
+        results = matcher_patterns.custom_words(data=data, word=word)
         if results != None:
             entities += results
 
