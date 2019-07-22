@@ -921,7 +921,7 @@ def custom_words(data,word=None,handler=None):
     
     import re 
     results = []
-    for match in re.finditer(word,data):
+    for match in re.finditer(word.replace('"',''),data):
         s = match.start()
         e= match.end()
         span = data[s:e]

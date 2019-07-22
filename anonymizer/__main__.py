@@ -87,7 +87,7 @@ python3 -m anonymizer
         outputfile = create_output_file_name(inputfile)
 
     if args.words != None:
-        words_array_string = args.words.strip()
+        words_array_string = args.words
         words_array = words_array_string.split(',')
     else:
         words_array = []

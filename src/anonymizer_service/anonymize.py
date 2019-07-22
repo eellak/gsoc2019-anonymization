@@ -168,6 +168,7 @@ def find_entities(ifile,
 
     # Words Array , Custom word search in text
     for word in words_array:
+        print(f'this is a word: {word}')
         results = matcher_patterns.custom_words(data=data, word=word)
         if results != None:
             entities += results

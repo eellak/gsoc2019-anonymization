@@ -19,6 +19,7 @@ import os
 # Imaginary function to handle an uploaded file.
 # from somewhere import handle_uploaded_file
 
+custom_words = ''
 user_folder = 'usr1/'
 files_folder = 'files/'
 
@@ -117,14 +118,22 @@ def document_download(request, id):
 def document_preview(request, id):
     url = request.get_full_path()
     words = request.GET.getlist('param')
+    custom_words = ''
     if words != []:
         # Make sure that we anonymize these words too.
-        pass
+        custom_words = words[0]
+        # print(*words)
+        # print(custom_words)
+        l = len(custom_words)
+        custom_words = custom_words[1:l-1]
+        custom_words = custom_words.replace("\\n", "")
+        print('custom words:', custom_words)
     user_folder = str(request.user) + '/'
     [document, document_anonymized] = anonymize_file(
         id=id,
         user_folder=user_folder,
-        files_folder=files_folder)
+        files_folder=files_folder,
+        custom_words=custom_words)
 
     context = {
         'document': document,

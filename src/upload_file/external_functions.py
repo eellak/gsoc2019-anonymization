@@ -3,7 +3,7 @@ from os import system as runShell
 from upload_file.models import Document
 
 
-def anonymize_file(id='', user_folder='default', files_folder='files'):
+def anonymize_file(id='', user_folder='default', files_folder='files', custom_words=''):
 
     obj_file = Document.objects.get(id=id)
     filename = str(obj_file)
@@ -35,7 +35,7 @@ def anonymize_file(id='', user_folder='default', files_folder='files'):
         command = 'odt2txt ' + file + ' --output=' + temp_file
         runShell(command)
         command = ('python3 -m anonymizer_service -i upload_file/documents/' + user_folder +
-                   tempname)
+                   tempname + " -w '" + custom_words + "'")
         runShell(command)
 
         anonymized_file_name = tempname[0:(
@@ -58,7 +58,7 @@ def anonymize_file(id='', user_folder='default', files_folder='files'):
             l-4)] + '_anonymized' + file_name[(l-4):l]
 
         command = ('python3 -m anonymizer_service -i ' + file +
-                   ' -o upload_file/documents/' + user_folder + anonymized_file_name)
+                   ' -o upload_file/documents/' + user_folder + anonymized_file_name + " -w '" + custom_words + "'")
         runShell(command)
 
         anonymized_file = os.path.join(os.path.dirname(__file__),
