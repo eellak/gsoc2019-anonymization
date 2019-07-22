@@ -50,8 +50,17 @@ function deleteWordsToBeAnonymized(n) {
     if (n == -1) {
         words_to_be_anonymized = [];
         base_url = window.location.href.split('?')[0]
+        temp = base_url.split('/')
+        new_url = ''
+        for (i = 0; i < temp.length - 2; i++) {
+            new_url += temp[i] + '/'
+        }
+        id = temp[temp.length - 1]
+        new_url += 'delete_anonymized_words/' + id
+        console.log(new_url)
+        // new_url = '/'
         // console.log(base_url)
-        new_url = base_url;
+        // new_url = base_url;
         window.location = new_url;
 
     }

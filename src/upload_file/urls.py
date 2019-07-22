@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, re_path
-from .views import document_preview, document_list, document_delete, document_download
+from .views import document_preview, document_list, document_delete, document_download, delete_anonymized_words
 # from filetransfers.api import serve_file
 
 # document app
@@ -12,5 +12,8 @@ urlpatterns = [
             document_delete, name='document-delete'),
     re_path(r'download/(?P<id>[\w\-.0-9]+)',
             document_download, name='document-download'),
+    re_path(r'delete_anonymized_words/(?P<id>[0-9]+)',
+            delete_anonymized_words, name='document-delete-anonymized-words'),
+
     path('list/', document_list, name='document-list')
 ]

@@ -9,7 +9,7 @@ from django.conf import settings
 from .models import Document
 from django.shortcuts import render, redirect
 from .forms import UploadDocumentForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 import os
 
 
@@ -150,3 +150,9 @@ def document_preview(request, id):
 
     }
     return render(request, 'document_preview.html', context)
+
+
+def delete_anonymized_words(request, id):
+    Document.objects.filter(id=id).update(anonymized_words='')
+    new_url = '/document/preview/' + str(id)
+    return redirect(new_url)
