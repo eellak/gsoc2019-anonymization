@@ -50,6 +50,8 @@ python3 -m anonymizer
     -p <patterns.json>
     
     -v <verbose_mode>
+    
+    -w <string of words separated by commas>
 ```
 
 
@@ -72,3 +74,4 @@ python3 -m anonymizer -i testfile.odt -o testfile_anonymized.odt -m s/*/True -p 
               be replaced with symbol _n_ times, always respecting the original alignment/format of the text.
 - p: Specify the patterns file. A default pattern file is given in _anonymizer/patterns.json_
 - v: If typed, verbose mode is on. In verbose mode all identified entities are printed on the console.
+- w: If typed the parser expects a string with words separated by commas (,). Each word is anonymized in the text, adding         flexibility to the service. Therefore the user can anonymize words that may not have been identified by default.
