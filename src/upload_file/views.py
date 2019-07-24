@@ -189,7 +189,7 @@ def document_preview(request, id):
 
 def delete_anonymized_words(request, id):
     Document.objects.filter(id=id).update(anonymized_words='')
-    new_url = '/document/preview/' + str(id)
+    new_url = '/document/preview/' + str(id) + '?param=[""]'
     return redirect(new_url)
 
 
