@@ -150,6 +150,7 @@ def document_preview(request, id):
         words = request.GET.getlist('param')
         print(f'words:{words}')
         custom_words = ''
+        updateTextParameter = False
         if words != []:
             # Make sure that we anonymize these words too.
             custom_words = words[0]
@@ -163,13 +164,16 @@ def document_preview(request, id):
             # Update anonymized words by user in database
             Document.objects.filter(id=id).update(
                 anonymized_words=anonymized_words)
+            updateTextParameter = True
+
         user_folder = str(request.user)
         [document, document_anonymized] = anonymize_file(
             id=id,
             user_folder=user_folder,
             files_folder=files_folder,
             custom_words=anonymized_words,
-            text=text)
+            text=text,
+            updateTextIfPossible=updateTextParameter)
 
         context = {
             'document': document,

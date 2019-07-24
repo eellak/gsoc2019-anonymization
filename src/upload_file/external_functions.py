@@ -3,7 +3,7 @@ from os import system as runShell
 from upload_file.models import Document
 
 
-def anonymize_file(id='', user_folder='default', files_folder='files', custom_words='', text='', download=False):
+def anonymize_file(id='', user_folder='default', files_folder='files', custom_words='', text='', download=False, updateTextIfPossible=False):
 
     obj_file = Document.objects.get(id=id)
     filename = str(obj_file)
@@ -36,8 +36,8 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
             temp_file = os.path.join(os.path.dirname(__file__),
                                      'documents/' + user_folder + '/' + tempname)
 
-            # Check if file exists already
-            if not os.path.isfile(temp_file):
+            # Check if file exists already or force update
+            if not os.path.isfile(temp_file) or updateTextIfPossible:
                 command = 'odt2txt ' + file + ' --output=' + temp_file
                 runShell(command)
 
@@ -49,8 +49,8 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
             anonymized_file = os.path.join(os.path.dirname(__file__),
                                            'documents/' + user_folder + '/' + anonymized_file_name)
 
-            # Check if file exists already
-            if not os.path.isfile(anonymized_file):
+            # Check if file exists already or force update
+            if not os.path.isfile(anonymized_file) or updateTextIfPossible:
                 command = ('python3 -m anonymizer_service' +
                            ' -i upload_file/documents/' + user_folder + '/' + tempname +
                            custom_words_option)
@@ -88,8 +88,8 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
         anonymized_file = os.path.join(os.path.dirname(__file__),
                                        'documents/' + user_folder + '/' + anonymized_file_name)
 
-        # Check if file exists already
-        if not os.path.isfile(anonymized_file):
+        # Check if file exists already or force update
+        if not os.path.isfile(anonymized_file) or updateTextIfPossible:
             print('den to eixa')
             command = ('python3 -m anonymizer_service -i ' + file +
                        ' -o upload_file/documents/' + user_folder + '/' + anonymized_file_name + " -w '" + custom_words + "'")
