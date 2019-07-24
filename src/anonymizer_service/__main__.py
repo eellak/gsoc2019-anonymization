@@ -89,7 +89,7 @@ python3 -m anonymizer_service
     if args.words != None:
         words_array_string = args.words
         words_array = words_array_string.split(',')
-        print('word_array is', words_array)
+
     else:
         words_array = []
 

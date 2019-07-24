@@ -1,3 +1,4 @@
+from django.http import HttpResponse, Http404
 import requests
 from pages.external_functions import create_user_folders
 from upload_file.external_functions import anonymize_file
@@ -19,9 +20,8 @@ import os
 # Imaginary function to handle an uploaded file.
 # from somewhere import handle_uploaded_file
 
-custom_words = ''
-user_folder = 'usr1/'
-files_folder = 'files/'
+user_folder = 'usr1'
+files_folder = 'files'
 
 
 def file_download(url, path, chunk=2048):
@@ -36,13 +36,16 @@ def file_download(url, path, chunk=2048):
         'Given url is return status code:{}'.format(req.status_code))
 
 
-def handle_uploaded_file(f, name='temp.txt', user_folder='usr1/', user='anonymous'):
+def handle_uploaded_file(f, name='temp.txt', user_folder='default', user='anonymous'):
     script_dir = os.path.dirname(__file__)
-    rel_path = "documents/" + user_folder + files_folder + name
-    # + str(User)
+    rel_path = "documents/" + user_folder + '/' + files_folder + '/' + name
     abs_file_path = os.path.join(script_dir, rel_path)
-    # text = ''
 
+    l = len(abs_file_path)
+    anonymized_rel_path = ("documents/" + user_folder + '/' +
+                           name[0:len(name)-4] + '_anonymized' + name[len(name)-4: len(name)])
+    anonymized_file_path = os.path.join(script_dir, anonymized_rel_path)
+    # Write file
     with open(abs_file_path, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
@@ -50,10 +53,9 @@ def handle_uploaded_file(f, name='temp.txt', user_folder='usr1/', user='anonymou
         text = destination.read()
         # text = unicode(text, errors='ignore')
 
+    # Save file to database
     Document.objects.create(name=name, text=text,
-                            file=abs_file_path, user_text=user)
-
-# Create your views here.
+                            file=abs_file_path, user_text=user, path=abs_file_path, anonymized_file_path=anonymized_file_path)
 
 
 def upload_file(request):
@@ -66,7 +68,7 @@ def upload_file(request):
                 handle_uploaded_file(
                     afile,
                     name=afile.name,
-                    user_folder=str(request.user) + '/',
+                    user_folder=str(request.user),
                     user=str(request.user)
                 )
                 filename_for_session = 'file' + str(cnt)
@@ -88,9 +90,9 @@ def document_list(request):
     # Get all documents from database
     queryset = Document.objects.filter(user_text=str(request.user))
     # queryset = Document.objects.order_by().values_list('name', flat=True).distinct()
-    user_folder = (str(request.user) + '/')
+    user_folder = (str(request.user))
     script_dir = os.path.dirname(__file__)
-    rel_path = "documents/" + user_folder + files_folder
+    rel_path = "documents/" + user_folder + '/' + files_folder
     abs_file_path = os.path.join(script_dir, rel_path)
 
     files = os.listdir(abs_file_path)
@@ -110,49 +112,83 @@ def document_delete(request, id):
 
 
 def document_download(request, id):
-    query = Document.objects.filter(id=id).filter(user_text=str(request.user))
 
-    # file_download(url='hello', path=)
+    doc_obj = Document.objects.get(id=id)
+    print(doc_obj.anonymized_file_path)
+    file_path = doc_obj.anonymized_file_path
+    print(f'anonymized_file{file_path}')
+
+    if not os.path.exists(file_path):
+        # File was not previewed so create it first
+        [document,
+         document_anonymized] = anonymize_file(id=id,
+                                               user_folder=doc_obj.user_text,
+                                               files_folder='files',
+                                               custom_words='',
+                                               text='',
+                                               download=True)
+    with open(file_path, 'rb') as fh:
+        response = HttpResponse(
+            fh.read(), content_type="application/vnd.ms-excel")
+        response['Content-Disposition'] = 'inline; filename=' + \
+            os.path.basename(file_path)
+    return response
+    # return redirect('/document/list/')
+    # raise Http404
 
 
 def document_preview(request, id):
-    # Get object instance
-    doc_obj = Document.objects.get(id=id)
-    anonymized_words = doc_obj.anonymized_words
-    print('arxika anonymized words', anonymized_words)
-    # GET method parameters
-    url = request.get_full_path()
-    words = request.GET.getlist('param')
-    custom_words = ''
-    if words != []:
-        # Make sure that we anonymize these words too.
-        custom_words = words[0]
-        l = len(custom_words)
-        custom_words = custom_words[1:l-1]
-        custom_words = custom_words.replace("\\n", "")
-        print('custom words:', custom_words)
-        anonymized_words += custom_words
-        anonymized_words += ','
-        print('anonymized_words', anonymized_words)
-        # Update anonymized words by user in database
-        Document.objects.filter(id=id).update(
-            anonymized_words=anonymized_words)
-    user_folder = str(request.user) + '/'
-    [document, document_anonymized] = anonymize_file(
-        id=id,
-        user_folder=user_folder,
-        files_folder=files_folder,
-        custom_words=anonymized_words)
+    # print('STARTING DOCUMENT PREVIEW')
+    if request.method == 'GET':
+        # Get object instance
+        doc_obj = Document.objects.get(id=id)
+        text = doc_obj.text
+        anonymized_words = doc_obj.anonymized_words
+        # print('arxika anonymized words', anonymized_words)
+        # GET method parameters
+        url = request.get_full_path()
+        words = request.GET.getlist('param')
+        print(f'words:{words}')
+        custom_words = ''
+        if words != []:
+            # Make sure that we anonymize these words too.
+            custom_words = words[0]
+            l = len(custom_words)
+            custom_words = custom_words[1:l-1]
+            custom_words = custom_words.replace("\\n", "")
+            print('custom words:', custom_words)
+            anonymized_words += custom_words
+            anonymized_words += ','
+            print('anonymized_words', anonymized_words)
+            # Update anonymized words by user in database
+            Document.objects.filter(id=id).update(
+                anonymized_words=anonymized_words)
+        user_folder = str(request.user)
+        [document, document_anonymized] = anonymize_file(
+            id=id,
+            user_folder=user_folder,
+            files_folder=files_folder,
+            custom_words=anonymized_words,
+            text=text)
 
-    context = {
-        'document': document,
-        'document_anonymized': document_anonymized
+        context = {
+            'document': document,
+            'document_anonymized': document_anonymized
 
-    }
-    return render(request, 'document_preview.html', context)
+        }
+        # Clear variables
+        anonymized_words = ''
+        custom_words = ''
+        words = []
+        return render(request, 'document_preview.html', context)
 
 
 def delete_anonymized_words(request, id):
     Document.objects.filter(id=id).update(anonymized_words='')
     new_url = '/document/preview/' + str(id)
     return redirect(new_url)
+
+
+# content = ContentFile(base64.b64decode(fileData))
+# speaker.profile_file.save(filename, content)
+# speaker.save()

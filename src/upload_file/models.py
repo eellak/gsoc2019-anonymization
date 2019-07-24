@@ -27,6 +27,8 @@ class Document(models.Model):
     file = models.FileField()
     documents = models.ForeignKey(
         UserDocuments, on_delete=models.CASCADE, default=None, null=True)
+    path = models.TextField(default='')
+    anonymized_file_path = models.TextField(default='')
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, default=None, null=True)
     user_text = models.CharField(max_length=200, default='anonymous')

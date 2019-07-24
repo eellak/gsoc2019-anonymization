@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'upload_file',
     'crispy_forms',
+    'documents',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
