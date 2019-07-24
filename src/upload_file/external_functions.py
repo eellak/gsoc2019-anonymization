@@ -36,19 +36,26 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
             temp_file = os.path.join(os.path.dirname(__file__),
                                      'documents/' + user_folder + '/' + tempname)
 
-            command = 'odt2txt ' + file + ' --output=' + temp_file
-            runShell(command)
+            # Check if file exists already
+            if not os.path.isfile(temp_file):
+                command = 'odt2txt ' + file + ' --output=' + temp_file
+                runShell(command)
+
             custom_words_option = (
                 " -w '" + custom_words + "'") if custom_words != '' else ''
-            command = ('python3 -m anonymizer_service' +
-                       ' -i upload_file/documents/' + user_folder + '/' + tempname +
-                       custom_words_option)
-            runShell(command)
 
             anonymized_file_name = tempname[0:(
                 len(tempname)-4)] + '_anonymized.txt'
             anonymized_file = os.path.join(os.path.dirname(__file__),
                                            'documents/' + user_folder + '/' + anonymized_file_name)
+
+            # Check if file exists already
+            if not os.path.isfile(anonymized_file):
+                command = ('python3 -m anonymizer_service' +
+                           ' -i upload_file/documents/' + user_folder + '/' + tempname +
+                           custom_words_option)
+                runShell(command)
+
             with open(temp_file, mode='r') as f:
                 text = f.read()
             # Always anonymize
@@ -78,13 +85,15 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
         l = len(file_name)
         anonymized_file_name = file_name[0:(
             l-4)] + '_anonymized' + file_name[(l-4):l]
-
-        command = ('python3 -m anonymizer_service -i ' + file +
-                   ' -o upload_file/documents/' + user_folder + '/' + anonymized_file_name + " -w '" + custom_words + "'")
-        runShell(command)
-
         anonymized_file = os.path.join(os.path.dirname(__file__),
                                        'documents/' + user_folder + '/' + anonymized_file_name)
+
+        # Check if file exists already
+        if not os.path.isfile(anonymized_file):
+            print('den to eixa')
+            command = ('python3 -m anonymizer_service -i ' + file +
+                       ' -o upload_file/documents/' + user_folder + '/' + anonymized_file_name + " -w '" + custom_words + "'")
+            runShell(command)
 
         with open(file, mode='r') as f:
             text = f.read()
