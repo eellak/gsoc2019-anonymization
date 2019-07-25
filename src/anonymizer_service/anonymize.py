@@ -168,8 +168,25 @@ def find_entities(ifile,
 
     # Words Array , Custom word search in text
     for word in words_array:
-        # print(f'this is a word: {word}')
-        results = matcher_patterns.custom_words(data=data, word=word)
+        [method_type,
+         symbol,
+         length_replace] = method
+        if len(symbol) > 1:
+            symbol = symbol[0]
+        if symbol in word:
+            # Make anonymize something like '9 **** 2019'
+            # Semi-anionymized
+            splitted_word = word.split(symbol)
+            pattern = r''
+            for item in splitted_word:
+                # Find . (anything) instead of *
+                pattern += item + '.'
+            pattern = pattern[0:len(pattern)-1]
+
+        else:
+            pattern = word
+
+        results = matcher_patterns.custom_words(data=data, word=pattern)
         if results != None:
             entities += results
 

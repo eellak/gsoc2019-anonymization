@@ -114,9 +114,9 @@ def document_delete(request, id):
 def document_download(request, id):
 
     doc_obj = Document.objects.get(id=id)
-    print(doc_obj.anonymized_file_path)
+    # print(doc_obj.anonymized_file_path)
     file_path = doc_obj.anonymized_file_path
-    print(f'anonymized_file{file_path}')
+    # print(f'anonymized_file{file_path}')
 
     if not os.path.exists(file_path):
         # File was not previewed so create it first
@@ -138,17 +138,16 @@ def document_download(request, id):
 
 
 def document_preview(request, id):
-    # print('STARTING DOCUMENT PREVIEW')
+
     if request.method == 'GET':
         # Get object instance
         doc_obj = Document.objects.get(id=id)
         text = doc_obj.text
         anonymized_words = doc_obj.anonymized_words
-        # print('arxika anonymized words', anonymized_words)
         # GET method parameters
         url = request.get_full_path()
         words = request.GET.getlist('param')
-        print(f'words:{words}')
+        # print(f'words:{words}')
         custom_words = ''
         updateTextParameter = False
         if words != []:
@@ -157,10 +156,10 @@ def document_preview(request, id):
             l = len(custom_words)
             custom_words = custom_words[1:l-1]
             custom_words = custom_words.replace("\\n", "")
-            print('custom words:', custom_words)
+            # print('custom words:', custom_words)
             anonymized_words += custom_words
             anonymized_words += ','
-            print('anonymized_words', anonymized_words)
+            # print('anonymized_words', anonymized_words)
             # Update anonymized words by user in database
             Document.objects.filter(id=id).update(
                 anonymized_words=anonymized_words)
