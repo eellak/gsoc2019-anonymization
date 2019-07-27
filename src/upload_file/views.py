@@ -7,7 +7,7 @@ from django.views.generic.edit import FormView
 import subprocess
 from os import system as runShell
 from django.conf import settings
-from .models import Document
+from .models import Document, User
 from django.shortcuts import render, redirect
 from .forms import UploadDocumentForm
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
@@ -59,11 +59,13 @@ def handle_uploaded_file(f, name='temp.txt', user_folder='default', user='anonym
 
 
 def upload_file(request):
+    user_name = request.user
     if request.method == 'POST':
         form = UploadDocumentForm(request.POST, request.FILES)
         if form.is_valid():
             files = request.FILES.getlist('file')
             keepfiles = []
+            user_obj = User.objects.filter(name=user_name)
             for cnt, afile in enumerate(files):
                 handle_uploaded_file(
                     afile,
@@ -80,8 +82,22 @@ def upload_file(request):
         else:
             print('not valid form')
     else:
+        # GET METHOD
+
         create_user_folders(request=request)
         form = UploadDocumentForm()
+        # If user exists do nothing
+        user_obj = User.objects.filter(name=user_name)
+        # print('user obj', user_obj)
+        # print(f'hope to be none User{User.objects.none()}')
+        if not user_obj:  # == User.objects.none():
+            print('user does not exist')
+            user_obj = User(name=request.user, user_dictionary='')
+            user_obj.save()
+        else:
+            user_obj = user_obj[0]
+            print(f'user {user_obj.name} exists')
+            pass
     return render(request, 'home.html', {'form': form})
 
 
@@ -140,16 +156,34 @@ def document_download(request, id):
 def document_preview(request, id):
 
     if request.method == 'GET':
+
+        # Get user details
+        user_name = request.user
+        user_obj = User.objects.filter(name=user_name)
+        print(user_obj)
+        if not user_obj:
+            print('user does not exist')
+            user_obj = User(name=request.user, user_dictionary='')
+        else:
+            print('user {user_obj[0].name} exists')
+            pass
+
         # Get object instance
         doc_obj = Document.objects.get(id=id)
         text = doc_obj.text
         anonymized_words = doc_obj.anonymized_words
-        # GET method parameters
-        url = request.get_full_path()
-        words = request.GET.getlist('param')
-        # print(f'words:{words}')
-        custom_words = ''
         updateTextParameter = False
+
+        # GET method text_parameters
+        url = request.get_full_path()
+        words = request.GET.getlist('text_param')
+        custom_words = ''
+
+        # GET method user_parameters
+        url = request.get_full_path()
+        user_words = request.GET.getlist('user_dictionary_param')
+        user_custom_words = ''
+
         if words != []:
             # Make sure that we anonymize these words too.
             custom_words = words[0]
@@ -165,12 +199,33 @@ def document_preview(request, id):
                 anonymized_words=anonymized_words)
             updateTextParameter = True
 
+        if user_words != []:
+            # Make sure that we anonymize these words too.
+            user_custom_words = user_words[0]
+            l = len(user_custom_words)
+            user_custom_words = user_custom_words[1:l-1]
+            user_custom_words = user_custom_words.replace("\\n", "")
+            # print('custom words:', custom_words)
+            anonymized_words += user_custom_words
+            anonymized_words += ','
+            # print('anonymized_words', anonymized_words)
+            # Update anonymized words by user in database
+            User.objects.filter(name=user_obj[0].name).update(
+                user_dictionary=anonymized_words)
+            updateTextParameter = True
+
+        # Get user anonymized words from db
+        user_anonymized_words = User.objects.filter(
+            name=str(request.user))[0].user_dictionary
+        print(user_anonymized_words)
+        if user_anonymized_words != '':
+            updateTextParameter = True
         user_folder = str(request.user)
         [document, document_anonymized] = anonymize_file(
             id=id,
             user_folder=user_folder,
             files_folder=files_folder,
-            custom_words=anonymized_words,
+            custom_words=(anonymized_words + ',' + user_anonymized_words),
             text=text,
             updateTextIfPossible=updateTextParameter)
 
@@ -188,7 +243,7 @@ def document_preview(request, id):
 
 def delete_anonymized_words(request, id):
     Document.objects.filter(id=id).update(anonymized_words='')
-    new_url = '/document/preview/' + str(id) + '?param=[""]'
+    new_url = '/document/preview/' + str(id) + '?text_param=[""]'
     return redirect(new_url)
 
 

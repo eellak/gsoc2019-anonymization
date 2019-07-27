@@ -15,6 +15,9 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
     command = 'cd ..'
     runShell(command)
     file_type = filename[-3:]
+    if(custom_words[0] == ','):
+        custom_words = custom_words[1:]
+    print('custom words', custom_words)
 
     if file_type == 'odt':
 
@@ -90,7 +93,6 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
 
         # Check if file exists already or force update
         if not os.path.isfile(anonymized_file) or updateTextIfPossible:
-            print('den to eixa')
             command = ('python3 -m anonymizer_service -i ' + file +
                        ' -o upload_file/documents/' + user_folder + '/' + anonymized_file_name + " -w '" + custom_words + "'")
             runShell(command)

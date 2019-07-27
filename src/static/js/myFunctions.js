@@ -43,13 +43,22 @@ function addWordsToBeAnonymized() {
 function updateText() {
     base_url = window.location.href.split('?')[0]
     // console.log(base_url)
-    new_url = base_url + '?param=' + JSON.stringify(words_to_be_anonymized);
+    new_url = base_url + '?text_param=' + JSON.stringify(words_to_be_anonymized);
     words_to_be_anonymized = [];
     selected_word = null;
-    setTimeout(function () { window.location = new_url; }, 2000);
-    // window.location = new_url;
+    //     setTimeout(function () { window.location = new_url; }, 2000);
+    //     // window.location = new_url;
+    // }
+    window.location = new_url;
 }
 
+function updateUserDictionary() {
+    base_url = window.location.href.split('?')[0]
+    new_url = base_url + '?user_dictionary_param=' + JSON.stringify(words_to_be_anonymized);
+    words_to_be_anonymized = [];
+    selected_word = null;
+    window.location = new_url;
+}
 function deleteWordsToBeAnonymized(n) {
     if (n == -1) {
         words_to_be_anonymized = [];
