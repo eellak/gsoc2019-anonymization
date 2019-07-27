@@ -119,13 +119,18 @@ def document_list(request):
         user_obj = User(name=request.user, user_dictionary='')
     else:
         user_obj = user_obj[0]
-    words = user_obj.user_dictionary
+    words = user_obj.user_dictionary  # .replace("'", "")
     user_words = []
+    new_dict = ''
     for word in words.split(','):
-        if word in ['', "'", '"', "", " ", ""]:
+        if word in ['', "'", '"', "", " ", "", None]:
             continue
         print(word)
-        user_words.append(word)
+        if word not in user_words:
+            user_words.append(word)
+            new_dict += word + ','
+    user_obj.user_dictionary = new_dict
+    user_obj.save()
 
     context = {
         'filenames': files,
@@ -225,6 +230,7 @@ def document_preview(request, id):
                 anonymized_words=anonymized_words)
             updateTextParameter = True
 
+        user_anonymized_words = ''
         if user_words != []:
             # Make sure that we anonymize these words too.
             user_custom_words = user_words[0]
@@ -232,18 +238,18 @@ def document_preview(request, id):
             user_custom_words = user_custom_words[1:l-1]
             user_custom_words = user_custom_words.replace("\\n", "")
             # print('custom words:', custom_words)
-            anonymized_words += user_custom_words
-            anonymized_words += ','
+            user_anonymized_words += user_custom_words
+            user_anonymized_words += ','
             # print('anonymized_words', anonymized_words)
             # Update anonymized words by user in database
             user_obj = User.objects.get(name=user_name)
-            user_obj.user_dictionary += anonymized_words
+            user_obj.user_dictionary += user_anonymized_words
             user_obj.save()
             updateTextParameter = True
 
         # Get user anonymized words from db
         user_anonymized_words = User.objects.filter(
-            name=str(request.user))[0].user_dictionary + (anonymized_words if user_words != [] else '')
+            name=str(request.user))[0].user_dictionary + (user_anonymized_words if user_words != [] else '')
         print(user_anonymized_words)
         if user_anonymized_words != '':
             updateTextParameter = True
