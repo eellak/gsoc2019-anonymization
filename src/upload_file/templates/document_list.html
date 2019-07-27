@@ -1,34 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2> Documents </h2>
-{% comment %} {{ documents.file }} {% endcomment %}
-{% comment %} <table class='table'>
-<thread>
-<tr>
-    <th>Name</th>
-    <th>Preview</th>
-    <th>Download</th>
-    <th>Delete</th>
-</tr>
-</thread>
-<tbody>
-{% for filename in filenames %}
-<tr>
-    <td>{{filename}}</td>
-    <td>
-        <a href = "/document/preview/{{filename}}" class='btn btn-primary btn-sm'>Preview</a>
-    </td>
-    <td>
-        <a href="/document/preview/{{filename}}" class='btn btn-primary btn-sm'>Download</a>
-    </td>
-    <th>
-        <button type='button' class='btn btn-danger' ><span  class='glyphicon glyphicon-trash' onclick="delete_file({{files_path}},{{filename}})"></span></button>
-    </th>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-{% endcomment %}
 <table class='table'>
 <thread>
 <tr>
@@ -56,5 +28,7 @@
 {% endfor %}
 </tbody>
 </table>
+
+{% include 'user_dictionary_words.html' %}
 
 {% endblock content %}

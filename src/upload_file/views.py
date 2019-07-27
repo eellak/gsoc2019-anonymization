@@ -113,10 +113,25 @@ def document_list(request):
 
     files = os.listdir(abs_file_path)
 
+    # Get user words
+    user_obj = User.objects.filter(name=str(request.user))
+    if not user_obj:
+        user_obj = User(name=request.user, user_dictionary='')
+    else:
+        user_obj = user_obj[0]
+    words = user_obj.user_dictionary
+    user_words = []
+    for word in words.split(','):
+        if word in ['', "'", '"', "", " ", ""]:
+            continue
+        print(word)
+        user_words.append(word)
+
     context = {
         'filenames': files,
         'files_path': os.path.join(script_dir, "documents/" + user_folder),
-        'object_list': queryset
+        'object_list': queryset,
+        'user_dictionary': user_words
     }
 
     return render(request, 'document_list.html', context)
@@ -125,6 +140,16 @@ def document_list(request):
 def document_delete(request, id):
     query = Document.objects.filter(id=id).delete()
     return HttpResponseRedirect('/document/list/')
+
+
+def delete_user_dictionary(request, word):
+    word = word.strip().replace('"', '')
+    user_obj = User.objects.get(name=str(request.user))
+    new_dict = user_obj.user_dictionary.replace(word + ',', '')
+    new_dict = new_dict.replace(word, '')
+    user_obj.user_dictionary = new_dict
+    user_obj.save()
+    return redirect('/document/list/')
 
 
 def document_download(request, id):
@@ -164,6 +189,7 @@ def document_preview(request, id):
         if not user_obj:
             print('user does not exist')
             user_obj = User(name=request.user, user_dictionary='')
+            user_obj.save()
         else:
             print('user {user_obj[0].name} exists')
             pass
@@ -210,13 +236,14 @@ def document_preview(request, id):
             anonymized_words += ','
             # print('anonymized_words', anonymized_words)
             # Update anonymized words by user in database
-            User.objects.filter(name=user_obj[0].name).update(
-                user_dictionary=anonymized_words)
+            user_obj = User.objects.get(name=user_name)
+            user_obj.user_dictionary += anonymized_words
+            user_obj.save()
             updateTextParameter = True
 
         # Get user anonymized words from db
         user_anonymized_words = User.objects.filter(
-            name=str(request.user))[0].user_dictionary
+            name=str(request.user))[0].user_dictionary + (anonymized_words if user_words != [] else '')
         print(user_anonymized_words)
         if user_anonymized_words != '':
             updateTextParameter = True

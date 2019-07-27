@@ -1,0 +1,20 @@
+<h2>User Dictionary Words</h2>
+<table class='table'>
+<thread>
+<tr>
+    <th>Word</th>
+    <th>Delete</th>
+</tr>
+</thread> 
+
+<tbody>
+{% for instance in user_dictionary %}
+<tr>
+    <td>{{instance}}</td>
+    <th>
+        <button type='button' class='btn btn-danger' onclick="location.href = '/document/user_dictionary/delete/{{instance}}'"><span  class='glyphicon glyphicon-trash' ></span></button>
+    </th>
+</tr>
+{% endfor %}
+</tbody>
+</table>
