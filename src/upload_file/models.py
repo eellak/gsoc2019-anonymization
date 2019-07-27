@@ -40,3 +40,12 @@ class Document(models.Model):
 
     # def get_absolute_url(self):
     #     return reverse("document-list", kwargs={"pk": self.pk})
+
+
+class User(models.Model):
+    name = models.CharField(
+        primary_key=True, max_length=200, default='anonymous')
+    user_dictionary = models.TextField(default='')
+
+    def __str__(self):
+        return str(self.name)
