@@ -917,6 +917,18 @@ def decision_number(data, pattern=None, handler=None):
 
     return results
 
+def custom_regex(data,pattern=None,handler=None):
+    import re
+    results = []
+    for item in pattern:
+        custom_regex_pattern = pattern[item]
+        for match in re.finditer(custom_regex_pattern, data):
+            s = match.start()
+            e = match.end()
+            span = data[s:e]
+            results.append([item, span.upper(), span, s, e, False])
+    return results
+
 def custom_words(data,word=None,handler=None):
 
     import re 
