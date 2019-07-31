@@ -1,7 +1,7 @@
 from django.http import HttpResponse, Http404
 import requests
 from pages.external_functions import create_user_folders
-from upload_file.external_functions import anonymize_file
+from upload_file.external_functions import anonymize_file, clear_user_dictionary
 from django.contrib.auth.models import User
 from django.views.generic.edit import FormView
 import subprocess
@@ -91,12 +91,12 @@ def upload_file(request):
         # print('user obj', user_obj)
         # print(f'hope to be none User{User.objects.none()}')
         if not user_obj:  # == User.objects.none():
-            print('user does not exist')
+            # print('user does not exist')
             user_obj = User(name=request.user, user_dictionary='')
             user_obj.save()
         else:
             user_obj = user_obj[0]
-            print(f'user {user_obj.name} exists')
+            # print(f'user {user_obj.name} exists')
             pass
     return render(request, 'home.html', {'form': form})
 
@@ -119,13 +119,13 @@ def document_list(request):
         user_obj = User(name=request.user, user_dictionary='')
     else:
         user_obj = user_obj[0]
-    words = user_obj.user_dictionary  # .replace("'", "")
+    words = user_obj.user_dictionary
     user_words = []
     new_dict = ''
     for word in words.split(','):
         if word in ['', "'", '"', "", " ", "", None]:
             continue
-        print(word)
+        # print(word)
         if word not in user_words:
             user_words.append(word)
             new_dict += word + ','
@@ -190,17 +190,20 @@ def document_preview(request, id):
         # Get user details
         user_name = request.user
         user_obj = User.objects.filter(name=user_name)
-        print(user_obj)
+        # print(user_obj)
         if not user_obj:
-            print('user does not exist')
+            # print('user does not exist')
             user_obj = User(name=request.user, user_dictionary='')
             user_obj.save()
         else:
-            print('user {user_obj[0].name} exists')
+            # print('user {user_obj[0].name} exists')
             pass
 
+        # Get user instance
+        user_obj = User.objects.get(name=user_name)
         # Get object instance
         doc_obj = Document.objects.get(id=id)
+
         text = doc_obj.text
         anonymized_words = doc_obj.anonymized_words
         updateTextParameter = False
@@ -237,30 +240,43 @@ def document_preview(request, id):
             l = len(user_custom_words)
             user_custom_words = user_custom_words[1:l-1]
             user_custom_words = user_custom_words.replace("\\n", "")
-            # print('custom words:', custom_words)
             user_anonymized_words += user_custom_words
             user_anonymized_words += ','
-            # print('anonymized_words', anonymized_words)
             # Update anonymized words by user in database
             user_obj = User.objects.get(name=user_name)
             user_obj.user_dictionary += user_anonymized_words
             user_obj.save()
-            updateTextParameter = True
 
         # Get user anonymized words from db
         user_anonymized_words = User.objects.filter(
             name=str(request.user))[0].user_dictionary + (user_anonymized_words if user_words != [] else '')
-        print(user_anonymized_words)
-        if user_anonymized_words != '':
-            updateTextParameter = True
+        # print(user_anonymized_words)
         user_folder = str(request.user)
+
+        clear_user_dictionary(user_name=user_obj.name)
+
+        # Check for possible updates
+        # If the user dictionary version is not up to date
+        # make sure to update it and re-render the text
+        if doc_obj.copy_of_user_dictionary != user_obj.user_dictionary:
+            # Update the copy user dictionary
+            print(doc_obj.copy_of_user_dictionary, user_obj.user_dictionary)
+            doc_obj.copy_of_user_dictionary = user_obj.user_dictionary
+            doc_obj.save()
+            # Make sure that the text is re rendered
+            rerender_text = True
+        else:
+            rerender_text = False
+        print(f'updateTextParameter={updateTextParameter}')
+        print(f'rerender_text={rerender_text}')
         [document, document_anonymized] = anonymize_file(
             id=id,
             user_folder=user_folder,
             files_folder=files_folder,
             custom_words=(anonymized_words + ',' + user_anonymized_words),
             text=text,
-            updateTextIfPossible=updateTextParameter)
+            updateTextIfPossible=updateTextParameter,
+            rerender_text=rerender_text)
 
         context = {
             'document': document,

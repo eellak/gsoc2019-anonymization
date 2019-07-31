@@ -34,6 +34,7 @@ class Document(models.Model):
     user_text = models.CharField(max_length=200, default='anonymous')
     text = models.TextField(default='')
     anonymized_words = models.TextField(default='')
+    copy_of_user_dictionary = models.TextField(default='')
 
     def __str__(self):
         return str(self.name)

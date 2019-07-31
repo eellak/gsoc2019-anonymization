@@ -1,9 +1,16 @@
 import os
 from os import system as runShell
-from upload_file.models import Document
+from upload_file.models import Document, User
 
 
-def anonymize_file(id='', user_folder='default', files_folder='files', custom_words='', text='', download=False, updateTextIfPossible=False):
+def anonymize_file(id='',
+                   user_folder='default',
+                   files_folder='files',
+                   custom_words='',
+                   text='',
+                   download=False,
+                   updateTextIfPossible=False,
+                   rerender_text=True):
 
     obj_file = Document.objects.get(id=id)
     filename = str(obj_file)
@@ -53,7 +60,7 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
                                            'documents/' + user_folder + '/' + anonymized_file_name)
 
             # Check if file exists already or force update
-            if not os.path.isfile(anonymized_file) or updateTextIfPossible:
+            if not os.path.isfile(anonymized_file) or updateTextIfPossible or rerender_text:
                 command = ('python3 -m anonymizer_service' +
                            ' -i upload_file/documents/' + user_folder + '/' + tempname +
                            custom_words_option)
@@ -92,7 +99,7 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
                                        'documents/' + user_folder + '/' + anonymized_file_name)
 
         # Check if file exists already or force update
-        if not os.path.isfile(anonymized_file) or updateTextIfPossible:
+        if not os.path.isfile(anonymized_file) or updateTextIfPossible or rerender_text:
             command = ('python3 -m anonymizer_service -i ' + file +
                        ' -o upload_file/documents/' + user_folder + '/' + anonymized_file_name + " -w '" + custom_words + "'")
             runShell(command)
@@ -128,3 +135,21 @@ def anonymize_file(id='', user_folder='default', files_folder='files', custom_wo
     }
 
     return [document, document_anonymized]
+
+
+def clear_user_dictionary(user_name=''):
+
+    user_obj = User.objects.get(name=user_name)
+    words = user_obj.user_dictionary
+
+    user_words = []
+    new_dict = ''
+    for word in words.split(','):
+        if word in ['', "'", '"', "", " ", "", None]:
+            continue
+        if word not in user_words:
+            user_words.append(word)
+            new_dict += word + ','
+
+    user_obj.user_dictionary = new_dict
+    user_obj.save()
