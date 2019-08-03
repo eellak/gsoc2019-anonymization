@@ -4,7 +4,6 @@ from pages.external_functions import create_user_folders
 from upload_file.external_functions import anonymize_file, clear_user_dictionary
 from django.contrib.auth.models import User
 from django.views.generic.edit import FormView
-import subprocess
 from os import system as runShell
 from django.conf import settings
 from .models import Document, User

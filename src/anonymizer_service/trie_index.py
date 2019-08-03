@@ -1,7 +1,3 @@
-# Python program for insert and search
-# operation in a Trie
-# import pickle
-
 
 def read_dictionary(dictionary_file=None):
 

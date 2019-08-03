@@ -1,5 +1,4 @@
 import sys
-import getopt
 from anonymizer_service.anonymize import find_entities
 from anonymizer_service import anonymize
 from anonymizer_service.external_functions import create_output_file_name

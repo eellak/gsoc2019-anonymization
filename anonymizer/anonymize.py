@@ -1,8 +1,6 @@
 import sys
 import getopt
-# import spacy
 from os import system as runShell
-# from spacy.matcher import Matcher
 from termcolor import colored
 from anonymizer import matcher_patterns
 from anonymizer.external_functions import official_json

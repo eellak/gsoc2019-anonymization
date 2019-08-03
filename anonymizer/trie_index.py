@@ -1,8 +1,3 @@
-# Python program for insert and search
-# operation in a Trie
-# import pickle
-
-
 def read_dictionary(dictionary_file=None):
 
     dictionary_file = 'male_and_female_names.txt' if dictionary_file == None else dictionary_file
