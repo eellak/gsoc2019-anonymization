@@ -75,3 +75,10 @@ python3 -m anonymizer -i testfile.odt -o testfile_anonymized.odt -m s/*/True -p 
 - p: Specify the patterns file. A default pattern file is given in _anonymizer/patterns.json_
 - v: If typed, verbose mode is on. In verbose mode all identified entities are printed on the console.
 - w: If typed the parser expects a string with words separated by commas (,). Each word is anonymized in the text, adding         flexibility to the service. Therefore the user can anonymize words that may not have been identified by default.
+
+## Technologies used
+
+#### Anonymizer Service
+ The anonymizer service uses the following libraries: [argparse](https://docs.python.org/3/library/argparse.html), [json](https://docs.python.org/3/library/json.html), [termcolor](https://pypi.org/project/termcolor/).
+#### Web GUI
+ The web GUI uses the following libraries: [django](https://www.djangoproject.com/), [bootstrap](https://getbootstrap.com/), [requests](https://pypi.org/project/requests/), [crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/install.html), [django-form-utils](https://pypi.org/project/django-form-utils/).
