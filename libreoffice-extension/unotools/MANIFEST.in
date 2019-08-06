@@ -1,0 +1,7 @@
+include MANIFEST.in
+include LICENSE
+include *.rst
+include *.md
+recursive-include unotools *.py
+recursive-include sample-scripts *.py *.csv
+recursive-include tests *.py

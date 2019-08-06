@@ -9,3 +9,8 @@ __pycache__/
 conf_temp.json
 myvenv/*
 src/upload_file/documents/*
+
+## LibreOffice Extension
+
+libreoffice-extension/*
+!libreoffice-extension/unotools/
