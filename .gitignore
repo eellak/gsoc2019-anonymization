@@ -12,5 +12,4 @@ src/upload_file/documents/*
 
 ## LibreOffice Extension
 
-libreoffice-extension/*
-!libreoffice-extension/unotools/
+libreoffice-extension/extras
