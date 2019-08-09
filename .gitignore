@@ -10,6 +10,11 @@ conf_temp.json
 myvenv/*
 src/upload_file/documents/*
 
+## Package files
+dist/
+build/
+anonymizer.egg-info/
+
 ## LibreOffice Extension
 
 libreoffice-extension/extras
