@@ -13,7 +13,13 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/eellak/gsoc2019-anonymization",
     packages=['anonymizer'],
-    package_data={'anonymizer': ['data/*']},
+    package_data={
+        'anonymizer': [
+            'data/*',
+            'patterns.json',
+            'conf.json'
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: MIT License",

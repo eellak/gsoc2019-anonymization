@@ -39,6 +39,9 @@ def anonymize_element(element, method=['strict', '*', 'True']):
 
 
 def read_patterns(ifile=''):
+    import os
+    cwd = os.path.abspath(__file__)
+    ifile = os.path.dirname(cwd) + '/' + ifile
     with open(ifile, 'r') as f:
         import json
         data = f.read().replace('\n', ' ')
@@ -67,7 +70,7 @@ def matches_handler(matcher, doc, i, matches, method='delete'):
     pass
 
 
-def read_data_from_file(ifile, format='txt'):
+def read_data_from_file(ifile, format='txt', libreoffice=False):
     if format == 'txt':
         try:
             with open(ifile, 'r') as f:
@@ -82,7 +85,11 @@ def read_data_from_file(ifile, format='txt'):
         except FileNotFoundError as fnf_error:
             exit(fnf_error)
     else:
+
         tempfile = ifile[0:len(ifile)-4] + '_temp.xml'
+        if libreoffice == True:
+            tempfile = '/tmp/libreoffice/anonymizer_extension/extension_files/' + tempfile
+            # ifile = '/tmp/libreoffice/anonymizer_extension/extension_files/' + ifile
         command = 'odf2xml ' + '-o ' + tempfile + ' ' + ifile
         runShell(command)
         with open(tempfile, mode='r', encoding='utf-8') as f:
@@ -112,10 +119,11 @@ def read_data_from_file(ifile, format='txt'):
 
 def find_entities(ifile,
                   ofile,
-                  method='delete',
+                  method=['strict', "*", "True"],
                   patterns_file='patterns.json',
                   verbose=False,
-                  words_array=[]):
+                  words_array=[],
+                  libreoffice=False):
 
     in_order = True
     # spacy -- init
@@ -127,9 +135,13 @@ def find_entities(ifile,
     # Check file extension
     extension = ifile[-3:]
     if extension == 'odt':
-        [data, replaced] = read_data_from_file(ifile=ifile, format='odt')
+        [data, replaced] = read_data_from_file(ifile=ifile,
+                                               format='odt',
+                                               libreoffice=libreoffice)
     elif extension == 'txt':
-        [data, replaced] = read_data_from_file(ifile=ifile, format='txt')
+        [data, replaced] = read_data_from_file(ifile=ifile,
+                                               format='txt',
+                                               libreoffice=libreoffice)
     else:
         raise NameError('find_entities: Not extension .txt or .odt')
     # doc = nlp(data)
