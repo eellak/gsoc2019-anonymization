@@ -17,8 +17,8 @@
         }
     },
     "paths": {
-        "patterns": "anonymizer/patterns.json",
-        "safewords": "anonymizer/data/safewords.csv",
-        "dioikhtikh_perifereia": "anonymizer/data/dioikhtikh_perifereia.csv"
+        "patterns": "patterns.json",
+        "safewords": "data/safewords.csv",
+        "dioikhtikh_perifereia": "data/dioikhtikh_perifereia.csv"
     }
 }

@@ -306,10 +306,12 @@ def known_address(data,pattern=None):
     import re
     from anonymizer.trie_index import create_trie_index
     from anonymizer.trie_index import prepair_word
-
+    import os 
     known_addresses = pattern['known_address_pattern']
     # Create dataset
-    dataset = 'anonymizer/data/odoi.csv'
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    dataset = cwd + '/data/odoi.csv'
+    # dataset = 'anonymizer/data/odoi.csv'
     address_trie_index = create_trie_index(dataset=dataset)
     for match in re.finditer(known_addresses,data):
         s = match.start()
@@ -359,8 +361,10 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
             e,
             found_by_spacy
         ])
+    import os
+    cwd = os.path.dirname(os.path.abspath(__file__))
     name_trie_index = trie_index.create_trie_index_for_names(
-        'anonymizer/data/male_and_female_names.txt')
+        cwd + '/data/male_and_female_names.txt')
 
     # Possible names. Words that start with uppercase letter
     are_names = []
@@ -407,7 +411,9 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     # These words will never be parsed as surnames
     #
     from anonymizer.external_functions import find_path
-    safewords_path = find_path('anonymizer/conf.json', 'safewords')
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    safewords_path = find_path( (cwd+'/conf.json'), 'safewords')
+    print(safewords_path)
     with open(safewords_path, mode='r') as sw:
         safe_words = [word.replace('\n', '') for word in sw.readlines()]
 
@@ -738,6 +744,7 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
 def place(data, pattern=None, handler=None):
 
     import re
+    import os
     from anonymizer.trie_index import create_trie_index
     from anonymizer.trie_index import prepair_word
 
@@ -748,10 +755,15 @@ def place(data, pattern=None, handler=None):
     #
     # Both have no spaces
     # Nomoi dataset
-    dataset = 'anonymizer/data/nomoi.csv'
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    dataset = cwd + '/data/nomoi.csv'
+
+    # dataset = 'anonymizer/data/nomoi.csv'
     place_trie_index_nomoi = create_trie_index(dataset=dataset)
     # Dhmoi dataset
-    dataset = 'anonymizer/data/dhmoi.csv'
+    dataset = cwd + '/data/dhmoi.csv'
+
+    # dataset = 'anonymizer/data/dhmoi.csv'
     place_trie_index_dhmoi = create_trie_index(dataset=dataset)
 
     # Find possible nomous using regex.
@@ -790,7 +802,8 @@ def place(data, pattern=None, handler=None):
     # Create dataset
     # This dataset - trie index handles any of: - or spaces as _
 
-    dataset = 'anonymizer/data/dioikhtikh_perifereia.csv'
+    # dataset = 'anonymizer/data/dioikhtikh_perifereia.csv'
+    dataset = cwd + '/data/dioikhtikh_perifereia.csv'
     place_trie_index_periferia = create_trie_index(dataset=dataset)
 
     place_with_space_pattern = pattern['place_with_space_pattern']

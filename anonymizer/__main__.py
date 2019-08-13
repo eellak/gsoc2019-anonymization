@@ -3,17 +3,18 @@ from anonymizer.anonymize import find_entities
 from anonymizer import anonymize
 from anonymizer.external_functions import create_output_file_name
 import argparse
-import os.path
+import os
 import json
 
 
 def main(argv):
+    cwd = os.path.dirname(os.path.abspath(__file__))
     inputfile = ''
     outputfile = ''
     method = ''
-    conf_file = 'anonymizer/conf.json'
+    conf_file = cwd + '/conf.json'
     # in_order = True
-    patterns_file = 'anonymizer/patterns.json'
+    patterns_file = '/patterns.json'
     helptext = '''
 ------------------------------------------------------------------------------
 python3 -m anonymizer
