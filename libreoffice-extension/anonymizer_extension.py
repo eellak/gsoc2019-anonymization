@@ -5,8 +5,8 @@ from unotools import Socket, connect
 
 # Some global variables
 files_folder = '/tmp/libreoffice/anonymizer_extension/extension_files/'
-tempfile = files_folder + 'tempfile.odt'
-tempanonymizedfile = (files_folder + 'tempfile_anonymized.odt')
+tempfile = files_folder + 'tempfile.txt'
+tempanonymizedfile = (files_folder + 'tempfile_anonymized.txt')
 
 
 def init():
