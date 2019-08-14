@@ -413,7 +413,6 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     from anonymizer.external_functions import find_path
     cwd = os.path.dirname(os.path.abspath(__file__))
     safewords_path = find_path( (cwd+'/conf.json'), 'safewords')
-    print(safewords_path)
     with open(safewords_path, mode='r') as sw:
         safe_words = [word.replace('\n', '') for word in sw.readlines()]
 

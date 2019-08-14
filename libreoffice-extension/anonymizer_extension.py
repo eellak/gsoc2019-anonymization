@@ -7,6 +7,7 @@ from unotools import Socket, connect
 files_folder = '/tmp/libreoffice/anonymizer_extension/extension_files/'
 tempfile = files_folder + 'tempfile.txt'
 tempanonymizedfile = (files_folder + 'tempfile_anonymized.txt')
+words_file = files_folder + '/words.txt'
 
 
 def init():
@@ -23,6 +24,39 @@ def init():
     url = convert_path_to_url(filename)
     writer.store_to_url(url, 'FilterName', 'writer8')
     writer.close(True)
+
+
+def get_selected_words():
+    import os
+    # Check if file exists else []
+    if not os.path.isfile(words_file):
+        return []
+    # File exists
+    with open(words_file, mode='r') as f:
+        text = f.read().replace('<selected_word>', '').replace('<end_of_selected_word>', '')
+        print(f'text={text}')
+        words = text.split(',')
+        print(f'words={words}')
+        # return words
+
+    # Clear words
+    cleared_words = []
+    for word in words:
+        if word != '':
+            cleared_words.append(word)
+    return cleared_words
+
+
+def set_selected_words(words=[]):
+    with open(words_file, mode='a') as f:
+        for word in words:
+            word_to_be_written = (
+                '<selected_word>' +
+                word +
+                '<end_of_selected_word>' +
+                ','
+            )
+            f.write(word_to_be_written)
 
 
 def my_first_macro_writer():
@@ -47,10 +81,40 @@ def getNewString(theString):
     return newString
 
 
-def capitalisePython():
+def call_anonymizer_service(text='', words=[]):
+    # from os import system
+    from anonymizer.anonymize import find_entities
+
+    # Write text to a temp file
+    with open(tempfile, mode='w') as open_file:
+        open_file.write(text)
+    # command = ("python3 -m anonymizer" +
+    #            " -i " + tempfile_name +
+    #            " -o " + tempanonymizedfile_name)
+    # system(command=command)
+
+    find_entities(ifile=tempfile,
+                  ofile=tempanonymizedfile,
+                  method=['strict', "*", "True"],
+                  patterns_file='patterns.json',
+                  verbose=False,
+                  words_array=words,
+                  libreoffice=True)
+
+    # Read the output file
+
+    with open(tempanonymizedfile, mode='r') as ofile:
+        text = ofile.read()
+
+    # Now return the anonymized text to be written
+    return text
+
+
+def anonymize_selected_text():
     """Change the case of a selection, or current word from upper case, to first char upper case, to all lower case to upper case..."""
     import string
-
+    selected_words = []
+    word = ''
     # The context variable is of type XScriptContext and is available to
     # all BeanShell scripts executed by the Script Framework
     xModel = XSCRIPTCONTEXT.getDocument()
@@ -86,36 +150,16 @@ def capitalisePython():
             if newString:
                 xTextRange.setString(newString)
                 xSelectionSupplier.select(xTextRange)
+                word += newString
+                print(f'newString added: {newString}')
         i += 1
-
-
-def call_anonymizer_service(text):
-    # from os import system
-    from anonymizer.anonymize import find_entities
-
-    # Write text to a temp file
-    with open(tempfile, mode='w') as open_file:
-        open_file.write(text)
-    # command = ("python3 -m anonymizer" +
-    #            " -i " + tempfile_name +
-    #            " -o " + tempanonymizedfile_name)
-    # system(command=command)
-
-    find_entities(ifile=tempfile,
-                  ofile=tempanonymizedfile,
-                  method=['strict', "*", "True"],
-                  patterns_file='patterns.json',
-                  verbose=False,
-                  words_array=[],
-                  libreoffice=True)
-
-    # Read the output file
-
-    with open(tempanonymizedfile, mode='r') as ofile:
-        text = ofile.read()
-
-    # Now return the anonymized text to be written
-    return text
+        # if (theString in [' ', '\n', '\r']):
+        #     pass
+    print(f'word={word}')
+    selected_words.append(word)
+    print(f'selected_words = {selected_words}')
+    set_selected_words(selected_words)
+    anonymize_document()
 
 
 def anonymize_document():
@@ -143,14 +187,18 @@ def anonymize_document():
     textString = xAllText.getString()
     # xAllTextAnonymized = call_anonymizer_service(
     #     'My name is dimitris katsiros 6984442548')
-    xAllTextAnonymized = call_anonymizer_service(textString)
+
+    xAllTextAnonymized = call_anonymizer_service(
+        textString,
+        words=get_selected_words()
+    )
 
     xAllText.setString(xAllTextAnonymized)
 
 
 # lists the scripts, that shall be visible inside OOo. Can be omitted, if
 # all functions shall be visible, however here getNewString shall be suppressed
-g_exportedScripts = anonymize_document,
+g_exportedScripts = anonymize_document, anonymize_selected_text
 
 
 if __name__ == "__main__":
