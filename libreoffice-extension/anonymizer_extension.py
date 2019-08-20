@@ -2,16 +2,20 @@ from os import system
 from unotools.component.writer import Writer
 from unotools.unohelper import convert_path_to_url
 from unotools import Socket, connect
+import uno
+from com.sun.star.beans import PropertyValue
+from shutil import copy2
+
 
 # Some global variables
 files_folder = '/tmp/libreoffice/anonymizer_extension/extension_files/'
-tempfile = files_folder + 'tempfile.txt'
-tempanonymizedfile = (files_folder + 'tempfile_anonymized.txt')
+tempfile = files_folder + 'tempfile.odt'
+tempanonymizedfile = (files_folder + 'tempfile_anonymized.odt')
 words_file = files_folder + '/words.txt'
 
 
 def init():
-    system("soffice --accept='socket,host=localhost,port=8100;urp;StarOffice.Service'")
+    # system("soffice --accept='socket,host=localhost,port=8100;urp;StarOffice.Service'")
 
     context = connect(Socket('localhost', 8100))
     writer = Writer(context)
@@ -19,6 +23,7 @@ def init():
     custom_text = 'this is the custom text'
     writer.set_string_to_end(custom_text)
     text = writer.text
+    print('this is the text:', text.getString())
 
     filename = './myfile.odt'
     url = convert_path_to_url(filename)
@@ -81,33 +86,38 @@ def getNewString(theString):
     return newString
 
 
-def call_anonymizer_service(text='', words=[]):
+def call_anonymizer_service(text=None, words=[], ifile=None, ofile=None):
     # from os import system
     from anonymizer.anonymize import find_entities
+    if text != None:
+        # Write text to a temp file
+        with open(tempfile, mode='w') as open_file:
+            open_file.write(text)
+        find_entities(ifile=tempfile,
+                      ofile=ofile,
+                      method=['strict', "*", "True"],
+                      patterns_file='patterns.json',
+                      verbose=False,
+                      words_array=words,
+                      libreoffice=True)
+    # If ifile is given
+    else:
+        print(ifile, 'ifile was given')
+        print(ofile, 'ofile was given')
+        find_entities(ifile=ifile,
+                      ofile=ofile,
+                      method=['strict', "*", "True"],
+                      patterns_file='patterns.json',
+                      verbose=False,
+                      words_array=words)
 
-    # Write text to a temp file
-    with open(tempfile, mode='w') as open_file:
-        open_file.write(text)
-    # command = ("python3 -m anonymizer" +
-    #            " -i " + tempfile_name +
-    #            " -o " + tempanonymizedfile_name)
-    # system(command=command)
+    # # Read the output file
 
-    find_entities(ifile=tempfile,
-                  ofile=tempanonymizedfile,
-                  method=['strict', "*", "True"],
-                  patterns_file='patterns.json',
-                  verbose=False,
-                  words_array=words,
-                  libreoffice=True)
+    # with open(ofile, mode='r') as ofile:
+    #     text = ofile.read()
 
-    # Read the output file
-
-    with open(tempanonymizedfile, mode='r') as ofile:
-        text = ofile.read()
-
-    # Now return the anonymized text to be written
-    return text
+    # # Now return the anonymized text to be written
+    # return text
 
 
 def anonymize_selected_text():
@@ -178,22 +188,31 @@ def anonymize_document():
     # The context variable is of type XScriptContext and is available to
     # all BeanShell scripts executed by the Script Framework
     xModel = XSCRIPTCONTEXT.getDocument()
+    # Save the document
+    xModel.store()
+    url = xModel.getLocation().replace('file://', '')
+    # print(url)
+    copy2(src=url, dst=tempfile)
+    # curr_args = xModel.getArgs()
+    # xModel.storeAsURL(tempfile, curr_args)
+    # xModel.storeToURL(tempfile, curr_args)
 
     # the writer controller impl supports the css.view.XSelectionSupplier interface
     xSelectionSupplier = xModel.getCurrentController()
 
     # Try to get the text
     xAllText = xModel.Text
+
     textString = xAllText.getString()
-    # xAllTextAnonymized = call_anonymizer_service(
-    #     'My name is dimitris katsiros 6984442548')
 
     xAllTextAnonymized = call_anonymizer_service(
-        textString,
-        words=get_selected_words()
+        text=None,
+        words=get_selected_words(),
+        ifile=tempfile,
+        ofile=tempanonymizedfile
     )
 
-    xAllText.setString(xAllTextAnonymized)
+    # xAllText.setString(xAllTextAnonymized)
 
 
 # lists the scripts, that shall be visible inside OOo. Can be omitted, if

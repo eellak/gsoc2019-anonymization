@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='anonymizer',
-    version="0.0.5",
+    version="0.0.6",
     author="Dimitris Katsiros",
     author_email="dkatsiros@gmail.com",
     description="Anonymizer Service implemented for GSoC 2019",

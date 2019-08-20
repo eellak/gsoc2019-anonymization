@@ -13,7 +13,6 @@ def main(argv):
     outputfile = ''
     method = ''
     conf_file = cwd + '/conf.json'
-    # in_order = True
     patterns_file = '/patterns.json'
     helptext = '''
 ------------------------------------------------------------------------------
