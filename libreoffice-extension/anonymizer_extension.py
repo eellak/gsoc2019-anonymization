@@ -212,6 +212,10 @@ def anonymize_document():
         ofile=tempanonymizedfile
     )
 
+    command = ('libreoffice --writer  --nofirststartwizard ' +
+               tempanonymizedfile + ' &')
+    system(command=command)
+
     # xAllText.setString(xAllTextAnonymized)
 
 
