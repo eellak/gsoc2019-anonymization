@@ -1,10 +1,12 @@
 from os import system
+import os
 from unotools.component.writer import Writer
 from unotools.unohelper import convert_path_to_url
 from unotools import Socket, connect
 import uno
 from com.sun.star.beans import PropertyValue
 from shutil import copy2
+import subprocess
 
 
 # Some global variables
@@ -29,6 +31,35 @@ def init():
     url = convert_path_to_url(filename)
     writer.store_to_url(url, 'FilterName', 'writer8')
     writer.close(True)
+
+
+def list_of_added_words():
+    result = subprocess.run(['which', 'gedit'], stdout=subprocess.PIPE)
+    if str(result.stdout) != "b''":
+        if words_file_exists(words_file):
+            # Remove \n and b''
+            # Open the word file
+            gedit_exec = str(result.stdout)
+            l = len(gedit_exec)
+            gedit_exec = gedit_exec[2:len(gedit_exec)-3]
+            command = (gedit_exec + ' ' + words_file)
+            system(command=command)
+        else:
+            # File doesn't exist so do nothing
+            pass
+
+
+def get_document_name(ifile):
+    xModel = XSCRIPTCONTEXT.getDocument()
+    url = xModel.getLocation().replace('file://', '')
+    return url
+
+
+def words_file_exists(ifile=None):
+    if os.path.isfile(ifile):
+        # This means that file exists
+        return True
+    return False
 
 
 def get_selected_words():
@@ -169,10 +200,10 @@ def anonymize_selected_text():
     selected_words.append(word)
     print(f'selected_words = {selected_words}')
     set_selected_words(selected_words)
-    anonymize_document()
+    anonymize_document(with_words=True)
 
 
-def anonymize_document():
+def anonymize_document(with_words=False):
 
     import string
     import os
@@ -212,8 +243,23 @@ def anonymize_document():
         ofile=tempanonymizedfile
     )
 
-    command = ('libreoffice --writer  --nofirststartwizard ' +
-               tempanonymizedfile + ' &')
+    # Copy file to the new location
+    if not words_file_exists(ifile=words_file) or with_words == False:
+        new_dest = url[0:len(url)-4] + '_anonymized.odt'
+    else:
+        # new_dest = new_dest, remains as it is
+        # Now we need a temp file
+        # Remove the already opened file.
+        # command = 'rm ' + url + ' &'
+        # system(command=command)
+        # Now set the new location as the existing file
+        # that we just deleted.
+        new_dest = url
+
+    # Now copy the file
+    copy2(src=tempanonymizedfile, dst=new_dest)
+    command = ('libreoffice --writer --nofirststartwizard ' +
+               new_dest + ' &')
     system(command=command)
 
     # xAllText.setString(xAllTextAnonymized)
@@ -221,7 +267,9 @@ def anonymize_document():
 
 # lists the scripts, that shall be visible inside OOo. Can be omitted, if
 # all functions shall be visible, however here getNewString shall be suppressed
-g_exportedScripts = anonymize_document, anonymize_selected_text
+g_exportedScripts = (anonymize_document,
+                     anonymize_selected_text,
+                     list_of_added_words)
 
 
 if __name__ == "__main__":
