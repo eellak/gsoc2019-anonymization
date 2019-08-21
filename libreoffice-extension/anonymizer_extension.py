@@ -16,19 +16,7 @@ settings_file = files_folder + '/settings.json'
 
 
 def init():
-    # system("soffice --accept='socket,host=localhost,port=8100;urp;StarOffice.Service'")
-
-    context = connect(Socket('localhost', 8100))
-    writer = Writer(context)
-
-    custom_text = 'this is the custom text'
-    writer.set_string_to_end(custom_text)
-    text = writer.text
-
-    filename = './myfile.odt'
-    url = convert_path_to_url(filename)
-    writer.store_to_url(url, 'FilterName', 'writer8')
-    writer.close(True)
+    pass
 
 
 def helpme():
@@ -37,16 +25,16 @@ This python script contains the following libreoffice macros:
 
  - anonymize_document: This macro should always be runned first.
             It anonymizes the whole document and opens a new file
-            for further anonymization. This funtion uses the basic 
+            for further anonymization. This funtion uses the basic
             patterns of anonymizer.
 
  - anonymize_selected_text: This macro anonymizes the selected text.
             Caution: This macro should NEVER be runned first.Otherwise
             it will replace the original document saving over the original.
-            
+
  - list_of_added_words: This macro previews all the words that user has selected
-            for anonymization. User can always delete any word that he had 
-            previously selected. If user changes and saves the file, in order to 
+            for anonymization. User can always delete any word that he had
+            previously selected. If user changes and saves the file, in order to
             see the changes he has to run the following script.
 
  - reload_changes : This macro reloads the document after user removes any word.
@@ -56,8 +44,19 @@ Author Dimitris Katsiros for GSoC 2019 for GFOSS.
     print(helptext)
 
 
+def get_from_settings(request):
+    with open(settings_file, mode='r') as settings:
+        data = json.load(settings)
+        return data[request]
+
+
 def reload_changes():
-    pass
+    original_file = get_from_settings('original_file')
+    reload = {
+        'original_file': original_file
+    }
+    anonymize_document(with_words=True, reload=reload)
+    reload_document()
 
 
 def list_of_added_words():
@@ -74,7 +73,7 @@ def list_of_added_words():
             gedit_exec = str(result.stdout)
             l = len(gedit_exec)
             gedit_exec = gedit_exec[2:len(gedit_exec)-3]
-            command = (gedit_exec + ' ' + words_file)
+            command = (gedit_exec + ' ' + words_file + ' &')
             system(command=command)
         else:
             # File doesn't exist so do nothing
@@ -101,7 +100,7 @@ def get_selected_words():
         return []
     # File exists
     with open(words_file, mode='r') as f:
-        text = f.read().replace('\n<selected_word>', '').replace(
+        text = f.read().replace('<selected_word>', '').replace(
             '<end_of_selected_word>', '')
         words = text.split(',')
         # return words
@@ -120,34 +119,12 @@ def set_selected_words(words=[]):
             if word in ['', ' ', None]:
                 continue
             word_to_be_written = (
-                '\n<selected_word>' +
+                '<selected_word>' +
                 word +
                 '<end_of_selected_word>' +
                 ','
             )
             f.write(word_to_be_written)
-
-
-def my_first_macro_writer():
-    doc = XSCRIPTCONTEXT.getDocument()
-    text = doc.getText()
-    text.setString('Hello World in Python in Writer')
-    return
-
-
-def getNewString(theString):
-    if(not theString or len(theString) == 0):
-        return ""
-    # should we tokenize on "."?
-    if theString[0].isupper() and len(theString) >= 2 and theString[1].isupper():
-        # first two chars are UC => first UC, rest LC
-        newString = theString[0:1].upper() + theString[1:].lower()
-    elif theString[0].isupper():
-        # first char UC => all to LC
-        newString = theString.lower()
-    else:  # all to UC.
-        newString = theString.upper()
-    return newString
 
 
 def call_anonymizer_service(text=None, words=[], ifile=None, ofile=None):
@@ -183,6 +160,7 @@ def call_anonymizer_service(text=None, words=[], ifile=None, ofile=None):
 
 
 def reload_document():
+
     from pynput.keyboard import Key, Controller
     import time
     keyboard = Controller()
@@ -217,25 +195,26 @@ def anonymize_selected_text():
         if len(theString) == 0:
             # sadly we can have a selection where nothing is selected
             # in this case we get the XWordCursor and make a selection!
-            xText = xTextRange.getText()
-            xWordCursor = xText.createTextCursorByRange(xTextRange)
-            if not xWordCursor.isStartOfWord():
-                xWordCursor.gotoStartOfWord(False)
-            xWordCursor.gotoNextWord(True)
-            theString = xWordCursor.getString()
-            newString = getNewString(theString)
-            if newString:
-                xWordCursor.setString(newString)
-                xSelectionSupplier.select(xWordCursor)
+            # xText = xTextRange.getText()
+            # xWordCursor = xText.createTextCursorByRange(xTextRange)
+            # if not xWordCursor.isStartOfWord():
+            #     xWordCursor.gotoStartOfWord(False)
+            # xWordCursor.gotoNextWord(True)
+            # theString = xWordCursor.getString()
+            # newString = getNewString(theString)
+            # if newString:
+            #     xWordCursor.setString(newString)
+            #     xSelectionSupplier.select(xWordCursor)
+            pass
         else:
 
-            newString = getNewString(theString)
+            newString = theString  # getNewString(theString)
             if newString:
                 xTextRange.setString(newString)
                 xSelectionSupplier.select(xTextRange)
                 word += newString
         i += 1
-
+    print('the word you selected is:', word)
     if word in [' ', '\n', '\r', '']:
         return
     selected_words.append(word)
@@ -244,7 +223,7 @@ def anonymize_selected_text():
     reload_document()
 
 
-def anonymize_document(with_words=False, reload=False):
+def anonymize_document(with_words=False, reload={}):
 
     import string
     import os
@@ -277,37 +256,49 @@ def anonymize_document(with_words=False, reload=False):
 
     textString = xAllText.getString()
 
-    if reload == True:
+    if reload != {}:
+        print('Reload is activated')
         # This means you should reload the file
-        pass
+        original_file = reload['original_file']
+        print(f'original file is {original_file}')
+        xAllTextAnonymized = call_anonymizer_service(
+            text=None,
+            words=get_selected_words(),
+            ifile=original_file,
+            ofile=tempanonymizedfile
+        )
+    else:
+        # This is the usual case
+        xAllTextAnonymized = call_anonymizer_service(
+            text=None,
+            words=get_selected_words(),
+            ifile=tempfile,
+            ofile=tempanonymizedfile
+        )
 
-    xAllTextAnonymized = call_anonymizer_service(
-        text=None,
-        words=get_selected_words(),
-        ifile=tempfile,
-        ofile=tempanonymizedfile
-    )
-
-    if get_selected_words() != []:
-        with_words = True
+    print(get_selected_words())
+    # if get_selected_words() != []:
+    #     with_words = True
     # Copy file to the new location
     if not file_exists(ifile=words_file) or with_words == False:
         new_dest = url[0:len(url)-4] + '_anonymized.odt'
+        # Now copy the file
+        copy2(src=tempanonymizedfile, dst=new_dest)
+        command = ('libreoffice --writer --nofirststartwizard ' +
+                   new_dest + ' &')
+        system(command=command)
     else:
         new_dest = url
-
-    # Now copy the file
-    copy2(src=tempanonymizedfile, dst=new_dest)
-    command = ('libreoffice --writer --nofirststartwizard ' +
-               new_dest + ' &')
-    system(command=command)
+        # Now copy the file
+        copy2(src=tempanonymizedfile, dst=new_dest)
 
 
 # lists the scripts, that shall be visible inside OOo. Can be omitted, if
 # all functions shall be visible, however here getNewString shall be suppressed
 g_exportedScripts = (anonymize_document,
                      anonymize_selected_text,
-                     list_of_added_words
+                     list_of_added_words,
+                     reload_changes
                      )
 
 
