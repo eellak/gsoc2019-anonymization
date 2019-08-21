@@ -71,7 +71,8 @@ def get_selected_words():
         return []
     # File exists
     with open(words_file, mode='r') as f:
-        text = f.read().replace('<selected_word>', '').replace('<end_of_selected_word>', '')
+        text = f.read().replace('<selected_word>', '').replace(
+            '<end_of_selected_word>', '')
         print(f'text={text}')
         words = text.split(',')
         print(f'words={words}')
@@ -153,6 +154,17 @@ def call_anonymizer_service(text=None, words=[], ifile=None, ofile=None):
     # return text
 
 
+def reload_document():
+    from pynput.keyboard import Key, Controller
+    import time
+    keyboard = Controller()
+    keyboard.press(Key.shift)
+    time.sleep(0.05)
+    keyboard.press(Key.f7)
+    keyboard.release(Key.shift)
+    keyboard.release(Key.f7)
+
+
 def anonymize_selected_text():
     """Change the case of a selection, or current word from upper case, to first char upper case, to all lower case to upper case..."""
     import string
@@ -203,6 +215,7 @@ def anonymize_selected_text():
     print(f'selected_words = {selected_words}')
     set_selected_words(selected_words)
     anonymize_document(with_words=True)
+    reload_document()
 
 
 def anonymize_document(with_words=False):
@@ -273,7 +286,9 @@ def anonymize_document(with_words=False):
 # all functions shall be visible, however here getNewString shall be suppressed
 g_exportedScripts = (anonymize_document,
                      anonymize_selected_text,
-                     list_of_added_words)
+                     list_of_added_words,
+                     reload_document
+                     )
 
 
 if __name__ == "__main__":
