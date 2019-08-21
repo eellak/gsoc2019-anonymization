@@ -1,9 +1,6 @@
 from os import system
-import os
-from unotools.component.writer import Writer
-from unotools.unohelper import convert_path_to_url
-from unotools import Socket, connect
 import uno
+import os
 from com.sun.star.beans import PropertyValue
 from shutil import copy2
 import subprocess
@@ -32,6 +29,35 @@ def init():
     url = convert_path_to_url(filename)
     writer.store_to_url(url, 'FilterName', 'writer8')
     writer.close(True)
+
+
+def helpme():
+    helptext = '''
+This python script contains the following libreoffice macros:
+
+ - anonymize_document: This macro should always be runned first.
+            It anonymizes the whole document and opens a new file
+            for further anonymization. This funtion uses the basic 
+            patterns of anonymizer.
+
+ - anonymize_selected_text: This macro anonymizes the selected text.
+            Caution: This macro should NEVER be runned first.Otherwise
+            it will replace the original document saving over the original.
+            
+ - list_of_added_words: This macro previews all the words that user has selected
+            for anonymization. User can always delete any word that he had 
+            previously selected. If user changes and saves the file, in order to 
+            see the changes he has to run the following script.
+
+ - reload_changes : This macro reloads the document after user removes any word.
+
+Author Dimitris Katsiros for GSoC 2019 for GFOSS.
+'''
+    print(helptext)
+
+
+def reload_changes():
+    pass
 
 
 def list_of_added_words():
@@ -218,7 +244,7 @@ def anonymize_selected_text():
     reload_document()
 
 
-def anonymize_document(with_words=False):
+def anonymize_document(with_words=False, reload=False):
 
     import string
     import os
@@ -251,6 +277,10 @@ def anonymize_document(with_words=False):
 
     textString = xAllText.getString()
 
+    if reload == True:
+        # This means you should reload the file
+        pass
+
     xAllTextAnonymized = call_anonymizer_service(
         text=None,
         words=get_selected_words(),
@@ -258,19 +288,12 @@ def anonymize_document(with_words=False):
         ofile=tempanonymizedfile
     )
 
+    if get_selected_words() != []:
+        with_words = True
     # Copy file to the new location
     if not file_exists(ifile=words_file) or with_words == False:
         new_dest = url[0:len(url)-4] + '_anonymized.odt'
     else:
-        # new_dest = new_dest, remains as it is
-        # Now we need a temp file
-        # Remove the already opened file.
-        # command = 'rm ' + url + ' &'
-        # system(command=command)
-        # Now set the new location as the existing file
-        # that we just deleted.
-        # new_dest = (url[0:len(url)-4] + '_anonymized' +
-                    # get_document_number(url)+'.odt')
         new_dest = url
 
     # Now copy the file
@@ -279,17 +302,14 @@ def anonymize_document(with_words=False):
                new_dest + ' &')
     system(command=command)
 
-    # xAllText.setString(xAllTextAnonymized)
-
 
 # lists the scripts, that shall be visible inside OOo. Can be omitted, if
 # all functions shall be visible, however here getNewString shall be suppressed
 g_exportedScripts = (anonymize_document,
                      anonymize_selected_text,
-                     list_of_added_words,
-                     reload_document
+                     list_of_added_words
                      )
 
 
 if __name__ == "__main__":
-    init()
+    helpme()
