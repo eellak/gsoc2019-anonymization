@@ -27,7 +27,6 @@ def init():
     custom_text = 'this is the custom text'
     writer.set_string_to_end(custom_text)
     text = writer.text
-    print('this is the text:', text.getString())
 
     filename = './myfile.odt'
     url = convert_path_to_url(filename)
@@ -36,6 +35,11 @@ def init():
 
 
 def list_of_added_words():
+    # Otherwise known as list of selected words.
+    # Each word in the file has the following form:
+    #   <selected_word>here is \nthe word\n<end_of_selected_word>,
+    # By calling this function all the selected words are previewed
+    # to the user.
     result = subprocess.run(['which', 'gedit'], stdout=subprocess.PIPE)
     if str(result.stdout) != "b''":
         if file_exists(words_file):
@@ -71,11 +75,9 @@ def get_selected_words():
         return []
     # File exists
     with open(words_file, mode='r') as f:
-        text = f.read().replace('<selected_word>', '').replace(
+        text = f.read().replace('\n<selected_word>', '').replace(
             '<end_of_selected_word>', '')
-        print(f'text={text}')
         words = text.split(',')
-        print(f'words={words}')
         # return words
 
     # Clear words
@@ -89,8 +91,10 @@ def get_selected_words():
 def set_selected_words(words=[]):
     with open(words_file, mode='a') as f:
         for word in words:
+            if word in ['', ' ', None]:
+                continue
             word_to_be_written = (
-                '<selected_word>' +
+                '\n<selected_word>' +
                 word +
                 '<end_of_selected_word>' +
                 ','
@@ -136,8 +140,6 @@ def call_anonymizer_service(text=None, words=[], ifile=None, ofile=None):
                       libreoffice=True)
     # If ifile is given
     else:
-        print(ifile, 'ifile was given')
-        print(ofile, 'ofile was given')
         find_entities(ifile=ifile,
                       ofile=ofile,
                       method=['strict', "*", "True"],
@@ -206,13 +208,11 @@ def anonymize_selected_text():
                 xTextRange.setString(newString)
                 xSelectionSupplier.select(xTextRange)
                 word += newString
-                print(f'newString added: {newString}')
         i += 1
-        # if (theString in [' ', '\n', '\r']):
-        #     pass
-    print(f'word={word}')
+
+    if word in [' ', '\n', '\r', '']:
+        return
     selected_words.append(word)
-    print(f'selected_words = {selected_words}')
     set_selected_words(selected_words)
     anonymize_document(with_words=True)
     reload_document()
