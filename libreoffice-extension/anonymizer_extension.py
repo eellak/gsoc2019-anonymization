@@ -7,6 +7,7 @@ import uno
 from com.sun.star.beans import PropertyValue
 from shutil import copy2
 import subprocess
+import json
 
 
 # Some global variables
@@ -14,6 +15,7 @@ files_folder = '/tmp/libreoffice/anonymizer_extension/extension_files/'
 tempfile = files_folder + 'tempfile.odt'
 tempanonymizedfile = (files_folder + 'tempfile_anonymized.odt')
 words_file = files_folder + '/words.txt'
+settings_file = files_folder + '/settings.json'
 
 
 def init():
@@ -36,7 +38,7 @@ def init():
 def list_of_added_words():
     result = subprocess.run(['which', 'gedit'], stdout=subprocess.PIPE)
     if str(result.stdout) != "b''":
-        if words_file_exists(words_file):
+        if file_exists(words_file):
             # Remove \n and b''
             # Open the word file
             gedit_exec = str(result.stdout)
@@ -55,7 +57,7 @@ def get_document_name(ifile):
     return url
 
 
-def words_file_exists(ifile=None):
+def file_exists(ifile=None):
     if os.path.isfile(ifile):
         # This means that file exists
         return True
@@ -244,7 +246,7 @@ def anonymize_document(with_words=False):
     )
 
     # Copy file to the new location
-    if not words_file_exists(ifile=words_file) or with_words == False:
+    if not file_exists(ifile=words_file) or with_words == False:
         new_dest = url[0:len(url)-4] + '_anonymized.odt'
     else:
         # new_dest = new_dest, remains as it is
@@ -254,6 +256,8 @@ def anonymize_document(with_words=False):
         # system(command=command)
         # Now set the new location as the existing file
         # that we just deleted.
+        # new_dest = (url[0:len(url)-4] + '_anonymized' +
+                    # get_document_number(url)+'.odt')
         new_dest = url
 
     # Now copy the file
