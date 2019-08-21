@@ -16,7 +16,12 @@ settings_file = files_folder + '/settings.json'
 
 
 def init():
-    pass
+    original_file = get_document_name()
+    data = {
+        'original_file': original_file
+    }
+    with open(settings_file, mode='w') as settings:
+        json.dump(data, settings)
 
 
 def helpme():
@@ -80,7 +85,7 @@ def list_of_added_words():
             pass
 
 
-def get_document_name(ifile):
+def get_document_name():
     xModel = XSCRIPTCONTEXT.getDocument()
     url = xModel.getLocation().replace('file://', '')
     return url
@@ -295,7 +300,8 @@ def anonymize_document(with_words=False, reload={}):
 
 # lists the scripts, that shall be visible inside OOo. Can be omitted, if
 # all functions shall be visible, however here getNewString shall be suppressed
-g_exportedScripts = (anonymize_document,
+g_exportedScripts = (init,
+                     anonymize_document,
                      anonymize_selected_text,
                      list_of_added_words,
                      reload_changes
