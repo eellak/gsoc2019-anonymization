@@ -40,23 +40,32 @@ def helpme():
     helptext = '''
 This python script contains the following libreoffice macros:
 
- - anonymize_document: This macro should always be runned first.
-            It anonymizes the whole document and opens a new file
-            for further anonymization. This funtion uses the basic
-            patterns of anonymizer.
+ - init: This macro should always be runned first, in order to set up
+         all important files for the service.
+
+ - anonymize_document: This macro should always be runned after init.
+                       It anonymizes the whole document and opens a new file
+                       for further anonymization. This function uses the basic
+                       patterns of anonymizer.
 
  - anonymize_selected_text: This macro anonymizes the selected text.
-            Caution: This macro should NEVER be runned first.Otherwise
-            it will replace the original document saving over the original.
+                            Caution: This macro should NEVER be runned before init or 
+                            anonymize_document.Otherwise it will replace the original 
+                            document saving the new one over the original.
 
  - list_of_added_words: This macro previews all the words that user has selected
-            for anonymization. User can always delete any word that he had
-            previously selected. If user changes and saves the file, in order to
-            see the changes he has to run the following script.
+                        for anonymization. User can always delete any word that he had
+                        previously selected. If user changes and saves the file, then in order
+                        to see the changes, user has to run the following script.
+                        If user wants to delete a word, for example Δημήτρης he has 
+                        to delete the whole line:
+                        <selected_word>Δημήτρης<end_of_selected_word>,
 
  - reload_changes : This macro reloads the document after user removes any word.
 
-Author Dimitris Katsiros for GSoC 2019 for GFOSS.
+ Author: Dimitris Katsiros
+ Implemented for GFOSS during GSoC 2019.
+ Original repository: https://www.github.com/eellak/gsoc2019-anonymization
 '''
     print(helptext)
 
