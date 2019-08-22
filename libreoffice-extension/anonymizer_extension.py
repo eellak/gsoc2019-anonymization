@@ -13,31 +13,9 @@ tempfile = files_folder + 'tempfile.odt'
 tempanonymizedfile = (files_folder + 'tempfile_anonymized.odt')
 words_file = files_folder + '/words.txt'
 settings_file = files_folder + '/settings.json'
+helptext_file = files_folder + '/helptext.txt'
 
-
-def init():
-
-    import string
-    import os
-
-    # Check some things first
-    # Folders etc.
-
-    if not os.path.isdir(files_folder):
-        # Create the folder
-        access_rights = 0o755
-        os.makedirs(files_folder, access_rights)
-
-    original_file = get_document_name()
-    data = {
-        'original_file': original_file
-    }
-    with open(settings_file, mode='w+') as settings:
-        json.dump(data, settings)
-
-
-def helpme():
-    helptext = '''
+helptext = '''
 This python script contains the following libreoffice macros:
 
  - init: This macro should always be runned first, in order to set up
@@ -67,7 +45,41 @@ This python script contains the following libreoffice macros:
  Implemented for GFOSS during GSoC 2019.
  Original repository: https://www.github.com/eellak/gsoc2019-anonymization
 '''
-    print(helptext)
+
+
+def init():
+
+    import string
+    import os
+
+    # Check some things first
+    # Folders etc.
+
+    if not os.path.isdir(files_folder):
+        # Create the folder
+        access_rights = 0o755
+        os.makedirs(files_folder, access_rights)
+
+    original_file = get_document_name()
+    data = {
+        'original_file': original_file
+    }
+
+    with open(settings_file, mode='w+') as settings:
+        json.dump(data, settings)
+
+
+def helpme():
+
+    if not os.path.exists(settings_file):
+        # User has not yet runned init but wants help
+        init()
+    with open(helptext_file, mode='w+') as f:
+        # Always rewrite the help file. User may delete or change
+        # the original file at any time. Overwrite it.
+        f.write(helptext)
+    # Preview the file for help
+    preview_file(editor='gedit', ifile=helptext_file)
 
 
 def get_from_settings(request):
@@ -85,25 +97,29 @@ def reload_changes():
     reload_document()
 
 
+def preview_file(editor='gedit', ifile=helptext_file):
+    result = subprocess.run(['which', editor], stdout=subprocess.PIPE)
+    if str(result.stdout) != "b''":
+        if file_exists(ifile):
+            # Remove \n and b''
+            # Open the word file
+            gedit_exec = str(result.stdout)
+            l = len(gedit_exec)
+            gedit_exec = gedit_exec[2:len(gedit_exec)-3]
+            command = (gedit_exec + ' ' + ifile + ' &')
+            system(command=command)
+        else:
+            # File doesn't exist so do nothing
+            pass
+
+
 def list_of_added_words():
     # Otherwise known as list of selected words.
     # Each word in the file has the following form:
     #   <selected_word>here is \nthe word\n<end_of_selected_word>,
     # By calling this function all the selected words are previewed
     # to the user.
-    result = subprocess.run(['which', 'gedit'], stdout=subprocess.PIPE)
-    if str(result.stdout) != "b''":
-        if file_exists(words_file):
-            # Remove \n and b''
-            # Open the word file
-            gedit_exec = str(result.stdout)
-            l = len(gedit_exec)
-            gedit_exec = gedit_exec[2:len(gedit_exec)-3]
-            command = (gedit_exec + ' ' + words_file + ' &')
-            system(command=command)
-        else:
-            # File doesn't exist so do nothing
-            pass
+    preview_file(editor='gedit', ifile=words_file)
 
 
 def get_document_name():
@@ -240,7 +256,6 @@ def anonymize_selected_text():
                 xSelectionSupplier.select(xTextRange)
                 word += newString
         i += 1
-    print('the word you selected is:', word)
     if word in [' ', '\n', '\r', '']:
         return
     selected_words.append(word)
@@ -267,7 +282,6 @@ def anonymize_document(with_words=False, reload={}):
     # Save the document
     xModel.store()
     url = xModel.getLocation().replace('file://', '')
-    # print(url)
     copy2(src=url, dst=tempfile)
     # curr_args = xModel.getArgs()
     # xModel.storeAsURL(tempfile, curr_args)
@@ -282,10 +296,8 @@ def anonymize_document(with_words=False, reload={}):
     textString = xAllText.getString()
 
     if reload != {}:
-        print('Reload is activated')
         # This means you should reload the file
         original_file = reload['original_file']
-        print(f'original file is {original_file}')
         xAllTextAnonymized = call_anonymizer_service(
             text=None,
             words=get_selected_words(),
@@ -301,7 +313,6 @@ def anonymize_document(with_words=False, reload={}):
             ofile=tempanonymizedfile
         )
 
-    print(get_selected_words())
     # if get_selected_words() != []:
     #     with_words = True
     # Copy file to the new location
@@ -324,7 +335,8 @@ g_exportedScripts = (init,
                      anonymize_document,
                      anonymize_selected_text,
                      list_of_added_words,
-                     reload_changes
+                     reload_changes,
+                     helpme
                      )
 
 
