@@ -27,15 +27,15 @@ This python script contains the following libreoffice macros:
                        patterns of anonymizer.
 
  - anonymize_selected_text: This macro anonymizes the selected text.
-                            Caution: This macro should NEVER be runned before init or 
-                            anonymize_document.Otherwise it will replace the original 
+                            Caution: This macro should NEVER be runned before init or
+                            anonymize_document.Otherwise it will replace the original
                             document saving the new one over the original.
 
  - list_of_added_words: This macro previews all the words that user has selected
                         for anonymization. User can always delete any word that he had
                         previously selected. If user changes and saves the file, then in order
                         to see the changes, user has to run the following script.
-                        If user wants to delete a word, for example Δημήτρης he has 
+                        If user wants to delete a word, for example Δημήτρης he has
                         to delete the whole line:
                         <selected_word>Δημήτρης<end_of_selected_word>,
 
@@ -109,8 +109,19 @@ def preview_file(editor='gedit', ifile=helptext_file):
             command = (gedit_exec + ' ' + ifile + ' &')
             system(command=command)
         else:
-            # File doesn't exist so do nothing
-            pass
+            result = subprocess.run(['which', 'vim'], stdout=subprocess.PIPE)
+            if str(result.stdout) != "b''":
+                if file_exists(ifile):
+                    # Remove \n and b''
+                    # Open the word file
+                    vim_exec = str(result.stdout)
+                    l = len(vim_exec)
+                    vim_exec = vim_exec[2:len(vim_exec)-3]
+                    command = (vim_exec + ' ' + ifile + ' &')
+                    system(command=command)
+            else:
+                command = ('vi' + ' ' + ifile + ' &')
+                system(command=command)
 
 
 def list_of_added_words():
