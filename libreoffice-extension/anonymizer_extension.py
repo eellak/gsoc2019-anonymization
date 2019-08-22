@@ -16,11 +16,23 @@ settings_file = files_folder + '/settings.json'
 
 
 def init():
+
+    import string
+    import os
+
+    # Check some things first
+    # Folders etc.
+
+    if not os.path.isdir(files_folder):
+        # Create the folder
+        access_rights = 0o755
+        os.makedirs(files_folder, access_rights)
+
     original_file = get_document_name()
     data = {
         'original_file': original_file
     }
-    with open(settings_file, mode='w') as settings:
+    with open(settings_file, mode='w+') as settings:
         json.dump(data, settings)
 
 
@@ -105,7 +117,7 @@ def get_selected_words():
         return []
     # File exists
     with open(words_file, mode='r') as f:
-        text = f.read().replace('<selected_word>', '').replace(
+        text = f.read().replace('\n<selected_word>', '').replace(
             '<end_of_selected_word>', '')
         words = text.split(',')
         # return words
@@ -124,7 +136,7 @@ def set_selected_words(words=[]):
             if word in ['', ' ', None]:
                 continue
             word_to_be_written = (
-                '<selected_word>' +
+                '\n<selected_word>' +
                 word +
                 '<end_of_selected_word>' +
                 ','
@@ -231,7 +243,6 @@ def anonymize_selected_text():
 def anonymize_document(with_words=False, reload={}):
 
     import string
-    import os
 
     # Check some things first
     # Folders etc.
