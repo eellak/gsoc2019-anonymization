@@ -24,6 +24,7 @@ python3 -m anonymizer
     -p <patterns.json>
     -v <verbose>
     -w <array of words>
+    -q <quick search>
     '''
 
     parser = argparse.ArgumentParser(
@@ -48,7 +49,8 @@ python3 -m anonymizer
 
     parser.add_argument('-m',
                         '--method',
-                        help='Which method is applied to the identified data', type=str,
+                        help='Which method is applied to the identified data',
+                        type=str,
                         required=False)
 
     parser.add_argument('-f',
@@ -64,6 +66,11 @@ python3 -m anonymizer
     parser.add_argument('-w',
                         '--words',
                         help='Custom words search',
+                        required=False)
+    parser.add_argument('-q',
+                        '--quick',
+                        help='Quick search, searching only custom words',
+                        action='store_true',
                         required=False)
     args = parser.parse_args()
 
@@ -115,6 +122,7 @@ python3 -m anonymizer
                       ]
 
     verbose = args.verbose
+    quick = args.quick
 
     # If given patterns file check that it exists
     #
@@ -137,7 +145,8 @@ python3 -m anonymizer
                       method=method,
                       patterns_file=patterns_file,
                       verbose=verbose,
-                      words_array=words_array)
+                      words_array=words_array,
+                      quick=quick)
 
     if args.folder != None:
         folder = args.folder
@@ -155,7 +164,8 @@ python3 -m anonymizer
                           method=method,
                           patterns_file=patterns_file,
                           verbose=verbose,
-                          words_array=words_array)
+                          words_array=words_array,
+                          quick=quick)
 
 
 if __name__ == "__main__":

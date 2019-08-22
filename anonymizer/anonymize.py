@@ -101,25 +101,14 @@ def read_data_from_file(ifile, format='txt'):
         runShell(remove_file_command)
         return [data, replaced]
 
-        # return [data, []]
-        # tempfile = ifile[0:len(ifile)-4] + '_temp.txt'
-        # command = 'odt2txt ' + ifile + ' --output=' + '\'' + tempfile + '\''
-        # runShell(command)
-        # with open(tempfile, mode='r') as f:
-        #     data = f.read().replace('\n', ' ')
-        # # with open('testtemp1.txt', mode='w') as temp:
-        # #     temp.write(data)
-        # remove_file_command = 'rm ' + tempfile
-        # runShell(remove_file_command)
-        # return [data, []]
-
 
 def find_entities(ifile,
                   ofile,
                   method=['strict', "*", "True"],
                   patterns_file='patterns.json',
                   verbose=False,
-                  words_array=[]):
+                  words_array=[],
+                  quick=False):
 
     in_order = True
     # spacy -- init
@@ -159,16 +148,17 @@ def find_entities(ifile,
         Some times these to might have the same value.
     '''
     entities = []
-
-    for matcher, value in patterns_json['matcher'].items():
-        if value['active'] == 'False':
-            continue
-        custom_pattern_method = getattr(matcher_patterns, matcher)
-        # Call function with the proper parameters
-        results = custom_pattern_method(
-            data=data, pattern=fix_pattern(value['pattern']))
-        if results != None:
-            entities += results
+    if not quick:
+        # Do not do the whole search
+        for matcher, value in patterns_json['matcher'].items():
+            if value['active'] == 'False':
+                continue
+            custom_pattern_method = getattr(matcher_patterns, matcher)
+            # Call function with the proper parameters
+            results = custom_pattern_method(
+                data=data, pattern=fix_pattern(value['pattern']))
+            if results != None:
+                entities += results
 
     # Words Array , Custom word search in text
     for word in words_array:
