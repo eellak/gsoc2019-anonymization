@@ -8,7 +8,9 @@ import json
 
 
 # Some global variables
-files_folder = '/tmp/libreoffice/anonymizer_extension/extension_files/'
+specific_file_folder = ''
+files_folder = ('/tmp/libreoffice/anonymizer_extension/extension_files/' +
+                specific_file_folder)
 tempfile = files_folder + 'tempfile.odt'
 tempanonymizedfile = (files_folder + 'tempfile_anonymized.odt')
 words_file = files_folder + '/words.txt'
@@ -47,22 +49,46 @@ This python script contains the following libreoffice macros:
 '''
 
 
+def update_folder_paths():
+    global files_folder, tempfile, tempanonymizedfile, words_file, settings_file, helptext_file
+    files_folder = ('/tmp/libreoffice/anonymizer_extension/extension_files/' +
+                    specific_file_folder)
+    tempfile = files_folder + 'tempfile.odt'
+    tempanonymizedfile = (files_folder + 'tempfile_anonymized.odt')
+    words_file = files_folder + '/words.txt'
+    settings_file = files_folder + '/settings.json'
+    helptext_file = files_folder + '/helptext.txt'
+
+
 def init():
 
     import string
     import os
 
+    original_file = get_document_name()
+    # Create the specific folder
+    global specific_file_folder
+    specific_file_folder = get_specific_file_folder(ifile=original_file)
+    print('1specific_file_folder:', specific_file_folder)
+    print('1files_foldes:', files_folder)
+    # Update all folders paths dynamically
+    update_folder_paths()
+    print('2specific_file_folder:', specific_file_folder)
+    print('2files_foldes:', files_folder)
+
     # Check some things first
     # Folders etc.
-
     if not os.path.isdir(files_folder):
         # Create the folder
         access_rights = 0o755
         os.makedirs(files_folder, access_rights)
 
-    original_file = get_document_name()
+    # Save settings
     data = {
-        'original_file': original_file
+        'original_file': original_file,
+        'specific_file_folder': specific_file_folder,
+        'files_folder': files_folder
+
     }
 
     with open(settings_file, mode='w+') as settings:
@@ -122,6 +148,15 @@ def preview_file(editor='gedit', ifile=helptext_file):
             else:
                 command = ('vi' + ' ' + ifile + ' &')
                 system(command=command)
+
+
+def get_specific_file_folder(ifile=None):
+    if ifile == None:
+        return ''
+    # Return the name of file without extension
+    ifile = ifile.split('/')
+    name = ifile[len(ifile)-1]
+    return name[0:len(name)-4].replace('.', '') + '/'
 
 
 def list_of_added_words():
