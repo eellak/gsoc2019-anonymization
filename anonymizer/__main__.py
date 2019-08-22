@@ -12,8 +12,8 @@ def main(argv):
     inputfile = ''
     outputfile = ''
     method = ''
-    conf_file = cwd + '/conf.json'
-    patterns_file = '/patterns.json'
+    conf_file = cwd + '/' + 'conf.json'
+    patterns_file = 'patterns.json'
     helptext = '''
 ------------------------------------------------------------------------------
 python3 -m anonymizer
@@ -126,7 +126,7 @@ python3 -m anonymizer
     else:
         # If the service can not track patterns.json
         patterns_file = conf_json['paths']['patterns']
-        if not os.path.exists(patterns_file):
+        if not os.path.exists(cwd + '/' + patterns_file):
             raise NameError(
                 f"Please make sure that the patterns file's path is: {patterns_file}")
 
