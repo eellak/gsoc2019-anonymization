@@ -52,6 +52,8 @@ python3 -m anonymizer
     -v <verbose_mode>
     
     -w <string of words separated by commas>
+    
+    -q <quick_mode>
 ```
 
 
@@ -75,6 +77,8 @@ python3 -m anonymizer -i testfile.odt -o testfile_anonymized.odt -m s/*/True -p 
 - p: Specify the patterns file. A default pattern file is given in _anonymizer/patterns.json_
 - v: If typed, verbose mode is on. In verbose mode all identified entities are printed on the console.
 - w: If typed the parser expects a string with words separated by commas (,). Each word is anonymized in the text, adding         flexibility to the service. Therefore the user can anonymize words that may not have been identified by default.
+- q: If typed, quick mode is on. In quick mode the service only searches for entities given by user through the -w input.
+    This is useful in cases where a text has already been parsed and user wants to anonymize additional entities.
 
 ## Technologies used
 
