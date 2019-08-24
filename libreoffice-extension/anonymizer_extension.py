@@ -63,7 +63,6 @@ def update_folder_paths():
 def init():
 
     import string
-    import os
 
     original_file = get_document_name()
     # Create the specific folder
@@ -182,7 +181,7 @@ def file_exists(ifile=None):
 
 
 def get_selected_words():
-    import os
+
     # Check if file exists else []
     if not os.path.isfile(words_file):
         return []
