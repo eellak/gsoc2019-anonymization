@@ -21,7 +21,9 @@ On the subject of the creation of the anonymizer I suggest the following metrics
 ## Usage
 
 ### Wiki 
-An extended documentation has been written in order to the service to be understandable and maintainable. Please check first the [wiki](https://github.com/eellak/gsoc2019-anonymization/wiki) pages.
+An extended documentation has been written in order to the service to be understandable and maintainable.
+
+Please check first the [wiki](https://github.com/eellak/gsoc2019-anonymization/wiki) pages.
 
 #### Syntax
 
