@@ -10,20 +10,6 @@ I propose the creation of a LibreOffice extension as well as a web GUI that will
 
 On the subject of the creation of the anonymizer I suggest the following metrics. First of all, given any document the anonymizer should encrypt any greek entity in the file from a standard token vocabulary set. The user will be able to add specific arguments for entities to be anonymized (in addition to the standard ones) and he will be given the option to choose for an additional encryption. I believe that the LibreOffice extension as well as the web GUI should be user-friendly so customizable technologies should be used.
 
-## Timeline
-Milestones at the end of each [GSoC phase](https://developers.google.com/open-source/gsoc/timeline):
-
-### June 28, 2019 Phase 1 Evaluation:
-- Complete the sensitive data recognition matcher using regular expressions in _.txt_ and _.odt_ files.
-- Complete the implementation of the data anonymizer module.
-### July 26, 2019 Phase 2 Evaluation:
-- Initial Documentation.
-- Complete the implementation of Linux application with a web GUI.
-- Tackling unexpected delays, fixes, runtime evaluation
-### August 26, 2019 Final Evaluation:
-- Implementing LibreOffice Extension.
-- Completion of relevant documentation.
-- Tests
 
 ## Contributors
 - Google Summer of Code participant: Dimitrios Katsiros
