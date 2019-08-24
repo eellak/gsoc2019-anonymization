@@ -72,6 +72,8 @@ python3 -m anonymizer -i testfile.odt -o testfile_anonymized.odt -m s/*/True -p 
  The anonymizer service uses the following libraries: [argparse](https://docs.python.org/3/library/argparse.html), [json](https://docs.python.org/3/library/json.html), [termcolor](https://pypi.org/project/termcolor/).
 #### Web GUI
  The web GUI uses the following libraries: [django](https://www.djangoproject.com/), [bootstrap](https://getbootstrap.com/), [requests](https://pypi.org/project/requests/), [crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/install.html), [django-form-utils](https://pypi.org/project/django-form-utils/).
+#### LibreOffice Extension
+The libreoffice extension uses the following libraries: [uno](https://wiki.openoffice.org/wiki/Uno), [json](https://docs.python.org/3/library/json.html), [pynput](https://pypi.org/project/pynput/).
  
 ## License
 This project is open source as a part of the Google Summer of Code Program. Here, the MIT license is adopted. For more information see LICENSE.
