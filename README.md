@@ -27,10 +27,15 @@ The libreoffice extension uses the following libraries: [uno](https://wiki.openo
 
 ## Future work 
 - Improvements in user interface.
-- Extend Web GUI, so that it can be hosted in VM and serve many clients at the same time. 
+
+- Extending Web GUI, so that it can be hosted in VM and serve multiple clients at the same time.
+
 - Creating API.
+
 - Machine learning techniques to identify sensitive information in text.
+
 - Resolving any open issues.
+
 
 For more information you can visit [future work](https://github.com/eellak/gsoc2019-anonymization/wiki/Future-Work) in wiki pages.
 
