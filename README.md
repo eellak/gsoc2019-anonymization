@@ -41,9 +41,13 @@ For more information you can visit [future work](https://github.com/eellak/gsoc2
 
 ## Contributors
 - Google Summer of Code participant: Dimitrios Katsiros
+
 - Mentor: Kostas Papadimas
+
 - Mentor: Theodoros Karounos
+
 - Mentor: Iraklis Varlamis
+
 - Organization: [GFOSS](https://gfoss.eu/)
  
 ## License
