@@ -122,7 +122,7 @@ def document_list(request):
     user_words = []
     new_dict = ''
     for word in words.split(','):
-        if word in ['', "'", '"', "", " ", "", None]:
+        if word in ['', "'", '"', "", " ", "", None] or len(word.replace('"', '')) == 0:
             continue
         # print(word)
         if word not in user_words:
@@ -130,6 +130,7 @@ def document_list(request):
             new_dict += word + ','
     user_obj.user_dictionary = new_dict
     user_obj.save()
+    print('user words', user_words)
 
     context = {
         'filenames': files,
