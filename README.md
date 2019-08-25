@@ -51,4 +51,4 @@ For more information you can visit [future work](https://github.com/eellak/gsoc2
 - Organization: [GFOSS](https://gfoss.eu/)
  
 ## License
-This project is open source as a part of the Google Summer of Code Program. Here, the MIT license is adopted. For more information see LICENSE.
+This project is open source as a part of the Google Summer of Code Program. Here, the MIT license is adopted. For more information see [LICENSE](https://github.com/eellak/gsoc2019-anonymization/blob/master/LICENSE).
