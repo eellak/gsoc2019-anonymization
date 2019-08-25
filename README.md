@@ -12,9 +12,9 @@ On the subject of the creation of the anonymizer I suggest the following metrics
 
 
 ## Wiki 
-An extended documentation has been written in order to the service to be understandable and maintainable.
+An extended documentation has been written to [wiki pages](https://github.com/eellak/gsoc2019-anonymization/wiki)
+in order the service to be understandable and maintainable.
 
-Check [wiki](https://github.com/eellak/gsoc2019-anonymization/wiki) pages.
 
 ## Technologies used
 
@@ -44,7 +44,7 @@ For more information you can visit [future work](https://github.com/eellak/gsoc2
 
 - Mentor: Kostas Papadimas
 
-- Mentor: Theodoros Karounos
+- Mentor: Panos Louridas
 
 - Mentor: Iraklis Varlamis
 
