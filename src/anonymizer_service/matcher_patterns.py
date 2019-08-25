@@ -414,7 +414,6 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     for index, name in enumerate(names):
         if prepair_word(name) in safe_words:
             try:
-                # print(f'I found {prepair_word(name)} in names')
                 names.remove(name)
             except:
                 raise NameError(f'Can not remove {name}')
@@ -432,12 +431,10 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
             possible_surname_after = match.group('possible_surname_after')
             if possible_surname_before != None:
                 if prepair_word(possible_surname_before) in safe_words:
-                    # print(possible_surname_before)
                     len_surname_before = len(possible_surname_before)
                     possible_surname_before = None
             if possible_surname_after != None:
                 if prepair_word(possible_surname_after) in safe_words:
-                    # print(possible_surname_after)
                     len_surname_after = len(possible_surname_after)
                     possible_surname_after = None
 

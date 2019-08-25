@@ -148,9 +148,7 @@ python3 -m anonymizer_service
         for file in os.listdir(folder):
             if file.endswith(".txt") or file.endswith(".odt"):
                 files.append(folder + file)
-        # print(files)
         for file in files:
-            # print(file)
             find_entities(ifile=file,
                           ofile=create_output_file_name(file),
                           method=method,

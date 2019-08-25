@@ -24,7 +24,6 @@ def anonymize_file(id='',
     file_type = filename[-3:]
     if(custom_words[0] == ','):
         custom_words = custom_words[1:]
-    print('custom words', custom_words)
 
     if file_type == 'odt':
 
@@ -79,7 +78,6 @@ def anonymize_file(id='',
                        ' -o ' + 'upload_file/documents/' + user_folder + '/' + anonymized_document_name +
                        custom_words_option)
             runShell(command)
-            print('---------------------------------------------------')
 
             anonymized_file_name = file_name[0:(
                 len(file_name)-4)] + '_anonymized.txt'

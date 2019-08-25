@@ -17,7 +17,6 @@ def create_user_folders(request, *args, **kwargs):
     path = os.path.dirname(__file__)
     rel_path = '../upload_file/documents/'
     abs_path = os.path.join(path, rel_path)
-    print(abs_path)
     if not os.path.exists(abs_path + user_dir):
         os.makedirs(abs_path + user_dir)
         if not os.path.exists(abs_path + user_dir + 'files/'):

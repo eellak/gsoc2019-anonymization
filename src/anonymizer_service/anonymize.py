@@ -213,7 +213,6 @@ def find_entities(ifile,
 
     # Anonymize entities by removing them
     # from the original file
-    # print(data)
 
     final_text = ''
     index = 0
@@ -279,14 +278,12 @@ def find_entities(ifile,
             index = previous_e
             continue
         elif (s >= previous_e):
-            # print(f'common case span:{span}')
             # Common case
             final_text += data[index:s] + anonymize_element(element, method)
             previous_e = e
             index = e
         else:
             # previous and current element have both a common substring
-            # print(
                 # f'Weird case span_trimmed:{data[previous_e:e]},span:{span}')
             temp_element = [
                 element[0],
@@ -300,7 +297,6 @@ def find_entities(ifile,
                 temp_element, method)
             previous_e = e
             index = e
-        # print(data[:s] + colored(data[s], 'red') + data[s:])
     if index < len(data):
         final_text += data[index:len(data)]
 

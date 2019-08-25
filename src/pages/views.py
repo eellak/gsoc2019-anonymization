@@ -5,7 +5,6 @@ from pages.external_functions import create_user_folders, clear_documents_on_red
 
 
 def home_view(request, *args, **kwargs):
-    print('ok')
     # file_uploader = upload_file(request=request)
     # clear_documents_on_redirect(request)
     create_user_folders(request=request)

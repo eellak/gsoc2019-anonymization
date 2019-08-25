@@ -68,12 +68,8 @@ def init():
     # Create the specific folder
     global specific_file_folder
     specific_file_folder = get_specific_file_folder(ifile=original_file)
-    print('1specific_file_folder:', specific_file_folder)
-    print('1files_foldes:', files_folder)
     # Update all folders paths dynamically
     update_folder_paths()
-    print('2specific_file_folder:', specific_file_folder)
-    print('2files_foldes:', files_folder)
 
     # Check some things first
     # Folders etc.
