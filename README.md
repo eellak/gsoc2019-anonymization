@@ -25,6 +25,15 @@ Check [wiki](https://github.com/eellak/gsoc2019-anonymization/wiki) pages.
 #### LibreOffice Extension
 The libreoffice extension uses the following libraries: [uno](https://wiki.openoffice.org/wiki/Uno), [json](https://docs.python.org/3/library/json.html), [pynput](https://pypi.org/project/pynput/).
 
+## Future work 
+- Improvements in user interface.
+- Extend Web GUI, so that it can be hosted in VM and serve many clients at the same time. 
+- Creating API.
+- Machine learning techniques to identify sensitive information in text.
+- Resolving any open issues.
+
+For more information you can visit [future work](https://github.com/eellak/gsoc2019-anonymization/wiki/Future-Work) in wiki pages.
+
 ## Contributors
 - Google Summer of Code participant: Dimitrios Katsiros
 - Mentor: Kostas Papadimas
