@@ -39,6 +39,9 @@ The libreoffice extension uses the following libraries: [uno](https://wiki.openo
 
 For more information you can visit [future work](https://github.com/eellak/gsoc2019-anonymization/wiki/Future-Work) in wiki pages.
 
+## Final Report Gist
+You can find the final report [here](https://gist.github.com/DimitrisKatsiros/cf6ad8e338a545a74306e0a52d2bfe26).
+
 ## Contributors
 - Google Summer of Code participant: Dimitrios Katsiros
 
