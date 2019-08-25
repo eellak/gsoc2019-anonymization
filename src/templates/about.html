@@ -1,5 +1,30 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>This is about page</h1>
-<p>Success</p>
+<div style='align:center'>
+<center>
+<h1>Google Summer Of Code 2019 </h1>
+
+<h3>Anonymisation Through Data Encryption of Sensitive Data in ODT and Text Files in Greek Language</h3>
+<br>
+<br>
+<br>
+
+<h2> Problem Statement </h2>
+<p>Over the past year, great importance has been attached to information anonymisation from governments all around the world. The GDPR defines pseudonymization and the processing of personal data in such a way that the data can no longer be attributed to a specific data subject without the use of additional information. Although the GDPR has been implemented since 2018 no reliable infrastructure exists in Greece to encrypt sensitive documents. It is therefore necessary to develop a product specifically for users of the Greek language that can safely and promptly anonymize their data in order for it to abide to the GDPR.</p>
+
+<h2>Abstract</h2>
+<p>I propose the creation of a LibreOffice extension as well as a web GUI that will anonymize information in any legal document given. All sensitive information should be easily anonymized through this open-source tool. 
+
+On the subject of the creation of the anonymizer I suggest the following metrics. First of all, given any document the anonymizer should encrypt any greek entity in the file from a standard token vocabulary set. The user will be able to add specific arguments for entities to be anonymized (in addition to the standard ones) and he will be given the option to choose for an additional encryption. I believe that the LibreOffice extension as well as the web GUI should be user-friendly so customizable technologies should be used.
+</p>
+
+<h2>Wiki</h2>
+An extended documentation has been written in order to the service to be understandable and maintainable.
+
+Check <a href='https://github.com/eellak/gsoc2019-anonymization/wiki'>wiki</a> pages.
+
+<h2>Project</h2>
+Check the whole project <a href='https://github.com/eellak/gsoc2019-anonymization'>here</a>.
+</center>
+</div>
 {% endblock content %}
