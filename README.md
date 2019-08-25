@@ -18,58 +18,10 @@ On the subject of the creation of the anonymizer I suggest the following metrics
 - Mentor: Iraklis Varlamis
 - Organization: [GFOSS](https://gfoss.eu/)
 
-## Usage
-
-### Wiki 
+## Wiki 
 An extended documentation has been written in order to the service to be understandable and maintainable.
 
-Please check first the [wiki](https://github.com/eellak/gsoc2019-anonymization/wiki) pages.
-
-#### Syntax
-
-```
-python3 -m anonymizer
-
-    -i <inputfile>
-    
-    -o <outputfile>
-    
-    -f <folder>
-    
-    -m <method_used(s,strict)/symbol/(lenght==lenght_of_word)>
-    
-    -p <patterns.json>
-    
-    -v <verbose_mode>
-    
-    -w <string of words separated by commas>
-    
-    -q <quick_mode>
-```
-
-
-#### Defaults
-
-```
-python3 -m anonymizer -i testfile.odt -o testfile_anonymized.odt -m s/*/True -p anonymizer/patterns.json
-```
-
-
-#### Explanation
-
-- i: Specify the input's file path.
-- o: Specify the output's file  path.
-- f: Specify a folder's path. If set, the module will anonymize all .txt and .odt files in the folder.
-- m:
-    - method: Strict method.
-    - symbol: Specify the symbol that will replace sensitive information.
-    - length: If True lenght is set to ` len(entity) `, else if a number _n_ is given each entity shall
-              be replaced with symbol _n_ times, always respecting the original alignment/format of the text.
-- p: Specify the patterns file. A default pattern file is given in _anonymizer/patterns.json_
-- v: If typed, verbose mode is on. In verbose mode all identified entities are printed on the console.
-- w: If typed the parser expects a string with words separated by commas (,). Each word is anonymized in the text, adding         flexibility to the service. Therefore the user can anonymize words that may not have been identified by default.
-- q: If typed, quick mode is on. In quick mode the service only searches for entities given by user through the -w input.
-    This is useful in cases where a text has already been parsed and user wants to anonymize additional entities.
+Check [wiki](https://github.com/eellak/gsoc2019-anonymization/wiki) pages.
 
 ## Technologies used
 
