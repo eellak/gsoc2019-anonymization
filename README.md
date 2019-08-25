@@ -11,13 +11,6 @@ I propose the creation of a LibreOffice extension as well as a web GUI that will
 On the subject of the creation of the anonymizer I suggest the following metrics. First of all, given any document the anonymizer should encrypt any greek entity in the file from a standard token vocabulary set. The user will be able to add specific arguments for entities to be anonymized (in addition to the standard ones) and he will be given the option to choose for an additional encryption. I believe that the LibreOffice extension as well as the web GUI should be user-friendly so customizable technologies should be used.
 
 
-## Contributors
-- Google Summer of Code participant: Dimitrios Katsiros
-- Mentor: Kostas Papadimas
-- Mentor: Theodoros Karounos
-- Mentor: Iraklis Varlamis
-- Organization: [GFOSS](https://gfoss.eu/)
-
 ## Wiki 
 An extended documentation has been written in order to the service to be understandable and maintainable.
 
@@ -31,6 +24,13 @@ Check [wiki](https://github.com/eellak/gsoc2019-anonymization/wiki) pages.
  The web GUI uses the following libraries: [django](https://www.djangoproject.com/), [bootstrap](https://getbootstrap.com/), [requests](https://pypi.org/project/requests/), [crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/install.html), [django-form-utils](https://pypi.org/project/django-form-utils/).
 #### LibreOffice Extension
 The libreoffice extension uses the following libraries: [uno](https://wiki.openoffice.org/wiki/Uno), [json](https://docs.python.org/3/library/json.html), [pynput](https://pypi.org/project/pynput/).
+
+## Contributors
+- Google Summer of Code participant: Dimitrios Katsiros
+- Mentor: Kostas Papadimas
+- Mentor: Theodoros Karounos
+- Mentor: Iraklis Varlamis
+- Organization: [GFOSS](https://gfoss.eu/)
  
 ## License
 This project is open source as a part of the Google Summer of Code Program. Here, the MIT license is adopted. For more information see LICENSE.
