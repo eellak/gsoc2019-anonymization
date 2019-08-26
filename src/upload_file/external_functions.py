@@ -1,6 +1,7 @@
 import os
 from os import system as runShell
 from upload_file.models import Document, User
+from anonymizer.anonymize import find_entities
 
 
 def anonymize_file(id='',
@@ -60,6 +61,11 @@ def anonymize_file(id='',
 
             # Check if file exists already or force update
             if not os.path.isfile(anonymized_file) or updateTextIfPossible or rerender_text:
+                # Package code
+                find_entities(ifile=('upload_file/documents/' +
+                                     user_folder + '/' + tempname),
+                              words_array=custom_words.split(','))
+                # Original code
                 command = ('python3 -m anonymizer_service' +
                            ' -i upload_file/documents/' + user_folder + '/' + tempname +
                            custom_words_option)

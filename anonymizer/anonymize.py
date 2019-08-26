@@ -6,6 +6,7 @@ from anonymizer import matcher_patterns
 from anonymizer.external_functions import official_json
 from anonymizer.external_functions import fix_pattern
 from anonymizer.external_functions import sort_by_start
+from anonymizer.external_functions import create_output_file_name
 
 
 def anonymize_element(element, method=['strict', '*', 'True']):
@@ -103,7 +104,7 @@ def read_data_from_file(ifile, format='txt'):
 
 
 def find_entities(ifile,
-                  ofile,
+                  ofile=None,
                   method=['strict', "*", "True"],
                   patterns_file='patterns.json',
                   verbose=False,
@@ -111,11 +112,10 @@ def find_entities(ifile,
                   quick=False):
 
     in_order = True
-    # spacy -- init
-    #
 
-    # nlp = spacy.load('el_core_news_sm')
-    # matcher = Matcher(nlp.vocab)
+    if ofile == None:
+        # Create a name for the output file
+        ofile = create_output_file_name(ifile=ifile)
 
     # Check file extension
     extension = ifile[-3:]
