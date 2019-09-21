@@ -10,8 +10,9 @@ def anonymize_file(id='',
                    text='',
                    download=False,
                    updateTextIfPossible=False,
-                   rerender_text=True):
-    import anonymizer
+                   rerender_text=True,
+                   delete_words=''):
+
     obj_file = Document.objects.get(id=id)
     filename = str(obj_file)
     file = os.path.join(os.path.dirname(__file__),
@@ -52,6 +53,8 @@ def anonymize_file(id='',
 
             custom_words_option = (
                 " -w '" + custom_words + "'") if custom_words != '' else ''
+            delete_words_option = (
+                " -r '" + delete_words + "'") if delete_words != '' else ''
 
             anonymized_file_name = tempname[0:(
                 len(tempname)-4)] + '_anonymized.txt'
@@ -86,6 +89,9 @@ def anonymize_file(id='',
             return [{}, {}]
 
     elif file_type == 'txt':
+        delete_words_option = (
+            " -r '" + delete_words + "'") if delete_words != '' else ''
+
         text = Document.objects.filter(id=1)
         file_name = filename
         l = len(file_name)

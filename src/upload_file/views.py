@@ -202,6 +202,10 @@ def document_preview(request, id):
         words = request.GET.getlist('text_param')
         custom_words = ''
 
+        # GET method delete_parameters
+        url = request.get_full_path()
+        delete_words = request.GET.getlist('delete_param')
+
         # GET method user_parameters
         url = request.get_full_path()
         user_words = request.GET.getlist('user_dictionary_param')
@@ -234,6 +238,17 @@ def document_preview(request, id):
             user_obj.user_dictionary += user_anonymized_words
             user_obj.save()
 
+        if delete_words != []:
+            delete_words = [word[1:-1]
+                            for word in delete_words[0][1:-1].split(',')]
+            old_delete_words = doc_obj.delete_words.split(',')
+            # Replace the old list with the
+            # union of the 2 lists
+            doc_obj.delete_words = ','.join(delete_words + old_delete_words)
+            print('afto kano save', ','.join(delete_words + old_delete_words))
+            doc_obj.save()
+            updateTextParameter = True
+
         # Get user anonymized words from db
         user_anonymized_words = User.objects.filter(
             name=str(request.user))[0].user_dictionary + (user_anonymized_words if user_words != [] else '')
@@ -259,7 +274,8 @@ def document_preview(request, id):
             custom_words=(anonymized_words + ',' + user_anonymized_words),
             text=text,
             updateTextIfPossible=updateTextParameter,
-            rerender_text=rerender_text)
+            rerender_text=rerender_text,
+            delete_words=doc_obj.delete_words)
 
         context = {
             'document': document,

@@ -24,6 +24,7 @@ python3 -m anonymizer
     -p <patterns.json>
     -v <verbose>
     -w <array of words>
+    -r <remove words>
     -q <quick search>
     '''
 
@@ -67,6 +68,10 @@ python3 -m anonymizer
                         '--words',
                         help='Custom words search',
                         required=False)
+    parser.add_argument('-r',
+                        '--remove',
+                        help='Remove words from standard anonymization',
+                        required=False)
     parser.add_argument('-q',
                         '--quick',
                         help='Quick search, searching only custom words',
@@ -97,6 +102,12 @@ python3 -m anonymizer
         words_array = words_array_string.split(',')
     else:
         words_array = []
+
+    if args.remove != None:
+        remove_words = args.remove
+        remove_words = remove_words.split(',')
+    else:
+        remove_words = []
 
     if args.method != None:
         try:
@@ -146,6 +157,7 @@ python3 -m anonymizer
                       patterns_file=patterns_file,
                       verbose=verbose,
                       words_array=words_array,
+                      remove_words=remove_words,
                       quick=quick)
 
     if args.folder != None:
@@ -163,6 +175,7 @@ python3 -m anonymizer
                           patterns_file=patterns_file,
                           verbose=verbose,
                           words_array=words_array,
+                          remove_words=remove_words,
                           quick=quick)
 
 
