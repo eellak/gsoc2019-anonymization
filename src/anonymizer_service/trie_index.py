@@ -1,4 +1,3 @@
-
 def read_dictionary(dictionary_file=None):
 
     dictionary_file = 'male_and_female_names.txt' if dictionary_file == None else dictionary_file
@@ -134,7 +133,7 @@ class Trie:
 
 def create_trie_index_for_names(dataset=None):
 
-    dataset = 'anonymizer_service/data/male_and_female_names.txt' if dataset == None else dataset
+    dataset = 'anonymizer/data/male_and_female_names.txt' if dataset == None else dataset
     data = read_dictionary(dictionary_file=dataset)
     # Input words (prepaired to only 'α' through 'ω' and lower case)
     dictionary = [word for word in data]

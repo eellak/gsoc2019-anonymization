@@ -1,22 +1,22 @@
 import sys
-from anonymizer_service.anonymize import find_entities
-from anonymizer_service import anonymize
-from anonymizer_service.external_functions import create_output_file_name
+from anonymizer.anonymize import find_entities
+from anonymizer import anonymize
+from anonymizer.external_functions import create_output_file_name
 import argparse
-import os.path
+import os
 import json
 
 
 def main(argv):
+    cwd = os.path.dirname(os.path.abspath(__file__))
     inputfile = ''
     outputfile = ''
     method = ''
-    conf_file = 'anonymizer_service/conf.json'
-    # in_order = True
-    patterns_file = 'anonymizer_service/patterns.json'
+    conf_file = cwd + '/' + 'conf.json'
+    patterns_file = 'patterns.json'
     helptext = '''
 ------------------------------------------------------------------------------
-python3 -m anonymizer_service
+python3 -m anonymizer
     -i <inputfile>
     -o <outputfile>
     -f <folder>
@@ -24,6 +24,7 @@ python3 -m anonymizer_service
     -p <patterns.json>
     -v <verbose>
     -w <array of words>
+    -q <quick search>
     '''
 
     parser = argparse.ArgumentParser(
@@ -48,7 +49,8 @@ python3 -m anonymizer_service
 
     parser.add_argument('-m',
                         '--method',
-                        help='Which method is applied to the identified data', type=str,
+                        help='Which method is applied to the identified data',
+                        type=str,
                         required=False)
 
     parser.add_argument('-f',
@@ -65,6 +67,11 @@ python3 -m anonymizer_service
                         '--words',
                         help='Custom words search',
                         required=False)
+    parser.add_argument('-q',
+                        '--quick',
+                        help='Quick search, searching only custom words',
+                        action='store_true',
+                        required=False)
     args = parser.parse_args()
 
     # If given configuration file check that it exists
@@ -72,7 +79,7 @@ python3 -m anonymizer_service
     # If the service can not track conf.json
     if not os.path.exists(conf_file):
         raise NameError(
-            "Please make sure that the conf.json file's path is: anonymizer_service/conf.json")
+            "Please make sure that the conf.json file's path is: anonymizer/conf.json")
 
     with open(conf_file, mode='r') as cf:
         data = cf.read().replace('\n', '')
@@ -88,7 +95,6 @@ python3 -m anonymizer_service
     if args.words != None:
         words_array_string = args.words
         words_array = words_array_string.split(',')
-
     else:
         words_array = []
 
@@ -116,6 +122,7 @@ python3 -m anonymizer_service
                       ]
 
     verbose = args.verbose
+    quick = args.quick
 
     # If given patterns file check that it exists
     #
@@ -127,7 +134,7 @@ python3 -m anonymizer_service
     else:
         # If the service can not track patterns.json
         patterns_file = conf_json['paths']['patterns']
-        if not os.path.exists(patterns_file):
+        if not os.path.exists(cwd + '/' + patterns_file):
             raise NameError(
                 f"Please make sure that the patterns file's path is: {patterns_file}")
 
@@ -138,7 +145,8 @@ python3 -m anonymizer_service
                       method=method,
                       patterns_file=patterns_file,
                       verbose=verbose,
-                      words_array=words_array)
+                      words_array=words_array,
+                      quick=quick)
 
     if args.folder != None:
         folder = args.folder
@@ -154,7 +162,8 @@ python3 -m anonymizer_service
                           method=method,
                           patterns_file=patterns_file,
                           verbose=verbose,
-                          words_array=words_array)
+                          words_array=words_array,
+                          quick=quick)
 
 
 if __name__ == "__main__":

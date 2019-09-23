@@ -304,12 +304,14 @@ def known_address(data,pattern=None):
     results = []
 
     import re
-    from anonymizer_service.trie_index import create_trie_index
-    from anonymizer_service.trie_index import prepair_word
-
+    from anonymizer.trie_index import create_trie_index
+    from anonymizer.trie_index import prepair_word
+    import os 
     known_addresses = pattern['known_address_pattern']
     # Create dataset
-    dataset = 'anonymizer_service/data/odoi.csv'
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    dataset = cwd + '/data/odoi.csv'
+    # dataset = 'anonymizer/data/odoi.csv'
     address_trie_index = create_trie_index(dataset=dataset)
     for match in re.finditer(known_addresses,data):
         s = match.start()
@@ -334,8 +336,8 @@ def known_address(data,pattern=None):
 def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     if pattern == None:
         return []
-    from anonymizer_service import trie_index
-    from anonymizer_service.trie_index import prepair_word
+    from anonymizer import trie_index
+    from anonymizer.trie_index import prepair_word
     import re
     results = []
     possible_names = []
@@ -359,8 +361,10 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
             e,
             found_by_spacy
         ])
+    import os
+    cwd = os.path.dirname(os.path.abspath(__file__))
     name_trie_index = trie_index.create_trie_index_for_names(
-        'anonymizer_service/data/male_and_female_names.txt')
+        cwd + '/data/male_and_female_names.txt')
 
     # Possible names. Words that start with uppercase letter
     are_names = []
@@ -406,8 +410,9 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     # Safewords:
     # These words will never be parsed as surnames
     #
-    from anonymizer_service.external_functions import find_path
-    safewords_path = find_path('anonymizer_service/conf.json', 'safewords')
+    from anonymizer.external_functions import find_path
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    safewords_path = find_path( (cwd+'/conf.json'), 'safewords')
     with open(safewords_path, mode='r') as sw:
         safe_words = [word.replace('\n', '') for word in sw.readlines()]
 
@@ -735,8 +740,9 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
 def place(data, pattern=None, handler=None):
 
     import re
-    from anonymizer_service.trie_index import create_trie_index
-    from anonymizer_service.trie_index import prepair_word
+    import os
+    from anonymizer.trie_index import create_trie_index
+    from anonymizer.trie_index import prepair_word
 
     if pattern == None:
         return []
@@ -745,10 +751,15 @@ def place(data, pattern=None, handler=None):
     #
     # Both have no spaces
     # Nomoi dataset
-    dataset = 'anonymizer_service/data/nomoi.csv'
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    dataset = cwd + '/data/nomoi.csv'
+
+    # dataset = 'anonymizer/data/nomoi.csv'
     place_trie_index_nomoi = create_trie_index(dataset=dataset)
     # Dhmoi dataset
-    dataset = 'anonymizer_service/data/dhmoi.csv'
+    dataset = cwd + '/data/dhmoi.csv'
+
+    # dataset = 'anonymizer/data/dhmoi.csv'
     place_trie_index_dhmoi = create_trie_index(dataset=dataset)
 
     # Find possible nomous using regex.
@@ -787,7 +798,8 @@ def place(data, pattern=None, handler=None):
     # Create dataset
     # This dataset - trie index handles any of: - or spaces as _
 
-    dataset = 'anonymizer_service/data/dioikhtikh_perifereia.csv'
+    # dataset = 'anonymizer/data/dioikhtikh_perifereia.csv'
+    dataset = cwd + '/data/dioikhtikh_perifereia.csv'
     place_trie_index_periferia = create_trie_index(dataset=dataset)
 
     place_with_space_pattern = pattern['place_with_space_pattern']
@@ -914,7 +926,7 @@ def decision_number(data, pattern=None, handler=None):
 
     return results
 
-def custom_regex(data, pattern=None, handler=None):
+def custom_regex(data,pattern=None,handler=None):
     import re
     results = []
     for item in pattern:
@@ -927,10 +939,10 @@ def custom_regex(data, pattern=None, handler=None):
     return results
 
 def custom_words(data,word=None,handler=None):
-    
+
     import re 
     results = []
-    for match in re.finditer(word.replace('"',''),data):
+    for match in re.finditer(word.replace('"', ''), data):
         s = match.start()
         e= match.end()
         span = data[s:e]

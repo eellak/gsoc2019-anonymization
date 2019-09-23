@@ -41,7 +41,9 @@ def fix_pattern(patterns):
     return(pattern)
 
 
-def find_path(conf_file='anonymizer_service/conf.json', file_needed=None):
+def find_path(conf_file='anonymizer/conf.json', file_needed=None):
+    import os
+
     if conf_file == None:
         raise NameError('find_path:No configuration file given')
     if file_needed == None:
@@ -50,4 +52,7 @@ def find_path(conf_file='anonymizer_service/conf.json', file_needed=None):
     with open(conf_file, mode='r') as json_file:
         data = json.load(json_file)
     paths = data['paths']
-    return paths[file_needed]
+
+    retval = os.path.dirname(os.path.abspath(
+        __file__)) + '/' + paths[file_needed]
+    return retval
