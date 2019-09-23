@@ -70,7 +70,8 @@ def anonymize_file(id='',
                 # # Original code
                 command = ('python3 -m anonymizer_service' +
                            ' -i upload_file/documents/' + user_folder + '/' + tempname +
-                           custom_words_option)
+                           custom_words_option +
+                           delete_words_option)
                 runShell(command)
             with open(temp_file, mode='r') as f:
                 text = f.read()
@@ -88,7 +89,8 @@ def anonymize_file(id='',
             command = ('python3 -m anonymizer_service' +
                        ' -i ' + file +
                        ' -o ' + 'upload_file/documents/' + user_folder + '/' + anonymized_document_name +
-                       custom_words_option)
+                       custom_words_option +
+                       delete_words_option)
             runShell(command)
             anonymized_file_name = file_name[0:(
                 len(file_name)-4)] + '_anonymized.txt'
@@ -118,7 +120,9 @@ def anonymize_file(id='',
             #                                    words_array=custom_words.split(','))
             # Original code
             command = ('python3 -m anonymizer_service -i ' + file +
-                       ' -o upload_file/documents/' + user_folder + '/' + anonymized_file_name + " -w '" + custom_words + "'")
+                       ' -o upload_file/documents/' + user_folder + '/' + anonymized_file_name +
+                       " -w '" + custom_words + "'"
+                       + delete_words_option)
             runShell(command)
         with open(file, mode='r') as f:
             text = f.read()
