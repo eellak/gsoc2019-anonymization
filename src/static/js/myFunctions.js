@@ -12,6 +12,31 @@ $(document).ready(function () {
         }
     });
 });
+$(document).ready(function () {
+    $("#original_document").click(function () {
+        // Get word
+        word = window.getSelection().toString();
+        if (word != '') {
+            selected_word = word;
+            fade();
+            document.getElementById('anonymize_word_button').style.opacity = 1;
+
+        }
+    });
+});
+
+$(document).ready(function () {
+    $("#anonymized_document").click(function () {
+        // Get word
+        word = window.getSelection().toString();
+        if (word != '') {
+            selected_word = word;
+            fade();
+            document.getElementById('anonymize_word_button').style.opacity = 1;
+
+        }
+    });
+});
 
 function fade() {
     var i = 0;
@@ -59,6 +84,21 @@ function updateUserDictionary() {
     selected_word = null;
     window.location = new_url;
 }
+
+function deanonymizeText() {
+    base_url = window.location.href.split('?')[0]
+    // console.log(base_url)
+    new_url = base_url + '?delete_param=' + JSON.stringify(words_to_be_anonymized);
+    console.log(words_to_be_anonymized);
+    words_to_be_anonymized = [];
+    selected_word = null;
+    //     setTimeout(function () { window.location = new_url; }, 2000);
+    //     // window.location = new_url;
+    // }
+    window.location = new_url;
+
+}
+
 function deleteWordsToBeAnonymized(n) {
     if (n == -1) {
         words_to_be_anonymized = [];

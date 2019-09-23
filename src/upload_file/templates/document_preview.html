@@ -45,6 +45,7 @@ function goBack() {
 
 <button type='button' id='anonymize_word_button' name='anonymize_word' class='btn btn-danger' onclick='addWordsToBeAnonymized()'>Anonymize word</button>
 
+<button type='button' id='deanonymize_text_button' name='deanonymize_text' class='btn btn-danger' onclick='deanonymizeText()'>Deanonymize Text</button>
 {% include 'button_delete_words.html' %}
 {% comment %} <button type='button' id='delete_words_button' name='delete_words' class='btn btn-warning' onclick='deleteWordsToBeAnonymized()'>Delete words</button> {% endcomment %}
 
@@ -58,7 +59,7 @@ function goBack() {
 
             <h3 style='text-align:center'><b>{{document.name}}</b><h3>
             <br>
-            {{document.text|linebreaks}}
+            <span id='original_document'>{{document.text|linebreaks}}</span>
         </div>
 
         <div id='anonymized_document' class='split right'>
@@ -72,7 +73,7 @@ function goBack() {
         </div>
     </div>
 
-    <div id='option2' style='z-index:+5;'>
+    <div id='option2'>
         
                 <div id='anonymized_document' >
             <h3 style='text-align:left;'><b>{{document_anonymized.name}}</b><h3>

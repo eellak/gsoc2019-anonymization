@@ -109,6 +109,7 @@ def find_entities(ifile,
                   patterns_file='patterns.json',
                   verbose=False,
                   words_array=[],
+                  remove_words=[],
                   quick=False):
 
     in_order = True
@@ -195,6 +196,11 @@ def find_entities(ifile,
             if entity not in final_entities:
                 final_entities.append(entity)
         entities = final_entities
+
+    # Remove specific words added by user
+    if remove_words != []:
+        entities = [entity for entity in entities if entity[2]
+                    not in remove_words]
 
     if verbose:
         # Display

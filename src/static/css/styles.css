@@ -119,6 +119,9 @@
   float: right;
   /* position: fixed */
 }
+#deanonymize_text_button{
+  float:right;
+}
 .my-top-buttons{
   z-index: 50;
 }

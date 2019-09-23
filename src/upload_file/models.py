@@ -35,6 +35,7 @@ class Document(models.Model):
     text = models.TextField(default='')
     anonymized_words = models.TextField(default='')
     copy_of_user_dictionary = models.TextField(default='')
+    delete_words = models.TextField(default='')
 
     def __str__(self):
         return str(self.name)
