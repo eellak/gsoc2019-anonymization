@@ -2,11 +2,11 @@ import sys
 import getopt
 from os import system as runShell
 from termcolor import colored
-from anonymizer import matcher_patterns
-from anonymizer.external_functions import official_json
-from anonymizer.external_functions import fix_pattern
-from anonymizer.external_functions import sort_by_start
-from anonymizer.external_functions import create_output_file_name
+from anonymizer_service import matcher_patterns
+from anonymizer_service.external_functions import official_json
+from anonymizer_service.external_functions import fix_pattern
+from anonymizer_service.external_functions import sort_by_start
+from anonymizer_service.external_functions import create_output_file_name
 
 
 def anonymize_element(element, method=['strict', '*', 'True']):
@@ -109,6 +109,7 @@ def find_entities(ifile,
                   patterns_file='patterns.json',
                   verbose=False,
                   words_array=[],
+                  remove_words=[],
                   quick=False):
 
     in_order = True
@@ -195,6 +196,11 @@ def find_entities(ifile,
             if entity not in final_entities:
                 final_entities.append(entity)
         entities = final_entities
+
+    # Remove specific words added by user
+    if remove_words != []:
+        entities = [entity for entity in entities if entity[2]
+                    not in remove_words]
 
     if verbose:
         # Display

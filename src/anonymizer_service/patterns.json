@@ -1,0 +1,93 @@
+{
+    "matcher": {
+        "phone_number": {
+            "active": "True",
+            "pattern": {
+                "general_phone_number_pattern": "\b(\+[\s]*[0-9]{2})?[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b",
+                "greek_mobile_number_pattern": "\b(\+[\s]*30)?[\s\.\-]*(69[0-9]{1})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b",
+                "greek_phone_number_pattern": "\b(\+[\s]*30)?[\s\.\-]*(2[0-9]{2})[\s\.\-]*([0-9]{3})[\s\.\-]*([0-9]{4})\b"
+            }
+        },
+        "vehicle": {
+            "active": "True",
+            "pattern": {
+                "vehicle_pattern": "\b((([ΑΒΕΖΗΙΚΜΝΟΡΤΥΧABEZHIKMNOPTYX])([\s.])?){3})([-\s])*([0-9]{4})\b",
+                "rare_vehicle_pattern": "\b((([ΠΣ])[\s.]?){2})([-\s])*([0-9]{4})",
+                "special_vehicle_pattern": "\b(([ΠΣΕΑΛΡΜSEAMP][\s.]?){2})[-\s]*([0-9]{5})\b",
+                "diplomatic_corps_vehicle_pattern": "\b(([ΔΣ][.\s]?){2})(([0-9][\s]?){2}[\s-]*[0-9]{1})[\s]?(CD[\s.]?|cd[\s.]?)\b"
+            }
+        },
+        "identity_card": {
+            "active": "True",
+            "pattern": {
+                "identity_card_pattern":"(?i)\s\b(([α-ω][\s.]?){2})[\s-]?(([0-9][\s]?){6})\b"
+            }
+        },
+        "iban": {
+            "active": "True",
+            "pattern": {
+                "iban_pattern":"(?i)\b(IBAN|iban|ΙΒΑΝ|ιβαν)([\s\-:]*)(([A-Z]|[a-z]){2}([\s\-]*\d){25})\b"
+            }
+        },
+        "afm": {
+            "active": "True",
+            "pattern": {
+                "afm_pattern":"(?i)\bα[\s.]?φ[\s.]?μ[\s.]?[\s\-]?[\w]*?[\s:]*([0-9]{9})\b"
+            }
+        },
+        "amka": {
+            "active": "True",
+            "pattern": {
+                "amka_pattern":"(?i)\b(α[\s.]?μ[\s.]?κ[\s.]?α[\s.]?)[\w]*?[\s.:](([012][0-9]|30|31)([0-9]|10|11|12)[0-9][0-9][0-9]{5})\b"
+            }
+        },
+        "brand": {
+            "active": "True",
+            "pattern": {
+                "brand_name_pattern":"(?i)\b(επωνυμία|επωνυμια)[\s:]?«(.*?)»{1}",
+                "brand_distinctive_title_pattern":"(?i)\b(διακριτικό|διακριτικο)[\s\-]?(τίτλο|τιτλο)[\s:]?«(.*?)»{1}"
+            }
+        },
+        "address": {
+            "active": "True",
+            "pattern": {
+                "address_pattern":"\b(?:οδός|οδος|οδο|οδό|οδού|οδου)[\s:]+?(?P<address>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number>.+?\b))?",
+                "multiple_address_pattern":"\b(?:οδών|οδων|Οδών|Οδων)[\s:]+?(?P<address1>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number1>.+?\b))(?:[\w]?[\s,]*(?:και|Και|κι)[\s,]*)(?P<address2>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number2>.+?\b))"
+            }
+        },
+        "known_address": {
+            "active": "True",
+            "pattern": {
+                "known_address_pattern":"(?:\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*[\s\-]){1,3}"
+            }
+        },
+        "name": {
+            "active": "True",
+            "pattern": {
+                "name_pattern": "\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*",
+                "surname_pattern_before": "(?:(?P<possible_surname_before>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?[\s]+)?",
+                "surname_pattern_after": "(?:[\s]+(?P<possible_surname_after>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*\b)?)?",
+                "surname_pattern_mr": "(?:\b(?:[κΚ]ος?|[κΚ]ου|[κΚ]ον|[κΚ]ας?|[δΔ]ις))\.?\s(?P<surname>[Α-Ω]+\w*)",
+                "surname_pattern_with_prefix": "\b(?P<prefix>\b[Α-Ω]+\.)\s*(?P<surname>[Α-Ω]+\w*)",
+                "middlename_pattern":"\s+(?P<middlename>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*(?P<middlename_dot>.?))\s+(?P<surname>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*)"
+            }
+        },
+        "place": {
+            "active": "True",
+            "pattern": {
+                "place_pattern": "\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*",
+                "place_with_space_pattern":"\b(?P<word1>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*)\s?-?\s?(?P<word2>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*)?\s?-?\s?(?P<word3>\b[Α-ΩΆΈΌΊΏΉΎ]+[α-ωάέόίώήύ]*)?"
+            }
+        },
+        "decision_number": {
+            "active": "True",
+            "pattern": {
+                "decision_number_pattern":"(\b[Αα]ρι?θ?μ?[οό]?ς?.?)?\s+(?P<n1>[0-9]+)\s?/\s?(?P<n2>[12][0-9][0-9][0-9])"
+            }
+        },
+        "custom_regex": {
+            "active": "False",
+            "pattern": {}
+        }
+    }
+}

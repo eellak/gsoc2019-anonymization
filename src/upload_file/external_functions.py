@@ -64,10 +64,14 @@ def anonymize_file(id='',
             # Check if file exists already or force update
             if not os.path.isfile(anonymized_file) or updateTextIfPossible or rerender_text:
                 # Package code
-                anonymizer.anonymize.find_entities(ifile=('upload_file/documents/' +
-                                                          user_folder + '/' + tempname),
-                                                   words_array=custom_words.split(','))
-
+                # anonymizer.anonymize.find_entities(ifile=('upload_file/documents/' +
+                #                                           user_folder + '/' + tempname),
+                #                                    words_array=custom_words.split(','))
+                # # Original code
+                command = ('python3 -m anonymizer_service' +
+                           ' -i upload_file/documents/' + user_folder + '/' + tempname +
+                           custom_words_option)
+                runShell(command)
             with open(temp_file, mode='r') as f:
                 text = f.read()
             # Always anonymize
@@ -76,10 +80,16 @@ def anonymize_file(id='',
         else:
 
             # Package code
-            anonymizer.anonymize.find_entities(ifile=file,
-                                               ofile='upload_file/documents/' + user_folder + '/' + anonymized_document_name,
-                                               words_array=custom_words.split(','))
-
+            # anonymizer.anonymize.find_entities(ifile=file,
+            #                                    ofile='upload_file/documents/' + user_folder + '/' + anonymized_document_name,
+            #                                    words_array=custom_words.split(','))
+            custom_words_option = (
+                " -w '" + custom_words + "'") if custom_words != '' else ''
+            command = ('python3 -m anonymizer_service' +
+                       ' -i ' + file +
+                       ' -o ' + 'upload_file/documents/' + user_folder + '/' + anonymized_document_name +
+                       custom_words_option)
+            runShell(command)
             anonymized_file_name = file_name[0:(
                 len(file_name)-4)] + '_anonymized.txt'
             anonymized_file = os.path.join(os.path.dirname(__file__),
@@ -103,10 +113,13 @@ def anonymize_file(id='',
         # Check if file exists already or force update
         if not os.path.isfile(anonymized_file) or updateTextIfPossible or rerender_text:
             # Package code
-            anonymizer.anonymize.find_entities(ifile=file,
-                                               ofile='upload_file/documents/' + user_folder + '/' + anonymized_file_name,
-                                               words_array=custom_words.split(','))
-
+            # anonymizer.anonymize.find_entities(ifile=file,
+            #                                    ofile='upload_file/documents/' + user_folder + '/' + anonymized_file_name,
+            #                                    words_array=custom_words.split(','))
+            # Original code
+            command = ('python3 -m anonymizer_service -i ' + file +
+                       ' -o upload_file/documents/' + user_folder + '/' + anonymized_file_name + " -w '" + custom_words + "'")
+            runShell(command)
         with open(file, mode='r') as f:
             text = f.read()
         with open(anonymized_file, mode='r') as f:

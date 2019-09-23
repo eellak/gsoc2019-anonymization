@@ -304,8 +304,8 @@ def known_address(data,pattern=None):
     results = []
 
     import re
-    from anonymizer.trie_index import create_trie_index
-    from anonymizer.trie_index import prepair_word
+    from anonymizer_service.trie_index import create_trie_index
+    from anonymizer_service.trie_index import prepair_word
     import os 
     known_addresses = pattern['known_address_pattern']
     # Create dataset
@@ -336,8 +336,8 @@ def known_address(data,pattern=None):
 def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     if pattern == None:
         return []
-    from anonymizer import trie_index
-    from anonymizer.trie_index import prepair_word
+    from anonymizer_service import trie_index
+    from anonymizer_service.trie_index import prepair_word
     import re
     results = []
     possible_names = []
@@ -410,7 +410,7 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     # Safewords:
     # These words will never be parsed as surnames
     #
-    from anonymizer.external_functions import find_path
+    from anonymizer_service.external_functions import find_path
     cwd = os.path.dirname(os.path.abspath(__file__))
     safewords_path = find_path( (cwd+'/conf.json'), 'safewords')
     with open(safewords_path, mode='r') as sw:
@@ -741,8 +741,8 @@ def place(data, pattern=None, handler=None):
 
     import re
     import os
-    from anonymizer.trie_index import create_trie_index
-    from anonymizer.trie_index import prepair_word
+    from anonymizer_service.trie_index import create_trie_index
+    from anonymizer_service.trie_index import prepair_word
 
     if pattern == None:
         return []
