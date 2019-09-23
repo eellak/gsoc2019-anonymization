@@ -38,6 +38,15 @@ $(document).ready(function () {
     });
 });
 
+function reload() {
+    base_url = window.location.href.split('?')[0]
+    // console.log(base_url)
+    new_url = base_url + '?reload=True';
+    words_to_be_anonymized = [];
+    selected_word = null;
+    window.location = new_url;
+}
+
 function fade() {
     var i = 0;
     var h1 = document.getElementById("anonymize_word_button");

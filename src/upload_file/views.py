@@ -202,6 +202,13 @@ def document_preview(request, id):
         words = request.GET.getlist('text_param')
         custom_words = ''
 
+        # GET reload parameter
+        url = request.get_full_path()
+        reload_property = request.GET.getlist('reload')
+        if reload_property[0] == 'True':
+            # Reload document
+            rerender_text = True
+
         # GET method delete_parameters
         url = request.get_full_path()
         delete_words = request.GET.getlist('delete_param')

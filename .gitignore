@@ -9,6 +9,7 @@ __pycache__/
 conf_temp.json
 myvenv/*
 src/upload_file/documents/*
+src/db.sqlite3
 
 ## Package files
 build/
