@@ -205,9 +205,10 @@ def document_preview(request, id):
         # GET reload parameter
         url = request.get_full_path()
         reload_property = request.GET.getlist('reload')
-        if reload_property[0] == 'True':
-            # Reload document
-            rerender_text = True
+        if reload_property != []:
+            if reload_property[0] == 'True':
+                # Reload document
+                rerender_text = True
 
         # GET method delete_parameters
         url = request.get_full_path()
