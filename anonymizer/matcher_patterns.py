@@ -913,10 +913,10 @@ def place(data, pattern=None, handler=None):
 
 
 def decision_number(data, pattern=None, handler=None):
-    
+
     import re
     results = []
-    
+
     decision_number_pattern = pattern['decision_number_pattern']
     for match in re.finditer(decision_number_pattern,data):
         s = match.start()
@@ -940,7 +940,7 @@ def custom_regex(data,pattern=None,handler=None):
 
 def custom_words(data,word=None,handler=None):
 
-    import re 
+    import re
     results = []
     for match in re.finditer(word.replace('"', ''), data):
         s = match.start()
@@ -948,5 +948,4 @@ def custom_words(data,word=None,handler=None):
         span = data[s:e]
         results.append(['custom_word',span.upper(),span,s,e,False])
     return results
-
 

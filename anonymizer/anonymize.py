@@ -135,6 +135,50 @@ def find_entities(ifile,
     # READ CONFIGURATION FILE
     #
     patterns_json = read_patterns(patterns_file)
+
+
+    # Except whole parts from the text
+
+    '''
+    It is possible that some parts in the text have
+    to stay untouched. Therefore, we should except
+    these parts from the anonymizer.
+
+    This function should create a list called
+    EXCEPTED_PARTS containing lists of type:
+    [start,end] for each excepted part.
+    '''
+    def except_parts(excepted_list=None):
+
+        # If nothing is given return empty list
+        if excepted_list == None:
+            return []
+
+        '''
+        In order to remove some parts from anonymization
+        we should first identify starting and ending spans
+        id in text.
+        After that we can except anything between these
+        two parts.
+        '''
+        def find_part(rgx):
+            import re
+            results = []
+            for match in re.finditer(rgx, data):
+                s = match.start()
+                e = match.end()
+                span = data[s:e]
+                if s==e:
+                    continue
+                return [s,e] #span removed
+                ## NEEDS FIX TO FIND FIRST MATCH ONLY
+
+
+        excepted_parts = []
+        for rgx in excepted_list:
+            excepted_parts.append( find_part(rgx=rgx) )
+        return excepted_parts
+
     '''
         --- ENTITY LIST EXPLANATION ---
         entities = [entity_name, entity_value,
@@ -149,6 +193,7 @@ def find_entities(ifile,
 
         Some times these to might have the same value.
     '''
+
     entities = []
     if not quick:
         # Do not do the whole search
@@ -189,6 +234,11 @@ def find_entities(ifile,
     if in_order == True:
         entities.sort(key=sort_by_start)
 
+    # Call except_parts here
+    # All excepted regexes should be read from json file
+    excepted_parts = except_parts([r'Συνεδρίασε\sδημόσια.*?Για\sνα\sδικάσει\s+|$'])
+
+
     unique_values = True
     if unique_values == True:
         final_entities = []
@@ -196,6 +246,27 @@ def find_entities(ifile,
             if entity not in final_entities:
                 final_entities.append(entity)
         entities = final_entities
+
+    # Before finalizing the list except any parts
+    # that should not be anonymized
+    final_entities = []
+    removed_spans = []
+    for entity in entities:
+        s = entity[3]
+        e = entity[4]
+        for [part_s,part_e] in excepted_parts:
+            if s >= part_s and e <= part_e:
+            # Entity exists within the part
+            # Do not add it to final_entities
+                removed_spans.append(entity[2])
+            else:
+                final_entities.append(entity)
+    entities = final_entities
+
+    # All removed_spans may be repeated in the text
+    # therefore they should be removed everywhere
+    if removed_spans != []:
+        entities = [entity for entity in entities if entity[2] not in removed_spans]
 
     # Remove specific words added by user
     if remove_words != []:
