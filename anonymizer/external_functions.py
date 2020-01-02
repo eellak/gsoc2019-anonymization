@@ -28,7 +28,7 @@ def official_json(ifile):
     #     jsonfile = json.loads(ifile)
 
 
-def fix_pattern(patterns):
+def fix_patterns(patterns):
     import json
     pattern = {}
     for key, value in patterns.items():
@@ -40,6 +40,8 @@ def fix_pattern(patterns):
                 'Make sure that values in patterns.json patterns are different within each function')
     return(pattern)
 
+def fix_pattern(rgx):
+    return rgx.replace('<#ec>','\\')
 
 def find_path(conf_file='anonymizer/conf.json', file_needed=None):
     import os

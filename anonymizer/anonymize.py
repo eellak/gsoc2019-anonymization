@@ -4,7 +4,7 @@ from os import system as runShell
 from termcolor import colored
 from anonymizer import matcher_patterns
 from anonymizer.external_functions import official_json
-from anonymizer.external_functions import fix_pattern
+from anonymizer.external_functions import fix_patterns, fix_pattern
 from anonymizer.external_functions import sort_by_start
 from anonymizer.external_functions import create_output_file_name
 
@@ -203,7 +203,7 @@ def find_entities(ifile,
             custom_pattern_method = getattr(matcher_patterns, matcher)
             # Call function with the proper parameters
             results = custom_pattern_method(
-                data=data, pattern=fix_pattern(value['pattern']))
+                data=data, pattern=fix_patterns(value['pattern']))
             if results != None:
                 entities += results
 
@@ -237,6 +237,11 @@ def find_entities(ifile,
     # Call except_parts here
     # All excepted regexes should be read from json file
     excepted_parts = except_parts([r'Συνεδρίασε\sδημόσια.*?Για\sνα\sδικάσει\s+|$'])
+
+    excepted_rgx = []
+    for part_id, rgx in patterns_json['excepted_parts'].items():
+        excepted_rgx.append(fix_pattern(rgx))
+    excepted_parts = except_parts(excepted_rgx)
 
 
     unique_values = True

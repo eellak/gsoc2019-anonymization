@@ -89,5 +89,8 @@
             "active": "False",
             "pattern": {}
         }
+    },
+    "excepted_parts":{
+        "Arxi_text": "Συνεδρίασε\sδημόσια.*?Για\sνα\sδικάσει\s+|$"
     }
 }
