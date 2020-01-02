@@ -168,7 +168,7 @@ def find_entities(ifile,
                 s = match.start()
                 e = match.end()
                 span = data[s:e]
-                if s==e:
+                if s==e :
                     continue
                 return [s,e] #span removed
                 ## NEEDS FIX TO FIND FIRST MATCH ONLY
@@ -176,7 +176,9 @@ def find_entities(ifile,
 
         excepted_parts = []
         for rgx in excepted_list:
-            excepted_parts.append( find_part(rgx=rgx) )
+            value = find_part(rgx=rgx)
+            if value != None:
+                excepted_parts.append( value)
         return excepted_parts
 
     '''
@@ -259,6 +261,7 @@ def find_entities(ifile,
     for entity in entities:
         s = entity[3]
         e = entity[4]
+
         for [part_s,part_e] in excepted_parts:
             if s >= part_s and e <= part_e:
             # Entity exists within the part
