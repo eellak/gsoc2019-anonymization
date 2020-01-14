@@ -246,13 +246,6 @@ def find_entities(ifile,
     excepted_parts = except_parts(excepted_rgx)
 
 
-    unique_values = True
-    if unique_values == True:
-        final_entities = []
-        for entity in entities:
-            if entity not in final_entities:
-                final_entities.append(entity)
-        entities = final_entities
 
     # Before finalizing the list except any parts
     # that should not be anonymized
@@ -265,16 +258,23 @@ def find_entities(ifile,
         for [part_s,part_e] in excepted_parts:
             if s >= part_s and e <= part_e:
             # Entity exists within the part
-            # Do not add it to final_entities
+            # Do not add it to final_entities later
+            # Also remove any copy later
                 removed_spans.append(entity[2])
-            else:
-                final_entities.append(entity)
-    entities = final_entities
+
 
     # All removed_spans may be repeated in the text
     # therefore they should be removed everywhere
     if removed_spans != []:
         entities = [entity for entity in entities if entity[2] not in removed_spans]
+
+    unique_values = True
+    if unique_values == True:
+        final_entities = []
+        for entity in entities:
+            if entity not in final_entities:
+                final_entities.append(entity)
+        entities = final_entities
 
     # Remove specific words added by user
     if remove_words != []:

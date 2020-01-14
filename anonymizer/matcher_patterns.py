@@ -269,6 +269,8 @@ def address(data, pattern=None, handler=None):
     #                             r'(?P<address2>(?:[Α-Ω]\w*.?\s?)+?)[,\s]+?(?:με\s)?((?:αρ)[ιί]?[θ]?[μ]?[οό]?[υύ]?[\.]?[:]?[\s]?(?P<number2>.+?\b))')
     address_pattern = pattern['address_pattern']
     multiple_address_pattern = pattern['multiple_address_pattern']
+    citizen_of_address_pattern = pattern['citizen_of_address_pattern']
+
     for match in re.finditer(address_pattern, data):
         s = match.start()
         e = match.end()
@@ -278,6 +280,7 @@ def address(data, pattern=None, handler=None):
         ).replace(',', '') + ('-' + match.group('number').strip() if match.group('number') != None else '')
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+
     for match in re.finditer(multiple_address_pattern, data):
         s = match.start()
         e = match.end()
@@ -294,7 +297,16 @@ def address(data, pattern=None, handler=None):
         ]
         found_by_spacy = False
         results.append([entity_name, entity_value, span, s, e, found_by_spacy])
-    
+
+    for match in re.finditer(citizen_of_address_pattern, data):
+        s = match.start()
+        e = match.end()
+        span = data[s:e]
+        entity_name = 'citizen_of_address_pattern'
+        entity_value = span.replace(',','').strip()
+        found_by_spacy = False
+        results.append([entity_name, entity_value, span, s, e, found_by_spacy])
+
     return results
 
 def known_address(data,pattern=None):
@@ -380,14 +392,14 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
     for index, is_name in enumerate(are_names):
         if is_name == True:
             results.append(not_final_results[index])
-
-    # Now fine surnames that maybe exist for each name in list
+    import copy
+    results_names = copy.deepcopy(results)
+    # Now find surnames that maybe exist for each name in list
     #
 
     surnames = []
     names = [result[2] for result in results]
-    name_set = set(names)
-    names = list(name_set)
+    names = list(set(names))
 
     surnames_postfixes = ['ιατης', 'ιατη', 'αιτης', 'αιτη',
                           'ιδης', 'ιδη', 'αδης', 'αδη',
@@ -733,7 +745,8 @@ def name(data, pattern=None, handler=None, strict_surname_matcher=True):
             entity_value = span.strip().replace(',','').upper()
             entity_name = 'name-middlename-surname'
             results.append([entity_name,entity_value,span,s,e,False])
-
+    results += results_names
+    # print('results:',results)
     return results
 
 
